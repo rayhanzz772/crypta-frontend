@@ -9,13 +9,13 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/logo_shield.png",
+      "src": "/icon_manifest.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo_shield.png",
+      "src": "/icon_manifest.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
@@ -24,7 +24,7 @@
   "categories": ["productivity", "security", "utilities"],
   "screenshots": [
     {
-      "src": "/logo_shield.png",
+      "src": "/icon_manifest.png",
       "sizes": "1280x720",
       "type": "image/png"
     }
