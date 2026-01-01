@@ -239,7 +239,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={isSubmitting || !formData.name || !formData.slug}
-              className="flex-1 px-3 py-2 text-sm bg-primary-500 hover:bg-primary-600 text-white rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+              className="flex-1 px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
             >
               {isSubmitting ? (
                 <>

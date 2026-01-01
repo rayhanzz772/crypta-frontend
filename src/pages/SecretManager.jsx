@@ -348,7 +348,7 @@ const SecretManager = () => {
               setShowCreateProjectModal(true);
             }
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
         >
           <Plus className="w-5 h-5" />
           {selectedProject
@@ -397,7 +397,7 @@ const SecretManager = () => {
               {!searchQuery && (
                 <button
                   onClick={() => setShowCreateProjectModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-all"
                 >
                   <Plus className="w-5 h-5" />
                   Create Project
@@ -714,7 +714,7 @@ const SecretManager = () => {
                   </p>
                   <button
                     onClick={() => setShowCreateServiceAccountModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl transition-all"
                   >
                     <Plus className="w-5 h-5" />
                     Create Service Account
