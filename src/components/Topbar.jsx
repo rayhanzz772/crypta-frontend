@@ -36,6 +36,9 @@ const Topbar = ({
     if (location.pathname.includes("/notes")) {
       return "Search notes by title, content, or tags...";
     }
+    if (location.pathname.includes("/secret-manager")) {
+      return "Search projects and secrets...";
+    }
     return "Search passwords...";
   };
 
@@ -97,7 +100,7 @@ const Topbar = ({
         </button>
 
         {/* Center: Search Bar */}
-        <div className="flex-1 max-w-2xl mx-4 hidden md:block">
+        <div className="flex-1 mr-4 hidden md:block">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input

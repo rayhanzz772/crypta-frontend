@@ -21,19 +21,19 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const validatePassword = (password) => {
+  const validatePassword = (master_password) => {
     const errors = [];
 
-    if (!password) {
+    if (!master_password) {
       errors.push("Master password is required");
       return errors;
     }
 
-    if (password.length < 8) {
+    if (master_password.length < 8) {
       errors.push("Password must be at least 8 characters");
     }
 
-    if (password.trim() !== password) {
+    if (master_password.trim() !== master_password) {
       errors.push("Password cannot start or end with spaces");
     }
 

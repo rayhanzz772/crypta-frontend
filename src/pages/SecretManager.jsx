@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from "react";
+import { useOutletContext } from "react-router-dom";
 import {
   FolderKey,
   Plus,
   Key,
   Calendar,
   ArrowLeft,
-  Search,
   MoreVertical,
   Edit,
   Trash2,
@@ -22,6 +22,7 @@ import {
   Shield,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useAuth } from "../contexts/AuthContext";
 import { projectsAPI, secretsAPI, serviceAccountsAPI } from "../utils/api";
 import CreateProjectModal from "../components/CreateProjectModal";
 import CreateSecretModal from "../components/CreateSecretModal";
@@ -31,6 +32,12 @@ import ManageAccessModal from "../components/ManageAccessModal";
 import Pagination from "../components/Pagination";
 
 const SecretManager = () => {
+  // Get search query from layout context
+  const { searchQuery = "" } = useOutletContext();
+  const { masterPassword } = useAuth();
+
+  const isVaultLocked = !masterPassword;
+
   // State
   const [projects, setProjects] = useState([]);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -40,7 +47,6 @@ const SecretManager = () => {
   const [isLoadingSecrets, setIsLoadingSecrets] = useState(false);
   const [isLoadingServiceAccounts, setIsLoadingServiceAccounts] =
     useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("secrets"); // 'secrets' | 'service-accounts'
 
   // Pagination state
@@ -67,9 +73,11 @@ const SecretManager = () => {
 
   // Fetch projects on mount
   useEffect(() => {
-    fetchProjects();
+    if (!isVaultLocked) {
+      fetchProjects();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectsPage, projectsPerPage]);
+  }, [projectsPage, projectsPerPage, isVaultLocked]);
 
   // Fetch data when project is selected
   useEffect(() => {
@@ -302,6 +310,121 @@ const SecretManager = () => {
     secret.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // Filter service accounts based on search
+  const filteredServiceAccounts = serviceAccounts.filter(
+    (sa) =>
+      sa.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      sa.client_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Show locked screen if vault is locked
+  if (isVaultLocked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 sm:p-6">
+        <div className="max-w-md w-full">
+          <div className="flex items-center justify-center mb-6">
+            <div className="relative">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gradient-to-br from-amber-500 to-orange-600 rounded-full flex items-center justify-center shadow-lg animate-pulse">
+                <FolderKey className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-7 h-7 sm:w-8 sm:h-8 bg-amber-500 rounded-full flex items-center justify-center">
+                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-3">
+              Secret Manager Locked
+            </h2>
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-2">
+              Your projects and secrets are protected
+            </p>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
+              Unlock your vault with your master password to access your
+              encrypted secrets
+            </p>
+          </div>
+
+          {/* Info Cards */}
+          <div className="space-y-3 mb-6 sm:mb-8">
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                  End-to-End Encrypted
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                  All secrets are encrypted with AES-256 encryption
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                  Zero-Knowledge Security
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                  Your secrets are never stored in plain text
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
+                <Key className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                  Version Control
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                  Track and rollback secret versions with full history
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                  Service Account Access
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                  Grant programmatic access with IAM permissions
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Security Note */}
+          <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border-2 border-primary-200 dark:border-primary-800 rounded-xl p-3 sm:p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="text-xs sm:text-sm font-semibold text-primary-800 dark:text-primary-200 mb-1">
+                  Security First
+                </h3>
+                <p className="text-xs text-primary-700 dark:text-primary-300">
+                  Your master password is never sent to our servers. All
+                  encryption and decryption happens locally in your browser.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -313,7 +436,6 @@ const SecretManager = () => {
                 setSelectedProject(null);
                 setSecrets([]);
                 setServiceAccounts([]);
-                setSearchQuery("");
                 // Reset pagination for secrets and service accounts
                 setSecretsPage(1);
                 setServiceAccountsPage(1);
@@ -348,7 +470,7 @@ const SecretManager = () => {
               setShowCreateProjectModal(true);
             }
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all shadow-lg shadow-primary-500/25"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
         >
           <Plus className="w-5 h-5" />
           {selectedProject
@@ -357,20 +479,6 @@ const SecretManager = () => {
               : "Create Service Account"
             : "New Project"}
         </button>
-      </div>
-
-      {/* Search Bar */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-        <input
-          type="text"
-          placeholder={
-            selectedProject ? "Search secrets..." : "Search projects..."
-          }
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-white placeholder-slate-400 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-        />
       </div>
 
       {/* Content */}
@@ -397,7 +505,7 @@ const SecretManager = () => {
               {!searchQuery && (
                 <button
                   onClick={() => setShowCreateProjectModal(true)}
-                  className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-all"
                 >
                   <Plus className="w-5 h-5" />
                   Create Project
@@ -677,7 +785,7 @@ const SecretManager = () => {
               )}
 
               {/* Info Banner */}
-              <div className="mt-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+              <div className="mt-6 bg-amber-50 hidden md:block dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
                 <div className="flex gap-3">
                   <History className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                   <div>
@@ -701,33 +809,95 @@ const SecretManager = () => {
                 <div className="flex items-center justify-center py-20">
                   <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
                 </div>
-              ) : serviceAccounts.length === 0 ? (
+              ) : filteredServiceAccounts.length === 0 ? (
                 <div className="text-center py-20">
                   <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
                     <Bot className="w-10 h-10 text-slate-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
-                    No service accounts yet
+                    {searchQuery
+                      ? "No service accounts found"
+                      : "No service accounts yet"}
                   </h3>
                   <p className="text-slate-500 dark:text-slate-400 mb-6">
-                    Create a service account to enable machine-to-machine access
+                    {searchQuery
+                      ? "Try a different search term"
+                      : "Create a service account to enable machine-to-machine access"}
                   </p>
-                  <button
-                    onClick={() => setShowCreateServiceAccountModal(true)}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
-                  >
-                    <Plus className="w-5 h-5" />
-                    Create Service Account
-                  </button>
+                  {!searchQuery && (
+                    <button
+                      onClick={() => setShowCreateServiceAccountModal(true)}
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl transition-all"
+                    >
+                      <Plus className="w-5 h-5" />
+                      Create Service Account
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div>
                   {/* Service Accounts Table */}
                   <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <table className="w-full">
+                    {/* Mobile Card View */}
+                    <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-700">
+                      {filteredServiceAccounts.map((sa) => (
+                        <div
+                          key={sa.id}
+                          className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-slate-800 dark:text-white mb-1 truncate">
+                                {sa.name}
+                              </p>
+                              <code className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-mono break-all">
+                                {sa.client_id}
+                              </code>
+                            </div>
+                            {sa.status === "active" ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium flex-shrink-0">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-medium flex-shrink-0">
+                                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                                Disabled
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                              {formatDate(sa.created_at)}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => copyToClipboard(sa.client_id)}
+                                className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                title="Copy client ID"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteServiceAccount(sa.id)
+                                }
+                                className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                title="Delete service account"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <table className="w-full hidden sm:table">
                       <thead className="bg-slate-50 dark:bg-slate-900">
                         <tr>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Client ID
                           </th>
                           <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">
@@ -742,12 +912,12 @@ const SecretManager = () => {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 dark:divide-slate-700">
-                        {serviceAccounts.map((sa) => (
+                        {filteredServiceAccounts.map((sa) => (
                           <tr
                             key={sa.id}
                             className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                           >
-                            <td className="px-6 py-4 hidden sm:table-cell">
+                            <td className="px-6 py-4">
                               <code className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded font-mono text-xs">
                                 {sa.client_id}
                               </code>
@@ -797,7 +967,7 @@ const SecretManager = () => {
                   </div>
 
                   {/* Service Accounts Pagination */}
-                  {serviceAccounts.length > 0 && (
+                  {filteredServiceAccounts.length > 0 && (
                     <div className="mt-6">
                       <Pagination
                         metadata={serviceAccountsMetadata}
