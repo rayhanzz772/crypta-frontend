@@ -59,7 +59,7 @@ export const authAPI = {
   register: async (email, masterPassword) => {
     const response = await api.post("/auth/register", {
       email,
-      password: masterPassword,
+      master_password: masterPassword,
     });
     return response.data;
   },
@@ -67,7 +67,7 @@ export const authAPI = {
   login: async (email, masterPassword) => {
     const response = await api.post("/auth/login", {
       email,
-      password: masterPassword,
+      master_password: masterPassword,
     });
     return response.data;
   },
@@ -78,7 +78,7 @@ export const authAPI = {
 
   checkPassword: async (masterPassword) => {
     const response = await api.post("/api/users/check-password", {
-      password: masterPassword,
+      master_password: masterPassword,
     });
     return response.data;
   },
@@ -267,6 +267,184 @@ export const notesAPI = {
       target_id: targetId,
       type: "note",
     });
+    return response.data;
+  },
+};
+
+// Projects API endpoints (Secret Manager)
+export const projectsAPI = {
+  getAll: async () => {
+    const response = await api.get("/client/project-secret");
+    return response.data;
+  },
+
+  getById: async (id) => {
+    const response = await api.get(`/client/project-secret/${id}/show`);
+    return response.data;
+  },
+
+  create: async (projectData) => {
+    const response = await api.post("/client/project-secret/create", {
+      name: projectData.name,
+      slug: projectData.slug,
+      description: projectData.description || "",
+    });
+    return response.data;
+  },
+
+  update: async (id, projectData) => {
+    const response = await api.put(`/client/project-secret/${id}/update`, {
+      name: projectData.name,
+      slug: projectData.slug,
+      description: projectData.description || "",
+    });
+    return response.data;
+  },
+
+  delete: async (id) => {
+    console.log("📡 projectsAPI.delete called with ID:", id);
+    if (!id) {
+      console.error("❌ Project ID is undefined in API call!");
+      throw new Error("Project ID is required for deletion");
+    }
+    const response = await api.delete(`/client/project-secret/${id}/delete`);
+    return response.data;
+  },
+};
+
+// Secrets API endpoints (Secret Manager)
+export const secretsAPI = {
+  // Get all secrets for a project
+  getAll: async (projectId) => {
+    const response = await api.get(`/client/secret/${projectId}`);
+    return response.data;
+  },
+
+  // Get single secret by ID
+  getById: async (secretId) => {
+    const response = await api.get(`/client/secret/${secretId}/show}`);
+    return response.data;
+  },
+
+  // Create new secret
+  create: async (projectId, secretData) => {
+    const payload = { name: secretData.name };
+
+    // Only include labels if provided and not empty
+    if (secretData.labels && secretData.labels.length > 0) {
+      payload.labels = secretData.labels;
+    }
+
+    console.log(
+      "📡 API sending to POST /client/secret/" + projectId + "/create:",
+      JSON.stringify(payload, null, 2)
+    );
+
+    const response = await api.post(
+      `/client/secret/${projectId}/create`,
+      payload
+    );
+    return response.data;
+  },
+
+  // Update secret
+  update: async (secretId, secretData) => {
+    const payload = { name: secretData.name };
+
+    // Only include labels if provided and not empty
+    if (secretData.labels && secretData.labels.length > 0) {
+      payload.labels = secretData.labels;
+    }
+
+    const response = await api.put(
+      `/client/secret/${secretId}/update`,
+      payload
+    );
+    return response.data;
+  },
+
+  // Delete secret
+  delete: async (secretId) => {
+    const response = await api.delete(`/client/secret/${secretId}/delete`);
+    return response.data;
+  },
+};
+
+// Secret Versions API endpoints (Secret Manager - Phase 2)
+export const secretVersionsAPI = {
+  // Get all versions for a secret
+  getAll: async (secretId) => {
+    const response = await api.get(`/client/secret-version/${secretId}`);
+    return response.data;
+  },
+
+  // Create new version (add secret value)
+  create: async (secretId, plaintext) => {
+    const response = await api.post(
+      `/client/secret-version/${secretId}/create`,
+      {
+        plaintext: plaintext,
+      }
+    );
+    return response.data;
+  },
+
+  // Enable/Disable a version
+  updateStatus: async (versionId, status) => {
+    const response = await api.patch(
+      `/client/secret-version/${versionId}/update`,
+      { status }
+    );
+    return response.data;
+  },
+};
+
+// Service Accounts API endpoints (Secret Manager - Phase 3)
+export const serviceAccountsAPI = {
+  // Get all service accounts for a project
+  getAll: async (projectId) => {
+    const response = await api.get(`/client/service-account/${projectId}`);
+    return response.data;
+  },
+
+  // Create new service account
+  create: async (projectId, name) => {
+    const response = await api.post(
+      `/client/service-account/${projectId}/create`,
+      {
+        name,
+      }
+    );
+    return response.data;
+  },
+
+  // Delete service account
+  delete: async (serviceAccountId) => {
+    const response = await api.delete(
+      `/client/service-account/${serviceAccountId}/delete`
+    );
+    return response.data;
+  },
+};
+
+// IAM Bindings API endpoints (Secret Manager - Phase 3)
+export const iamBindingsAPI = {
+  getByResourceId: async (resourceId) => {
+    const response = await api.get(`/client/bindings`, {
+      params: { resource_id: resourceId },
+    });
+    return response.data;
+  },
+
+  create: async (secretId, serviceAccountId) => {
+    const response = await api.post(`/client/bindings/${secretId}/create`, {
+      service_account_id: serviceAccountId,
+    });
+    return response.data;
+  },
+
+  delete: async (bindingId) => {
+    const response = await api.delete(`/client/bindings/${bindingId}/delete`);
     return response.data;
   },
 };
