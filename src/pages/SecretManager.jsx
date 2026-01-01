@@ -447,7 +447,7 @@ const SecretManager = () => {
           )}
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-              <FolderKey className="w-7 h-7 sm:w-8 sm:h-8 text-primary-600 dark:text-primary-400" />
+              <FolderKey className="w-7 h-7 sm:w-8 sm:h-8 text-white-600 dark:text-white-400" />
               {selectedProject ? selectedProject.name : "Secret Manager"}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
@@ -785,22 +785,6 @@ const SecretManager = () => {
               )}
 
               {/* Info Banner */}
-              <div className="mt-6 bg-amber-50 hidden md:block dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
-                <div className="flex gap-3">
-                  <History className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-semibold text-amber-900 dark:text-amber-100 mb-1">
-                      Secret Version Management
-                    </p>
-                    <p className="text-sm text-amber-800 dark:text-amber-200">
-                      Click on any secret to manage its versions. Add new secret
-                      values, enable/disable versions for rollback, and track
-                      version history. Secret values are encrypted and never
-                      exposed in the UI.
-                    </p>
-                  </div>
-                </div>
-              </div>
             </div>
           ) : (
             // Service Accounts Tab Content
@@ -976,24 +960,6 @@ const SecretManager = () => {
                       />
                     </div>
                   )}
-
-                  {/* Info Banner */}
-                  <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-                    <div className="flex gap-3">
-                      <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                      <div>
-                        <p className="font-semibold text-blue-900 dark:text-blue-100 mb-1">
-                          Service Account Authentication
-                        </p>
-                        <p className="text-sm text-blue-800 dark:text-blue-200">
-                          Service accounts use RSA key pairs for authentication.
-                          The private key is shown only once during creation.
-                          Grant access to secrets via IAM bindings to allow
-                          service accounts to read them programmatically.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               )}
             </div>
