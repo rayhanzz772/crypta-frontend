@@ -879,7 +879,7 @@ const SecretManager = () => {
 
                     {/* Desktop Table View */}
                     <table className="w-full hidden sm:table">
-                      <thead className="bg-slate-50 dark:bg-slate-900">
+                      <thead className="bg-slate-50 dark:bg-slate-900/50">
                         <tr>
                           <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Client ID
