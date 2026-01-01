@@ -724,10 +724,66 @@ const SecretManager = () => {
                 <div>
                   {/* Service Accounts Table */}
                   <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                    <table className="w-full">
+                    {/* Mobile Card View */}
+                    <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-700">
+                      {serviceAccounts.map((sa) => (
+                        <div
+                          key={sa.id}
+                          className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-3 mb-3">
+                            <div className="flex-1 min-w-0">
+                              <p className="font-semibold text-slate-800 dark:text-white mb-1 truncate">
+                                {sa.name}
+                              </p>
+                              <code className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-mono break-all">
+                                {sa.client_id}
+                              </code>
+                            </div>
+                            {sa.status === "active" ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium flex-shrink-0">
+                                <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                                Active
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-medium flex-shrink-0">
+                                <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
+                                Disabled
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                              {formatDate(sa.created_at)}
+                            </span>
+                            <div className="flex items-center gap-1">
+                              <button
+                                onClick={() => copyToClipboard(sa.client_id)}
+                                className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                title="Copy client ID"
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  handleDeleteServiceAccount(sa.id)
+                                }
+                                className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                title="Delete service account"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Desktop Table View */}
+                    <table className="w-full hidden sm:table">
                       <thead className="bg-slate-50 dark:bg-slate-900">
                         <tr>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                             Client ID
                           </th>
                           <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">
@@ -747,7 +803,7 @@ const SecretManager = () => {
                             key={sa.id}
                             className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                           >
-                            <td className="px-6 py-4 hidden sm:table-cell">
+                            <td className="px-6 py-4">
                               <code className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded font-mono text-xs">
                                 {sa.client_id}
                               </code>
