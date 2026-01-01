@@ -15,8 +15,9 @@ const AppLayout = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  // Reset category selection when navigating away from passwords page
+  // Reset search and category when navigating between pages
   useEffect(() => {
+    setSearchQuery(""); // Clear search on page change
     const isPasswordsPage =
       location.pathname === "/app" || location.pathname === "/app/";
     if (!isPasswordsPage) {

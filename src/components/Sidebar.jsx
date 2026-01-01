@@ -186,7 +186,7 @@ const Sidebar = ({
             className={`rounded-xl p-3 transition-all ${
               isVaultUnlocked
                 ? "bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800"
-                : "bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800"
+                : "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800"
             }`}
           >
             <div className="flex items-center gap-2 mb-1">
@@ -204,14 +204,14 @@ const Sidebar = ({
                 {isVaultUnlocked ? (
                   <LockOpen className="w-4 h-4 text-green-600 dark:text-green-400" />
                 ) : (
-                  <Lock className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                 )}
               </motion.div>
               <span
                 className={`text-xs font-semibold ${
                   isVaultUnlocked
                     ? "text-green-700 dark:text-green-300"
-                    : "text-red-700 dark:text-red-300"
+                    : "text-blue-700 dark:text-blue-300"
                 }`}
               >
                 {isVaultUnlocked ? "Vault Unlocked" : "Vault Locked"}
@@ -221,37 +221,13 @@ const Sidebar = ({
               className={`text-xs ${
                 isVaultUnlocked
                   ? "text-green-600 dark:text-green-400"
-                  : "text-red-600 dark:text-red-400"
+                  : "text-blue-600 dark:text-blue-400"
               }`}
             >
               {isVaultUnlocked
                 ? "All passwords encrypted"
                 : "Master password required"}
             </p>
-
-            {/* Lock/Unlock Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={isVaultUnlocked ? handleLockVault : onUnlock}
-              className={`w-full mt-3 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all ${
-                isVaultUnlocked
-                  ? "bg-red-500 hover:bg-red-600 text-white"
-                  : "bg-primary-500 hover:bg-primary-600 text-white"
-              }`}
-            >
-              {isVaultUnlocked ? (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Lock Vault
-                </>
-              ) : (
-                <>
-                  <LockOpen className="w-4 h-4" />
-                  Unlock Vault
-                </>
-              )}
-            </motion.button>
           </motion.div>
         </div>
       )}
