@@ -273,8 +273,15 @@ export const notesAPI = {
 
 // Projects API endpoints (Secret Manager)
 export const projectsAPI = {
-  getAll: async () => {
-    const response = await api.get("/client/project-secret");
+  getAll: async (page = 1, per_page = 10) => {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("per_page", per_page);
+    const queryString = params.toString();
+    const url = queryString
+      ? `/client/project-secret?${queryString}`
+      : "/client/project-secret";
+    const response = await api.get(url);
     return response.data;
   },
 
@@ -315,8 +322,15 @@ export const projectsAPI = {
 // Secrets API endpoints (Secret Manager)
 export const secretsAPI = {
   // Get all secrets for a project
-  getAll: async (projectId) => {
-    const response = await api.get(`/client/secret/${projectId}`);
+  getAll: async (projectId, page = 1, per_page = 10) => {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("per_page", per_page);
+    const queryString = params.toString();
+    const url = queryString
+      ? `/client/secret/${projectId}?${queryString}`
+      : `/client/secret/${projectId}`;
+    const response = await api.get(url);
     return response.data;
   },
 
@@ -402,8 +416,15 @@ export const secretVersionsAPI = {
 // Service Accounts API endpoints (Secret Manager - Phase 3)
 export const serviceAccountsAPI = {
   // Get all service accounts for a project
-  getAll: async (projectId) => {
-    const response = await api.get(`/client/service-account/${projectId}`);
+  getAll: async (projectId, page = 1, per_page = 10) => {
+    const params = new URLSearchParams();
+    params.append("page", page);
+    params.append("per_page", per_page);
+    const queryString = params.toString();
+    const url = queryString
+      ? `/client/service-account/${projectId}?${queryString}`
+      : `/client/service-account/${projectId}`;
+    const response = await api.get(url);
     return response.data;
   },
 

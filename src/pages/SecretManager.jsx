@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   FolderKey,
   Plus,
@@ -28,6 +28,7 @@ import CreateSecretModal from "../components/CreateSecretModal";
 import SecretVersionsModal from "../components/SecretVersionsModal";
 import CreateServiceAccountModal from "../components/CreateServiceAccountModal";
 import ManageAccessModal from "../components/ManageAccessModal";
+import Pagination from "../components/Pagination";
 
 const SecretManager = () => {
   // State
@@ -42,6 +43,19 @@ const SecretManager = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("secrets"); // 'secrets' | 'service-accounts'
 
+  // Pagination state
+  const [projectsPage, setProjectsPage] = useState(1);
+  const [projectsPerPage, setProjectsPerPage] = useState(10);
+  const [projectsMetadata, setProjectsMetadata] = useState(null);
+
+  const [secretsPage, setSecretsPage] = useState(1);
+  const [secretsPerPage, setSecretsPerPage] = useState(10);
+  const [secretsMetadata, setSecretsMetadata] = useState(null);
+
+  const [serviceAccountsPage, setServiceAccountsPage] = useState(1);
+  const [serviceAccountsPerPage, setServiceAccountsPerPage] = useState(10);
+  const [serviceAccountsMetadata, setServiceAccountsMetadata] = useState(null);
+
   // Modal states
   const [showCreateProjectModal, setShowCreateProjectModal] = useState(false);
   const [showCreateSecretModal, setShowCreateSecretModal] = useState(false);
@@ -54,7 +68,8 @@ const SecretManager = () => {
   // Fetch projects on mount
   useEffect(() => {
     fetchProjects();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectsPage, projectsPerPage]);
 
   // Fetch data when project is selected
   useEffect(() => {
@@ -65,14 +80,29 @@ const SecretManager = () => {
         fetchServiceAccounts(selectedProject.id);
       }
     }
-  }, [selectedProject, activeTab]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    selectedProject,
+    activeTab,
+    secretsPage,
+    secretsPerPage,
+    serviceAccountsPage,
+    serviceAccountsPerPage,
+  ]);
 
   const fetchProjects = async () => {
     try {
       setIsLoadingProjects(true);
-      const response = await projectsAPI.getAll();
-      const projectList = response.data || response || [];
-      setProjects(Array.isArray(projectList) ? projectList : []);
+      const response = await projectsAPI.getAll(projectsPage, projectsPerPage);
+      // Handle response with metadata
+      if (response.success && response.metadata) {
+        setProjectsMetadata(response.metadata);
+        setProjects(Array.isArray(response.data) ? response.data : []);
+      } else {
+        // Fallback for responses without metadata
+        const projectList = response.data || response || [];
+        setProjects(Array.isArray(projectList) ? projectList : []);
+      }
     } catch (error) {
       console.error("Error fetching projects:", error);
       toast.error("Failed to load projects");
@@ -85,9 +115,20 @@ const SecretManager = () => {
   const fetchSecrets = async (projectId) => {
     try {
       setIsLoadingSecrets(true);
-      const response = await secretsAPI.getAll(projectId);
-      const secretList = response.data || response || [];
-      setSecrets(Array.isArray(secretList) ? secretList : []);
+      const response = await secretsAPI.getAll(
+        projectId,
+        secretsPage,
+        secretsPerPage
+      );
+      // Handle response with metadata
+      if (response.success && response.metadata) {
+        setSecretsMetadata(response.metadata);
+        setSecrets(Array.isArray(response.data) ? response.data : []);
+      } else {
+        // Fallback for responses without metadata
+        const secretList = response.data || response || [];
+        setSecrets(Array.isArray(secretList) ? secretList : []);
+      }
     } catch (error) {
       console.error("Error fetching secrets:", error);
       toast.error("Failed to load secrets");
@@ -100,9 +141,20 @@ const SecretManager = () => {
   const fetchServiceAccounts = async (projectId) => {
     try {
       setIsLoadingServiceAccounts(true);
-      const response = await serviceAccountsAPI.getAll(projectId);
-      const saList = response.data || response || [];
-      setServiceAccounts(Array.isArray(saList) ? saList : []);
+      const response = await serviceAccountsAPI.getAll(
+        projectId,
+        serviceAccountsPage,
+        serviceAccountsPerPage
+      );
+      // Handle response with metadata
+      if (response.success && response.metadata) {
+        setServiceAccountsMetadata(response.metadata);
+        setServiceAccounts(Array.isArray(response.data) ? response.data : []);
+      } else {
+        // Fallback for responses without metadata
+        const saList = response.data || response || [];
+        setServiceAccounts(Array.isArray(saList) ? saList : []);
+      }
     } catch (error) {
       console.error("Error fetching service accounts:", error);
       toast.error("Failed to load service accounts");
@@ -260,7 +312,11 @@ const SecretManager = () => {
               onClick={() => {
                 setSelectedProject(null);
                 setSecrets([]);
+                setServiceAccounts([]);
                 setSearchQuery("");
+                // Reset pagination for secrets and service accounts
+                setSecretsPage(1);
+                setServiceAccountsPage(1);
               }}
               className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
             >
@@ -354,7 +410,12 @@ const SecretManager = () => {
                 <div
                   key={project.id}
                   className="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-700 transition-all cursor-pointer"
-                  onClick={() => setSelectedProject(project)}
+                  onClick={() => {
+                    setSelectedProject(project);
+                    // Reset pagination when selecting a project
+                    setSecretsPage(1);
+                    setServiceAccountsPage(1);
+                  }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
@@ -396,6 +457,17 @@ const SecretManager = () => {
               ))}
             </div>
           )}
+
+          {/* Projects Pagination */}
+          {!selectedProject && filteredProjects.length > 0 && (
+            <div className="mt-6">
+              <Pagination
+                metadata={projectsMetadata}
+                currentPage={projectsPage}
+                onPageChange={setProjectsPage}
+              />
+            </div>
+          )}
         </div>
       ) : (
         // Project View with Tabs
@@ -403,7 +475,10 @@ const SecretManager = () => {
           {/* Tabs */}
           <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-700">
             <button
-              onClick={() => setActiveTab("secrets")}
+              onClick={() => {
+                setActiveTab("secrets");
+                setSecretsPage(1);
+              }}
               className={`px-4 py-3 font-semibold transition-all border-b-2 flex items-center gap-2 ${
                 activeTab === "secrets"
                   ? "border-primary-500 text-primary-600 dark:text-primary-400"
@@ -414,7 +489,10 @@ const SecretManager = () => {
               Secrets
             </button>
             <button
-              onClick={() => setActiveTab("service-accounts")}
+              onClick={() => {
+                setActiveTab("service-accounts");
+                setServiceAccountsPage(1);
+              }}
               className={`px-4 py-3 font-semibold transition-all border-b-2 flex items-center gap-2 ${
                 activeTab === "service-accounts"
                   ? "border-primary-500 text-primary-600 dark:text-primary-400"
@@ -587,6 +665,17 @@ const SecretManager = () => {
                 </div>
               )}
 
+              {/* Secrets Pagination */}
+              {filteredSecrets.length > 0 && (
+                <div className="mt-6">
+                  <Pagination
+                    metadata={secretsMetadata}
+                    currentPage={secretsPage}
+                    onPageChange={setSecretsPage}
+                  />
+                </div>
+              )}
+
               {/* Info Banner */}
               <div className="mt-6 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
                 <div className="flex gap-3">
@@ -638,9 +727,6 @@ const SecretManager = () => {
                     <table className="w-full">
                       <thead className="bg-slate-50 dark:bg-slate-900">
                         <tr>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-                            Service Account
-                          </th>
                           <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">
                             Client ID
                           </th>
@@ -661,21 +747,6 @@ const SecretManager = () => {
                             key={sa.id}
                             className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
                           >
-                            <td className="px-6 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                                  <Bot className="w-5 h-5 text-white" />
-                                </div>
-                                <div>
-                                  <p className="font-semibold text-slate-800 dark:text-white">
-                                    {sa.name}
-                                  </p>
-                                  <p className="text-xs text-slate-500 dark:text-slate-400">
-                                    Machine Identity
-                                  </p>
-                                </div>
-                              </div>
-                            </td>
                             <td className="px-6 py-4 hidden sm:table-cell">
                               <code className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded font-mono text-xs">
                                 {sa.client_id}
@@ -724,6 +795,17 @@ const SecretManager = () => {
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Service Accounts Pagination */}
+                  {serviceAccounts.length > 0 && (
+                    <div className="mt-6">
+                      <Pagination
+                        metadata={serviceAccountsMetadata}
+                        currentPage={serviceAccountsPage}
+                        onPageChange={setServiceAccountsPage}
+                      />
+                    </div>
+                  )}
 
                   {/* Info Banner */}
                   <div className="mt-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
