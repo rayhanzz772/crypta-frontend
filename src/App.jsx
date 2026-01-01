@@ -16,6 +16,7 @@ import Notes from "./pages/Notes";
 import ActivityLogs from "./pages/ActivityLogs";
 import DeveloperKeys from "./pages/DeveloperKeys";
 import ApiDocumentation from "./pages/ApiDocumentation";
+import SecretManager from "./pages/SecretManager";
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
               <Route path="social" element={<Passwords />} />
               <Route path="notes" element={<Notes />} />
               <Route path="logs" element={<ActivityLogs />} />
+              <Route path="secret-manager" element={<SecretManager />} />
               <Route path="developer" element={<DeveloperKeys />} />
               <Route path="api-docs" element={<ApiDocumentation />} />
             </Route>
