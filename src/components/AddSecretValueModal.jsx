@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { secretVersionsAPI } from "../utils/api";
+import Portal from "./Portal";
 
 const AddSecretValueModal = ({
   isOpen,
@@ -97,158 +98,162 @@ const AddSecretValueModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-      <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                <Lock className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h2 className="text-base sm:text-lg font-bold text-white">
-                  {hasExistingVersions ? "Add New Version" : "Set Secret Value"}
-                </h2>
-                <p className="text-white/80 text-xs truncate max-w-[200px] sm:max-w-none">
-                  {secretName}
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="p-1.5 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
-            >
-              <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </button>
-          </div>
-        </div>
-
-        {/* Content */}
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-          {/* Warning for existing versions */}
-          {hasExistingVersions && (
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
-              <div className="flex gap-2.5">
-                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+    <Portal>
+      <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
+        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
+                  <Lock className="w-5 h-5 text-white" />
+                </div>
                 <div>
-                  <p className="font-semibold text-amber-900 dark:text-amber-100 text-xs">
-                    New Version Warning
-                  </p>
-                  <p className="text-xs text-amber-800 dark:text-amber-200 mt-1 leading-relaxed">
-                    This will create a new version and disable all previous
-                    versions. The new version will become the active secret
-                    value.
+                  <h2 className="text-base sm:text-lg font-bold text-white">
+                    {hasExistingVersions
+                      ? "Add New Version"
+                      : "Set Secret Value"}
+                  </h2>
+                  <p className="text-white/80 text-xs truncate max-w-[200px] sm:max-w-none">
+                    {secretName}
                   </p>
                 </div>
               </div>
-            </div>
-          )}
-
-          {/* Secret Value Input */}
-          <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-              Secret Value
-            </label>
-            <div className="relative">
-              <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-              <input
-                ref={inputRef}
-                type={showValue ? "text" : "password"}
-                value={secretValue}
-                onChange={(e) => setSecretValue(e.target.value)}
-                placeholder="Enter your secret value..."
-                className="w-full pl-9 pr-11 py-2.5 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all outline-none"
+              <button
+                onClick={handleClose}
                 disabled={isSubmitting}
-                autoComplete="off"
-                data-1p-ignore
-                data-lpignore="true"
-              />
+                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
+              >
+                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* Content */}
+          <form onSubmit={handleSubmit} className="p-4 space-y-4">
+            {/* Warning for existing versions */}
+            {hasExistingVersions && (
+              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                <div className="flex gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-amber-900 dark:text-amber-100 text-xs">
+                      New Version Warning
+                    </p>
+                    <p className="text-xs text-amber-800 dark:text-amber-200 mt-1 leading-relaxed">
+                      This will create a new version and disable all previous
+                      versions. The new version will become the active secret
+                      value.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Secret Value Input */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                Secret Value
+              </label>
+              <div className="relative">
+                <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  ref={inputRef}
+                  type={showValue ? "text" : "password"}
+                  value={secretValue}
+                  onChange={(e) => setSecretValue(e.target.value)}
+                  placeholder="Enter your secret value..."
+                  className="w-full pl-9 pr-11 py-2.5 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all outline-none"
+                  disabled={isSubmitting}
+                  autoComplete="off"
+                  data-1p-ignore
+                  data-lpignore="true"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowValue(!showValue)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                >
+                  {showValue ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
+              </div>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Your secret value will be encrypted and stored securely
+              </p>
+            </div>
+
+            {/* Confirmation checkbox for existing versions */}
+            {hasExistingVersions && (
+              <label className="flex items-start gap-2.5 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={confirmed}
+                  onChange={(e) => setConfirmed(e.target.checked)}
+                  className="w-4 h-4 rounded border-slate-300 text-green-500 focus:ring-green-500 mt-0.5 flex-shrink-0"
+                />
+                <span className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  I understand this will create a new version and disable all
+                  previous versions
+                </span>
+              </label>
+            )}
+
+            {/* Security Features */}
+            <div className="grid grid-cols-2 gap-2">
+              <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <ShieldCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
+                <span className="text-xs text-slate-600 dark:text-slate-400">
+                  AES-256 Encrypted
+                </span>
+              </div>
+              <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
+                <History className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                <span className="text-xs text-slate-600 dark:text-slate-400">
+                  Version History
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-2 pt-1">
               <button
                 type="button"
-                onClick={() => setShowValue(!showValue)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                onClick={handleClose}
+                disabled={isSubmitting}
+                className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
               >
-                {showValue ? (
-                  <EyeOff className="w-4 h-4" />
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={
+                  isSubmitting ||
+                  !secretValue.trim() ||
+                  (hasExistingVersions && !confirmed)
+                }
+                className="flex-1 px-3 py-2 text-sm bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Saving...
+                  </>
                 ) : (
-                  <Eye className="w-4 h-4" />
+                  <>
+                    <Lock className="w-4 h-4" />
+                    {hasExistingVersions ? "Add Version" : "Set Value"}
+                  </>
                 )}
               </button>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-              Your secret value will be encrypted and stored securely
-            </p>
-          </div>
-
-          {/* Confirmation checkbox for existing versions */}
-          {hasExistingVersions && (
-            <label className="flex items-start gap-2.5 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-              <input
-                type="checkbox"
-                checked={confirmed}
-                onChange={(e) => setConfirmed(e.target.checked)}
-                className="w-4 h-4 rounded border-slate-300 text-green-500 focus:ring-green-500 mt-0.5 flex-shrink-0"
-              />
-              <span className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                I understand this will create a new version and disable all
-                previous versions
-              </span>
-            </label>
-          )}
-
-          {/* Security Features */}
-          <div className="grid grid-cols-2 gap-2">
-            <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <ShieldCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
-              <span className="text-xs text-slate-600 dark:text-slate-400">
-                AES-256 Encrypted
-              </span>
-            </div>
-            <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
-              <History className="w-4 h-4 text-blue-500 flex-shrink-0" />
-              <span className="text-xs text-slate-600 dark:text-slate-400">
-                Version History
-              </span>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2 pt-1">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={isSubmitting}
-              className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={
-                isSubmitting ||
-                !secretValue.trim() ||
-                (hasExistingVersions && !confirmed)
-              }
-              className="flex-1 px-3 py-2 text-sm bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg font-semibold hover:from-green-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  {hasExistingVersions ? "Add Version" : "Set Value"}
-                </>
-              )}
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
-    </div>
+    </Portal>
   );
 };
 
