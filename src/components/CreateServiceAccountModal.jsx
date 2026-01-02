@@ -238,15 +238,7 @@ const CreateServiceAccountModal = ({
                 <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
                   <div>
                     <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                      Service Account Name
-                    </p>
-                    <p className="font-semibold text-slate-800 dark:text-white">
-                      {serviceAccount?.name}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
-                      Client ID
+                      Service Account (Client ID)
                     </p>
                     <code className="text-sm font-mono text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
                       {serviceAccount?.client_id}
@@ -293,7 +285,7 @@ const CreateServiceAccountModal = ({
 
                   <div className="relative">
                     <Code className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                    <pre className="w-full pl-10 pr-4 py-3 bg-slate-900 dark:bg-black text-green-400 font-mono text-xs rounded-xl overflow-auto border-2 border-slate-700 max-h-48">
+                    <pre className="w-full pl-10 pr-4 py-3 bg-slate-900 dark:bg-black text-grey-400 font-mono text-xs rounded-xl overflow-auto border-2 border-slate-700 max-h-48">
                       {serviceAccount?.private_key ||
                         "Private key not available"}
                     </pre>
