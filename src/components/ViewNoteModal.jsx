@@ -37,7 +37,7 @@ const ViewNoteModal = ({
   onDelete,
   categories,
 }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
   const [decryptedContent, setDecryptedContent] = useState("");
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [decryptError, setDecryptError] = useState("");
@@ -73,13 +73,13 @@ const ViewNoteModal = ({
   }, [retryCountdown]);
 
   const decryptNote = async () => {
-    if (!note || !masterPassword || !canRetry) return;
+    if (!note || !mek || !canRetry) return;
 
     try {
       setIsDecrypting(true);
       setDecryptError("");
 
-      const response = await notesAPI.decrypt(note.id, masterPassword);
+      const response = await notesAPI.decrypt(note.id, mek);
 
       const content =
         response.data?.note ||
@@ -179,7 +179,7 @@ const ViewNoteModal = ({
   // Backend returns category_name, try to match by name first, then by ID
   const categoryData =
     categories.find(
-      (cat) => cat.name.toLowerCase() === note.category_name?.toLowerCase()
+      (cat) => cat.name.toLowerCase() === note.category_name?.toLowerCase(),
     ) ||
     categories.find((cat) => cat.id === note.category_id) ||
     categories.find((cat) => cat.id === note.category) ||

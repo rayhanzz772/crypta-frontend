@@ -34,9 +34,9 @@ import Pagination from "../components/Pagination";
 const SecretManager = () => {
   // Get search query from layout context
   const { searchQuery = "" } = useOutletContext();
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
-  const isVaultLocked = !masterPassword;
+  const isVaultLocked = !mek;
 
   // State
   const [projects, setProjects] = useState([]);
@@ -126,7 +126,7 @@ const SecretManager = () => {
       const response = await secretsAPI.getAll(
         projectId,
         secretsPage,
-        secretsPerPage
+        secretsPerPage,
       );
       // Handle response with metadata
       if (response.success && response.metadata) {
@@ -152,7 +152,7 @@ const SecretManager = () => {
       const response = await serviceAccountsAPI.getAll(
         projectId,
         serviceAccountsPage,
-        serviceAccountsPerPage
+        serviceAccountsPerPage,
       );
       // Handle response with metadata
       if (response.success && response.metadata) {
@@ -199,7 +199,7 @@ const SecretManager = () => {
 
     if (
       !confirm(
-        "Are you sure you want to delete this project? This action cannot be undone."
+        "Are you sure you want to delete this project? This action cannot be undone.",
       )
     ) {
       return;
@@ -225,7 +225,7 @@ const SecretManager = () => {
   const handleDeleteSecret = async (secretId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this secret? This action cannot be undone."
+        "Are you sure you want to delete this secret? This action cannot be undone.",
       )
     ) {
       return;
@@ -259,7 +259,7 @@ const SecretManager = () => {
   const handleDeleteServiceAccount = async (serviceAccountId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this service account? Applications using this service account will lose access."
+        "Are you sure you want to delete this service account? Applications using this service account will lose access.",
       )
     ) {
       return;
@@ -275,7 +275,7 @@ const SecretManager = () => {
     } catch (error) {
       console.error("Error deleting service account:", error);
       toast.error(
-        error.response?.data?.message || "Failed to delete service account"
+        error.response?.data?.message || "Failed to delete service account",
       );
     }
   };
@@ -302,19 +302,19 @@ const SecretManager = () => {
   const filteredProjects = projects.filter(
     (project) =>
       project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.slug?.toLowerCase().includes(searchQuery.toLowerCase())
+      project.slug?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Filter secrets based on search
   const filteredSecrets = secrets.filter((secret) =>
-    secret.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    secret.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Filter service accounts based on search
   const filteredServiceAccounts = serviceAccounts.filter(
     (sa) =>
       sa.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sa.client_id?.toLowerCase().includes(searchQuery.toLowerCase())
+      sa.client_id?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Show locked screen if vault is locked

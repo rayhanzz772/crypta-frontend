@@ -208,6 +208,16 @@ const Login = () => {
                   {errors.master_password}
                 </p>
               )}
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end mt-2">
+                <Link
+                  to="/recover-password"
+                  className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
+                >
+                  Forgot Master Password?
+                </Link>
+              </div>
             </div>
 
             {/* Submit Button */}

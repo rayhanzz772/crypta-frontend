@@ -15,7 +15,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
 const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
   const [decryptedPassword, setDecryptedPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,18 +31,18 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   // Check if master password is available
   useEffect(() => {
-    if (isOpen && !masterPassword) {
+    if (isOpen && !mek) {
       setShowMasterPasswordInput(true);
     } else {
       setShowMasterPasswordInput(false);
       setInputMasterPassword("");
     }
-  }, [isOpen, masterPassword]);
+  }, [isOpen, mek]);
 
-  // Auto-decrypt on open if master password is available
+  // Auto-decrypt on open if mek is available
   useEffect(() => {
-    if (isOpen && vaultItem && masterPassword) {
-      handleDecrypt(masterPassword);
+    if (isOpen && vaultItem && mek) {
+      handleDecrypt(mek);
     }
   }, [isOpen, vaultItem?.id]);
 
@@ -175,10 +175,10 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   // Get category icon and gradient
   const CategoryIcon = getCategoryIcon(
-    vaultItem?.category || vaultItem?.category_name
+    vaultItem?.category || vaultItem?.category_name,
   );
   const categoryGradient = getCategoryGradient(
-    vaultItem?.category || vaultItem?.category_name
+    vaultItem?.category || vaultItem?.category_name,
   );
 
   if (!isOpen || !vaultItem) return null;

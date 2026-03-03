@@ -8,6 +8,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
   timeout: 10000,
 });
 
@@ -31,7 +32,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.response.use(
@@ -52,7 +53,7 @@ api.interceptors.response.use(
       clearAuthAndRedirect();
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export const authAPI = {
@@ -72,15 +73,23 @@ export const authAPI = {
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem("jwt_token");
-  },
-
-  checkPassword: async (masterPassword) => {
-    const response = await api.post("/api/users/check-password", {
-      master_password: masterPassword,
+  verifyRecoveryKey: async (email, recoveryKey) => {
+    const response = await api.post("/auth/verify-recovery-key", {
+      email,
+      recovery_key: recoveryKey,
     });
     return response.data;
+  },
+
+  resetPassword: async (newPassword) => {
+    const response = await api.post("/auth/reset-password", {
+      new_password: newPassword,
+    });
+    return response.data;
+  },
+
+  logout: () => {
+    localStorage.removeItem("jwt_token");
   },
 };
 
@@ -123,32 +132,32 @@ export const vaultAPI = {
     return response.data;
   },
 
-  create: async (vaultData, masterPassword) => {
+  create: async (vaultData, mek) => {
     const response = await api.post("/api/vault", {
       ...vaultData,
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  decrypt: async (id, masterPassword) => {
+  decrypt: async (id, mek) => {
     const response = await api.post(`/api/vault/${id}/decrypt`, {
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  update: async (id, vaultData, masterPassword) => {
+  update: async (id, vaultData, mek) => {
     const response = await api.put(`/api/vault/${id}/update`, {
       ...vaultData,
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  delete: async (id, masterPassword) => {
+  delete: async (id, mek) => {
     const response = await api.delete(`/api/vault/${id}/delete`, {
-      data: { master_password: masterPassword },
+      data: { mek },
     });
     return response.data;
   },
@@ -219,45 +228,43 @@ export const notesAPI = {
   },
 
   // Create new note
-  create: async (noteData, masterPassword) => {
-    // Encrypt the note content client-side (if encryption is enabled)
-    // For now, send to server as is - server will handle encryption
+  create: async (noteData, mek) => {
     const response = await api.post("/api/notes", {
       title: noteData.title,
       note: noteData.note,
-      category_id: noteData.category, // Send as category_id to match database schema
+      category_id: noteData.category,
       tags: noteData.tags || [],
-      master_password: masterPassword,
+      mek,
     });
 
     return response.data;
   },
 
   // Update existing note
-  update: async (id, noteData, masterPassword) => {
+  update: async (id, noteData, mek) => {
     const response = await api.put(`/api/notes/${id}/update`, {
       title: noteData.title,
       note: noteData.note,
-      category_id: noteData.category, // Send as category_id to match database schema
+      category_id: noteData.category,
       tags: noteData.tags || [],
-      master_password: masterPassword,
+      mek,
     });
 
     return response.data;
   },
 
   // Delete note
-  delete: async (id, masterPassword) => {
+  delete: async (id, mek) => {
     const response = await api.delete(`/api/notes/${id}/delete`, {
-      data: { master_password: masterPassword },
+      data: { mek },
     });
     return response.data;
   },
 
   // Decrypt note content
-  decrypt: async (id, masterPassword) => {
+  decrypt: async (id, mek) => {
     const response = await api.post(`/api/notes/${id}/decrypt`, {
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
@@ -351,12 +358,12 @@ export const secretsAPI = {
 
     console.log(
       "📡 API sending to POST /client/secret/" + projectId + "/create:",
-      JSON.stringify(payload, null, 2)
+      JSON.stringify(payload, null, 2),
     );
 
     const response = await api.post(
       `/client/secret/${projectId}/create`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -372,7 +379,7 @@ export const secretsAPI = {
 
     const response = await api.put(
       `/client/secret/${secretId}/update`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -398,7 +405,7 @@ export const secretVersionsAPI = {
       `/client/secret-version/${secretId}/create`,
       {
         plaintext: plaintext,
-      }
+      },
     );
     return response.data;
   },
@@ -407,7 +414,7 @@ export const secretVersionsAPI = {
   updateStatus: async (versionId, status) => {
     const response = await api.patch(
       `/client/secret-version/${versionId}/update`,
-      { status }
+      { status },
     );
     return response.data;
   },
@@ -434,7 +441,7 @@ export const serviceAccountsAPI = {
       `/client/service-account/${projectId}/create`,
       {
         name,
-      }
+      },
     );
     return response.data;
   },
@@ -442,7 +449,7 @@ export const serviceAccountsAPI = {
   // Delete service account
   delete: async (serviceAccountId) => {
     const response = await api.delete(
-      `/client/service-account/${serviceAccountId}/delete`
+      `/client/service-account/${serviceAccountId}/delete`,
     );
     return response.data;
   },

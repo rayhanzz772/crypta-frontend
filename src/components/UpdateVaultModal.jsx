@@ -17,7 +17,7 @@ import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
 const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
   const [formData, setFormData] = useState({
     name: "",
     username: "",
@@ -78,10 +78,8 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!masterPassword) {
-      toast.error(
-        "Master password is required. Please unlock your vault first."
-      );
+    if (!mek) {
+      toast.error("Vault is locked. Please unlock your vault first.");
       return;
     }
 
@@ -103,14 +101,13 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
         username: formData.username.trim(),
         note: formData.note.trim(),
         category: formData.category_name.trim(),
-        master_password: masterPassword,
       };
 
       // Only include password if it was changed
       if (formData.password.trim()) {
         updateData.password = formData.password.trim();
       }
-      await vaultAPI.update(vaultItem.id, updateData, masterPassword);
+      await vaultAPI.update(vaultItem.id, updateData, mek);
 
       toast.success("Password updated successfully!");
 
@@ -141,10 +138,10 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
 
   // Get category icon and gradient
   const CategoryIcon = getCategoryIcon(
-    formData.category || vaultItem?.category
+    formData.category || vaultItem?.category,
   );
   const categoryGradient = getCategoryGradient(
-    formData.category || vaultItem?.category
+    formData.category || vaultItem?.category,
   );
 
   if (!isOpen) return null;

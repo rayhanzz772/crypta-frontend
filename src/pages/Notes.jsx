@@ -42,9 +42,9 @@ const normalizeTags = (tags) => {
 
 const Notes = () => {
   const { searchQuery } = useOutletContext();
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
-  const isVaultLocked = !masterPassword;
+  const isVaultLocked = !mek;
 
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
@@ -160,15 +160,15 @@ const Notes = () => {
 
       // Update pagination state
       setTotalItems(
-        paginationData.total || paginationData.total_items || notesData.length
+        paginationData.total || paginationData.total_items || notesData.length,
       );
       setTotalPages(
         paginationData.total_pages ||
           Math.ceil(
             (paginationData.total ||
               paginationData.total_items ||
-              notesData.length) / perPage
-          )
+              notesData.length) / perPage,
+          ),
       );
     } catch (error) {
       toast.error("Failed to load notes");
@@ -203,7 +203,7 @@ const Notes = () => {
         if (note.category_id === selectedCategory) return true;
 
         const selectedCategoryData = categories.find(
-          (cat) => cat.id === selectedCategory
+          (cat) => cat.id === selectedCategory,
         );
         if (
           selectedCategoryData &&
@@ -225,7 +225,7 @@ const Notes = () => {
         (note) =>
           note.title?.toLowerCase().includes(query) ||
           note.preview?.toLowerCase().includes(query) ||
-          note.tags?.some((tag) => tag.toLowerCase().includes(query))
+          note.tags?.some((tag) => tag.toLowerCase().includes(query)),
       );
     }
 
@@ -234,7 +234,7 @@ const Notes = () => {
 
   const getCategoryData = (categoryNameOrId) => {
     let category = categories.find(
-      (cat) => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase()
+      (cat) => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase(),
     );
     if (!category) {
       category = categories.find((cat) => cat.id === categoryNameOrId);
@@ -588,7 +588,7 @@ const Notes = () => {
               {filteredNotes.map((note) => {
                 // Backend returns category_name, fallback to category_id or category
                 const categoryData = getCategoryData(
-                  note.category_name || note.category_id || note.category
+                  note.category_name || note.category_id || note.category,
                 );
                 const Icon = getCategoryIcon(categoryData?.name);
                 const gradient = getCategoryGradient(categoryData?.name);
@@ -699,7 +699,7 @@ const Notes = () => {
               {filteredNotes.map((note) => {
                 // Backend returns category_name, fallback to category_id or category
                 const categoryData = getCategoryData(
-                  note.category_name || note.category_id || note.category
+                  note.category_name || note.category_id || note.category,
                 );
                 const Icon = getCategoryIcon(categoryData?.name);
                 const gradient = getCategoryGradient(categoryData?.name);

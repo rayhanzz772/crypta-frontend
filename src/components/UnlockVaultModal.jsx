@@ -10,11 +10,10 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
-import { authAPI } from "../utils/api";
 import { useNavigate } from "react-router-dom";
 
 const UnlockVaultModal = ({ isOpen, onClose }) => {
-  const { unlockVault, logout } = useAuth();
+  const { user, unlockVault, logout } = useAuth();
   const navigate = useNavigate();
   const [masterPassword, setMasterPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,14 +53,10 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
     try {
       setIsLoading(true);
 
-      // Call the password validation endpoint
-      const response = await authAPI.checkPassword(masterPassword);
+      // Re-login to get a fresh MEK from the server
+      const result = await unlockVault(user?.email, masterPassword);
 
-      // Check if password is valid
-      if (response.data && response.data.valid === true) {
-        // Unlock the vault with the verified password
-        await unlockVault(masterPassword);
-
+      if (result.success) {
         toast.success("Vault unlocked successfully!", {
           icon: "🔓",
           duration: 1500,
@@ -72,17 +67,14 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
         setShowPassword(false);
         onClose();
       } else {
-        setError("Invalid master password. Please try again.");
+        setError(result.error || "Invalid master password. Please try again.");
         toast.error("Invalid master password", {
           icon: "🔒",
         });
       }
     } catch (error) {
       // Handle specific error cases
-      if (error.response?.status === 401) {
-        setError("Invalid master password. Please try again.");
-        toast.error("Invalid master password");
-      } else if (error.response?.status === 429) {
+      if (error.response?.status === 429) {
         setError("Too many attempts. Please try again later.");
         toast.error("Too many attempts. Please wait a moment.");
       } else if (

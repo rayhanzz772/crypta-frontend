@@ -26,7 +26,7 @@ import UpdateVaultModal from "../components/UpdateVaultModal";
 const Passwords = () => {
   const { refreshTrigger, openCreateModal, searchQuery, selectedCategory } =
     useOutletContext();
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
   const [passwords, setPasswords] = useState([]);
   const [filteredPasswords, setFilteredPasswords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -106,15 +106,15 @@ const Passwords = () => {
 
       // Update pagination state
       setTotalItems(
-        paginationData.total || paginationData.total_items || vaultList.length
+        paginationData.total || paginationData.total_items || vaultList.length,
       );
       setTotalPages(
         paginationData.total_pages ||
           Math.ceil(
             (paginationData.total ||
               paginationData.total_items ||
-              vaultList.length) / perPage
-          )
+              vaultList.length) / perPage,
+          ),
       );
       setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
@@ -204,7 +204,7 @@ const Passwords = () => {
   };
 
   // Locked Vault State
-  if (!masterPassword) {
+  if (!mek) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <motion.div
@@ -534,10 +534,10 @@ const PasswordCard = ({
 
   // Get category icon and gradient for this password
   const CategoryIcon = getCategoryIcon(
-    password.category || password.category_name
+    password.category || password.category_name,
   );
   const categoryGradient = getCategoryGradient(
-    password.category || password.category_name
+    password.category || password.category_name,
   );
 
   // Close menu when clicking outside

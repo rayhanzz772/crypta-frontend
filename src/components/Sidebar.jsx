@@ -22,9 +22,9 @@ const Sidebar = ({
   onUnlock,
   onNavigate,
 }) => {
-  const { masterPassword, lockVault } = useAuth();
+  const { mek, lockVault } = useAuth();
   const location = useLocation();
-  const isVaultUnlocked = !!masterPassword;
+  const isVaultUnlocked = !!mek;
   const isPasswordsPage =
     location.pathname === "/app" || location.pathname === "/app/";
   const isLogsPage = location.pathname.includes("/logs");

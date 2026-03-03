@@ -35,7 +35,7 @@ function debounce(func, wait) {
 }
 
 const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -84,7 +84,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
       const excluded = ["medical", "ideas", "other"];
       const filtered = categoryList.filter(
-        (c) => !excluded.includes(c.name?.toLowerCase())
+        (c) => !excluded.includes(c.name?.toLowerCase()),
       );
 
       if (filtered.length > 0) {
@@ -143,7 +143,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             count: result.count,
             severity: result.severity,
             message: `This password has been exposed ${formatBreachCount(
-              result.count
+              result.count,
             )} in data breaches!`,
           });
         } else {
@@ -158,7 +158,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
         setIsCheckingBreach(false);
       }
     }, 800),
-    []
+    [],
   );
 
   const handleGeneratePassword = () => {
@@ -204,8 +204,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
       return;
     }
 
-    if (!masterPassword) {
-      toast.error("Master password not found. Please log in again.");
+    if (!mek) {
+      toast.error("Vault is locked. Please unlock your vault first.");
       return;
     }
 
@@ -213,7 +213,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
     setBreachWarning(null);
 
     try {
-      const result = await vaultAPI.create(formData, masterPassword);
+      const result = await vaultAPI.create(formData, mek);
 
       // Check for breach warning in response
       if (result.message && result.message.includes("ditemukan")) {
@@ -260,7 +260,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
   // Get selected category for dynamic icon
   const selectedCategoryObj = categories.find(
-    (cat) => cat.id === parseInt(formData.category_id)
+    (cat) => cat.id === parseInt(formData.category_id),
   );
   const CategoryIcon = getCategoryIcon(selectedCategoryObj?.name || "");
   const categoryGradient = getCategoryGradient(selectedCategoryObj?.name || "");
@@ -430,10 +430,10 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       passwordStrength.color === "red"
                         ? "text-red-600"
                         : passwordStrength.color === "orange"
-                        ? "text-orange-600"
-                        : passwordStrength.color === "yellow"
-                        ? "text-yellow-600"
-                        : "text-green-600"
+                          ? "text-orange-600"
+                          : passwordStrength.color === "yellow"
+                            ? "text-yellow-600"
+                            : "text-green-600"
                     }`}
                   >
                     {passwordStrength.label}
@@ -445,10 +445,10 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       passwordStrength.color === "red"
                         ? "bg-red-500"
                         : passwordStrength.color === "orange"
-                        ? "bg-orange-500"
-                        : passwordStrength.color === "yellow"
-                        ? "bg-yellow-500"
-                        : "bg-green-500"
+                          ? "bg-orange-500"
+                          : passwordStrength.color === "yellow"
+                            ? "bg-yellow-500"
+                            : "bg-green-500"
                     }`}
                     style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
                   />
@@ -471,8 +471,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                     ? breachInfo.severity === "critical"
                       ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
                       : breachInfo.severity === "high"
-                      ? "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
-                      : "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
+                        ? "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
+                        : "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
                     : "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
                 }`}
               >
@@ -483,8 +483,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                         breachInfo.severity === "critical"
                           ? "text-red-600 dark:text-red-400"
                           : breachInfo.severity === "high"
-                          ? "text-orange-600 dark:text-orange-400"
-                          : "text-yellow-600 dark:text-yellow-400"
+                            ? "text-orange-600 dark:text-orange-400"
+                            : "text-yellow-600 dark:text-yellow-400"
                       }`}
                     />
                     <div className="flex-1">
@@ -493,8 +493,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                           breachInfo.severity === "critical"
                             ? "text-red-800 dark:text-red-300"
                             : breachInfo.severity === "high"
-                            ? "text-orange-800 dark:text-orange-300"
-                            : "text-yellow-800 dark:text-yellow-300"
+                              ? "text-orange-800 dark:text-orange-300"
+                              : "text-yellow-800 dark:text-yellow-300"
                         }`}
                       >
                         ⚠️ Password Found in Data Breaches
@@ -504,8 +504,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                           breachInfo.severity === "critical"
                             ? "text-red-700 dark:text-red-400"
                             : breachInfo.severity === "high"
-                            ? "text-orange-700 dark:text-orange-400"
-                            : "text-yellow-700 dark:text-yellow-400"
+                              ? "text-orange-700 dark:text-orange-400"
+                              : "text-yellow-700 dark:text-yellow-400"
                         }`}
                       >
                         {breachInfo.message}

@@ -4,17 +4,20 @@ import { Mail, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import PasswordWarningModal from "../components/PasswordWarningModal";
+import RecoveryKeyModal from "../components/RecoveryKeyModal";
 
 const Register = () => {
   const navigate = useNavigate();
   const { register, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  // Redirect if already authenticated
+  const [isRegistered, setIsRegistered] = useState(false);
+
+  // Redirect if already authenticated and not purely from just-completed registration
   useEffect(() => {
-    if (isAuthenticated && !authLoading) {
+    if (isAuthenticated && !authLoading && !isRegistered) {
       navigate("/app", { replace: true });
     }
-  }, [isAuthenticated, authLoading, navigate]);
+  }, [isAuthenticated, authLoading, navigate, isRegistered]);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -27,6 +30,8 @@ const Register = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showRecoveryModal, setShowRecoveryModal] = useState(false);
+  const [recoveryKey, setRecoveryKey] = useState("");
   const [pendingRegistration, setPendingRegistration] = useState(null);
 
   const validateForm = () => {
@@ -92,12 +97,22 @@ const Register = () => {
 
     const result = await register(
       pendingRegistration.email,
-      pendingRegistration.password
+      pendingRegistration.password,
     );
 
     if (result.success) {
+      setIsRegistered(true);
       toast.success("Account created successfully!");
-      navigate("/app");
+
+      // Extract recovery key from various possible response structures
+      const key = result.data?.data?.recovery_key || result.data?.recovery_key;
+
+      if (key) {
+        setRecoveryKey(key);
+        setShowRecoveryModal(true);
+      } else {
+        navigate("/app");
+      }
     } else {
       toast.error(result.error);
     }
@@ -109,6 +124,11 @@ const Register = () => {
   const handleCancelRegistration = () => {
     setShowWarningModal(false);
     setPendingRegistration(null);
+  };
+
+  const handleCloseRecoveryModal = () => {
+    setShowRecoveryModal(false);
+    navigate("/app");
   };
 
   // Show loading while checking auth status
@@ -130,6 +150,13 @@ const Register = () => {
         isOpen={showWarningModal}
         onClose={handleCancelRegistration}
         onConfirm={handleConfirmRegistration}
+      />
+
+      {/* Recovery Key Modal */}
+      <RecoveryKeyModal
+        isOpen={showRecoveryModal}
+        recoveryKey={recoveryKey}
+        onClose={handleCloseRecoveryModal}
       />
 
       <div className="min-h-screen flex items-center justify-center absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] px-4 py-6 sm:py-12">

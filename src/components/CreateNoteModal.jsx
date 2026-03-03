@@ -6,7 +6,7 @@ import { notesAPI } from "../utils/api";
 import { getCategoryIcon } from "../utils/categoryIcons";
 
 const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -48,8 +48,8 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
       return;
     }
 
-    if (!masterPassword) {
-      toast.error("Master password is required");
+    if (!mek) {
+      toast.error("Vault is locked. Please unlock your vault first.");
       return;
     }
 
@@ -69,7 +69,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
         tags: tagsArray,
       };
 
-      await notesAPI.create(noteData, masterPassword);
+      await notesAPI.create(noteData, mek);
 
       toast.success("Note created successfully!", {
         icon: "📝",

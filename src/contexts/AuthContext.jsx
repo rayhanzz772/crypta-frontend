@@ -5,7 +5,7 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [masterPassword, setMasterPassword] = useState(null); // Store in memory only
+  const [mek, setMek] = useState(null); // Master Encryption Key — in-memory only, never persisted
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -86,11 +86,12 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("jwt_token", token);
       localStorage.setItem("jwt_token_timestamp", Date.now().toString());
 
-      // Store master password in React state only (not localStorage!)
-      setMasterPassword(password);
+      // Store MEK in React state ONLY — never persisted to localStorage
+      const receivedMek = data?.data?.mek || null;
+      setMek(receivedMek);
 
       // Update auth state
-      setUser(data.user || data.data?.user || { email });
+      setUser(data?.data?.user || { email });
       setIsAuthenticated(true);
 
       return { success: true, data };
@@ -107,21 +108,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.register(email, password);
 
-      // Check all possible token field names
-      const token =
-        data.token ||
-        data.accessToken ||
-        data.access_token ||
-        data.jwt ||
-        data.authToken;
-
-      // Optionally auto-login after registration
+      // Registration does not return a MEK — user must log in to get one
+      // Optionally auto-login after registration if a token is returned
+      const token = data?.data?.token;
       if (token) {
         localStorage.setItem("jwt_token", token);
         localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-        setMasterPassword(password);
-        setUser(data.user || data.data?.user || { email });
+        setUser(data?.data?.user || { email });
         setIsAuthenticated(true);
+        // MEK is not available at registration time — vault starts locked
       }
 
       return { success: true, data };
@@ -138,16 +133,15 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     authAPI.logout();
     setUser(null);
-    setMasterPassword(null); // Clear from memory
+    setMek(null); // Clear MEK from memory
     setIsAuthenticated(false);
-    localStorage.removeItem("jwt_token"); // Ensure token is removed
-    localStorage.removeItem("jwt_token_timestamp"); // Remove timestamp as well
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("jwt_token_timestamp");
   };
 
   const lockVault = async () => {
-    // Lock vault by clearing master password from memory
-    // Keep user logged in (JWT token remains)
-    setMasterPassword(null);
+    // Lock vault by clearing MEK from memory — JWT token remains valid
+    setMek(null);
 
     // Log the action to the backend
     try {
@@ -157,21 +151,43 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const unlockVault = async (password) => {
-    // Unlock vault by setting master password in memory
-    setMasterPassword(password);
-
-    // Log the action to the backend
+  // Re-login to retrieve a fresh MEK from the server.
+  // There is no way to reconstruct the MEK client-side — the server must derive it.
+  const unlockVault = async (email, password) => {
     try {
-      await logsAPI.create("Unlocked Vault");
-    } catch {
-      // Don't throw error, unlocking should still work even if logging fails
+      const data = await authAPI.login(email, password);
+      const freshMek = data?.data?.mek || null;
+
+      if (!freshMek) {
+        return {
+          success: false,
+          error: "Server did not return an encryption key.",
+        };
+      }
+
+      setMek(freshMek);
+
+      // Log the action to the backend
+      try {
+        await logsAPI.create("Unlocked Vault");
+      } catch {
+        // Don't throw error, unlocking should still work even if logging fails
+      }
+
+      return { success: true };
+    } catch (error) {
+      return {
+        success: false,
+        error:
+          error.response?.data?.message ||
+          "Invalid password. Please try again.",
+      };
     }
   };
 
   const value = {
     user,
-    masterPassword,
+    mek, // Master Encryption Key — in-memory only
     isAuthenticated,
     isLoading,
     login,
