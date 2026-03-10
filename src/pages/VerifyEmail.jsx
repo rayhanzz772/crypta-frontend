@@ -178,7 +178,7 @@ const VerifyEmail = () => {
 
       window.setTimeout(() => {
         navigate("/login", { replace: true });
-      }, 1200);
+      }, 2000);
     } catch (error) {
       toast.error(
         error.response?.data?.message ||
@@ -250,7 +250,7 @@ const VerifyEmail = () => {
           </h1>
           <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 sm:text-base">
             {isVerified
-              ? "Your email has been verified. Redirecting you to sign in."
+              ? "Your email has been verified. Redirecting you to sign in..."
               : "Enter the 6-digit code from your inbox to activate your account."}
           </p>
         </div>

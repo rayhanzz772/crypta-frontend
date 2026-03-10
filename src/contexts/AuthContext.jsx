@@ -1,13 +1,63 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { authAPI, logsAPI } from "../utils/api";
+import { useNavigate } from "react-router-dom";
+import {
+  authAPI,
+  logsAPI,
+  registerAuthFailureHandler,
+} from "../utils/api";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [mek, setMek] = useState(null); // Master Encryption Key — in-memory only, never persisted
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const extractCurrentUser = (authMeData, fallbackEmail) => {
+    const authMePayload = authMeData?.data;
+
+    if (authMePayload?.user && typeof authMePayload.user === "object") {
+      return authMePayload.user;
+    }
+
+    if (authMeData?.user && typeof authMeData.user === "object") {
+      return authMeData.user;
+    }
+
+    if (
+      authMePayload &&
+      typeof authMePayload === "object" &&
+      !Array.isArray(authMePayload)
+    ) {
+      return authMePayload;
+    }
+
+    return { email: fallbackEmail };
+  };
+
+  const isBlockedUser = (currentUser) => {
+    if (!currentUser || typeof currentUser !== "object") {
+      return false;
+    }
+
+    return (
+      currentUser.blocked === true ||
+      currentUser.is_blocked === true ||
+      currentUser.blocked_at != null ||
+      currentUser.status === "blocked" ||
+      currentUser.account_status === "blocked"
+    );
+  };
+
+  const clearClientAuthState = () => {
+    setUser(null);
+    setMek(null);
+    setIsAuthenticated(false);
+    localStorage.removeItem("jwt_token");
+    localStorage.removeItem("jwt_token_timestamp");
+  };
 
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -31,6 +81,17 @@ export const AuthProvider = ({ children }) => {
     }
     setIsLoading(false);
   }, []);
+
+  useEffect(() => {
+    registerAuthFailureHandler(({ redirectTo }) => {
+      clearClientAuthState();
+      navigate(redirectTo, { replace: true });
+    });
+
+    return () => {
+      registerAuthFailureHandler(null);
+    };
+  }, [navigate]);
 
   // Update timestamp when page becomes visible (page is opened/active)
   useEffect(() => {
@@ -86,15 +147,20 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("jwt_token", token);
       localStorage.setItem("jwt_token_timestamp", Date.now().toString());
 
+      const authMeData = await authAPI.getMe();
+      const currentUser = extractCurrentUser(authMeData, email);
+
       // Store MEK in React state ONLY — never persisted to localStorage
       const receivedMek = data?.data?.mek || null;
-      setMek(receivedMek);
+      if (!isBlockedUser(currentUser)) {
+        setMek(receivedMek);
+      }
 
-      // Update auth state
-      setUser(data?.data?.user || { email });
+      // Update auth state (blocked users can log in but see a blocked screen)
+      setUser(currentUser);
       setIsAuthenticated(true);
 
-      return { success: true, data };
+      return { success: true, data, user: currentUser, authMe: authMeData };
     } catch (error) {
       return {
         success: false,
@@ -121,11 +187,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     authAPI.logout();
-    setUser(null);
-    setMek(null); // Clear MEK from memory
-    setIsAuthenticated(false);
-    localStorage.removeItem("jwt_token");
-    localStorage.removeItem("jwt_token_timestamp");
+    clearClientAuthState();
   };
 
   const lockVault = async () => {
@@ -174,10 +236,13 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const isBlocked = isBlockedUser(user);
+
   const value = {
     user,
     mek, // Master Encryption Key — in-memory only
     isAuthenticated,
+    isBlocked,
     isLoading,
     login,
     register,

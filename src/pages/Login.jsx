@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
+import { consumeAuthRedirectMessage } from "../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +15,14 @@ const Login = () => {
       navigate("/app", { replace: true });
     }
   }, [isAuthenticated, authLoading, navigate]);
+
+  useEffect(() => {
+    const message = consumeAuthRedirectMessage();
+
+    if (message) {
+      toast.error(message);
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     email: "",

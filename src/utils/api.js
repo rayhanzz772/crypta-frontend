@@ -1,5 +1,17 @@
 import axios from "axios";
 
+const AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
+const PUBLIC_AUTH_ROUTES = [
+  "/login",
+  "/register",
+  "/verify-email",
+  "/recover-password",
+];
+const AUTH_FAILURE_DEBOUNCE_MS = 1500;
+
+let authFailureHandler = null;
+let lastAuthFailureAt = 0;
+
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_BASE_URL ||
@@ -12,15 +24,75 @@ const api = axios.create({
   timeout: 10000,
 });
 
-const clearAuthAndRedirect = () => {
+const clearStoredAuth = () => {
   localStorage.removeItem("jwt_token");
-  const publicAuthRoutes = ["/login", "/register", "/verify-email"];
+  localStorage.removeItem("jwt_token_timestamp");
+};
+
+const isPublicAuthRoute = (pathname = window.location.pathname) => {
+  return PUBLIC_AUTH_ROUTES.some((route) => pathname.startsWith(route));
+};
+
+const getAuthFailureMessage = (error) => {
+  const rawMessage =
+    error.response?.data?.message || error.response?.data?.error || "";
+  const normalizedMessage = rawMessage.toLowerCase();
+
+  if (normalizedMessage.includes("session")) {
+    return "Your session has expired. Please sign in again.";
+  }
 
   if (
-    !publicAuthRoutes.some((route) => window.location.pathname.includes(route))
+    normalizedMessage.includes("jwt") ||
+    normalizedMessage.includes("token") ||
+    error.response?.status === 401
   ) {
-    window.location.href = "/login";
+    return "Your session has ended. Please sign in again.";
   }
+
+  return "Your session has ended. Please sign in again.";
+};
+
+const clearAuthAndRedirect = (error) => {
+  clearStoredAuth();
+
+  if (isPublicAuthRoute()) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastAuthFailureAt < AUTH_FAILURE_DEBOUNCE_MS) {
+    return;
+  }
+
+  lastAuthFailureAt = now;
+
+  const message = getAuthFailureMessage(error);
+  sessionStorage.setItem(AUTH_REDIRECT_MESSAGE_KEY, message);
+
+  if (typeof authFailureHandler === "function") {
+    authFailureHandler({
+      message,
+      redirectTo: "/login",
+    });
+    return;
+  }
+
+  window.location.replace("/login");
+};
+
+export const registerAuthFailureHandler = (handler) => {
+  authFailureHandler = handler;
+};
+
+export const consumeAuthRedirectMessage = () => {
+  const message = sessionStorage.getItem(AUTH_REDIRECT_MESSAGE_KEY);
+
+  if (message) {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+
+  return message;
 };
 
 api.interceptors.request.use(
@@ -41,18 +113,21 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const authErrorText = (
+      error.response?.data?.message || error.response?.data?.error || ""
+    ).toLowerCase();
+
     if (
-      error.response?.data?.message?.includes("JWT") ||
-      error.response?.data?.message?.includes("jwt") ||
-      error.response?.data?.error?.includes("JWT") ||
-      error.response?.data?.error?.includes("jwt")
+      authErrorText.includes("jwt") ||
+      authErrorText.includes("token")
     ) {
-      clearAuthAndRedirect();
+      clearAuthAndRedirect(error);
     }
 
     if (error.response?.status === 401) {
-      clearAuthAndRedirect();
+      clearAuthAndRedirect(error);
     }
+
     return Promise.reject(error);
   },
 );
@@ -71,6 +146,11 @@ export const authAPI = {
       email,
       master_password: masterPassword,
     });
+    return response.data;
+  },
+
+  getMe: async () => {
+    const response = await api.get("/auth/me");
     return response.data;
   },
 
@@ -105,7 +185,7 @@ export const authAPI = {
   },
 
   logout: () => {
-    localStorage.removeItem("jwt_token");
+    clearStoredAuth();
   },
 };
 
