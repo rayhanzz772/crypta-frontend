@@ -11,6 +11,7 @@ import AppLayout from "./layouts/AppLayout";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import VerifyEmail from "./pages/VerifyEmail";
 import RecoverPassword from "./pages/RecoverPassword";
 import Passwords from "./pages/Passwords";
 import Notes from "./pages/Notes";
@@ -56,6 +57,7 @@ function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/verify-email" element={<VerifyEmail />} />
             <Route path="/recover-password" element={<RecoverPassword />} />
 
             {/* Protected Routes with App Layout */}

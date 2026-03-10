@@ -32,6 +32,7 @@ const Register = () => {
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [showRecoveryModal, setShowRecoveryModal] = useState(false);
   const [recoveryKey, setRecoveryKey] = useState("");
+  const [registeredEmail, setRegisteredEmail] = useState("");
   const [pendingRegistration, setPendingRegistration] = useState(null);
 
   const validateForm = () => {
@@ -92,6 +93,8 @@ const Register = () => {
   const handleConfirmRegistration = async () => {
     if (!pendingRegistration) return;
 
+    const email = pendingRegistration.email;
+
     setIsLoading(true);
     setShowWarningModal(false);
 
@@ -102,7 +105,8 @@ const Register = () => {
 
     if (result.success) {
       setIsRegistered(true);
-      toast.success("Account created successfully!");
+      setRegisteredEmail(email);
+      toast.success("Account created. Check your email for the 6-digit code.");
 
       // Extract recovery key from various possible response structures
       const key = result.data?.data?.recovery_key || result.data?.recovery_key;
@@ -111,7 +115,7 @@ const Register = () => {
         setRecoveryKey(key);
         setShowRecoveryModal(true);
       } else {
-        navigate("/app");
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
       }
     } else {
       toast.error(result.error);
@@ -128,7 +132,7 @@ const Register = () => {
 
   const handleCloseRecoveryModal = () => {
     setShowRecoveryModal(false);
-    navigate("/app");
+    navigate(`/verify-email?email=${encodeURIComponent(registeredEmail)}`);
   };
 
   // Show loading while checking auth status

@@ -108,17 +108,6 @@ export const AuthProvider = ({ children }) => {
     try {
       const data = await authAPI.register(email, password);
 
-      // Registration does not return a MEK — user must log in to get one
-      // Optionally auto-login after registration if a token is returned
-      const token = data?.data?.token;
-      if (token) {
-        localStorage.setItem("jwt_token", token);
-        localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-        setUser(data?.data?.user || { email });
-        setIsAuthenticated(true);
-        // MEK is not available at registration time — vault starts locked
-      }
-
       return { success: true, data };
     } catch (error) {
       return {

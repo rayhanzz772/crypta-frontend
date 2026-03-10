@@ -61,7 +61,7 @@ const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
 
           <button
             onClick={onClose}
-            className="w-full py-3 px-4 bg-gradient-to-br from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700 text-white rounded-lg font-semibold shadow-md transition-all flex items-center justify-center gap-2"
+            className="w-full py-3 px-4 bg-gradient-to-br from-blue-500 to-blue-600 hover:to-blue-700 text-white rounded-lg font-semibold shadow-md transition-all flex items-center justify-center gap-2"
           >
             <ShieldCheck className="w-5 h-5" />I have saved my recovery key
           </button>

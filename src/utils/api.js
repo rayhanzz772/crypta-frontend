@@ -14,9 +14,10 @@ const api = axios.create({
 
 const clearAuthAndRedirect = () => {
   localStorage.removeItem("jwt_token");
+  const publicAuthRoutes = ["/login", "/register", "/verify-email"];
+
   if (
-    !window.location.pathname.includes("/login") &&
-    !window.location.pathname.includes("/register")
+    !publicAuthRoutes.some((route) => window.location.pathname.includes(route))
   ) {
     window.location.href = "/login";
   }
@@ -77,6 +78,21 @@ export const authAPI = {
     const response = await api.post("/auth/verify-recovery-key", {
       email,
       recovery_key: recoveryKey,
+    });
+    return response.data;
+  },
+
+  verifyEmail: async (email, code) => {
+    const response = await api.post("/auth/verify-email", {
+      email,
+      code,
+    });
+    return response.data;
+  },
+
+  resendVerification: async (email) => {
+    const response = await api.post("/auth/resend-verification", {
+      email,
     });
     return response.data;
   },
