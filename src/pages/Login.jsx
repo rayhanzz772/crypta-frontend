@@ -36,14 +36,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
 
-    // Password validation
     if (!formData.master_password) {
       newErrors.master_password = "Master password is required";
     }
@@ -55,7 +53,6 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -71,7 +68,6 @@ const Login = () => {
 
     setIsLoading(true);
 
-    // Clear any existing invalid token first
     const existingToken = localStorage.getItem("jwt_token");
     if (existingToken) {
       localStorage.removeItem("jwt_token");
@@ -82,7 +78,6 @@ const Login = () => {
     if (result.success) {
       toast.success("Welcome back!");
 
-      // Small delay to ensure state is updated
       setTimeout(() => {
         navigate("/app");
       }, 100);
@@ -93,7 +88,6 @@ const Login = () => {
     setIsLoading(false);
   };
 
-  // Show loading while checking auth status
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
