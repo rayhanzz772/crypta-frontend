@@ -270,19 +270,19 @@ export const vaultAPI = {
 // Logs API endpoints
 export const logsAPI = {
   create: async (action) => {
-    const response = await api.post("/api/vault/logs", {
+    const response = await api.post("/api/activity/logs", {
       action: action,
     });
     return response.data;
   },
 
   getAll: async () => {
-    const response = await api.get("/api/vault/logs");
+    const response = await api.get("/api/activity/logs");
     return response.data;
   },
 
   getSummary: async () => {
-    const response = await api.get("/api/vault/recent-activity");
+    const response = await api.get("/api/activity/recent-activity");
     return response.data;
   },
 };
