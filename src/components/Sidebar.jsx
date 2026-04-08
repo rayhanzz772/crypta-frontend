@@ -10,6 +10,7 @@ import {
   LockOpen,
   FileText,
   FolderKey,
+  FolderLock,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
@@ -61,6 +62,7 @@ const Sidebar = ({
 
   const secondaryLinks = [
     { name: "Secret Notes", icon: FileText, path: "/app/notes" },
+    { name: "Secure Files", icon: FolderLock, path: "/app/files" },
     { name: "Secret Manager", icon: FolderKey, path: "/app/secret-manager" },
     { name: "Activity Logs", icon: Activity, path: "/app/logs" },
   ];

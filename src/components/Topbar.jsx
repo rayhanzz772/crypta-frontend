@@ -39,6 +39,9 @@ const Topbar = ({
     if (location.pathname.includes("/secret-manager")) {
       return "Search projects and secrets...";
     }
+    if (location.pathname.includes("/files")) {
+      return "Search Folder / file...";
+    }
     return "Search passwords...";
   };
 

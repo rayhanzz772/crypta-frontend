@@ -118,7 +118,7 @@ const Passwords = () => {
       );
       setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
-      toast.error("Failed to load passwords");
+      toast.error(error.response?.data?.message || "Failed to load passwords");
       setPasswords([]); // Set empty array on error
     } finally {
       setIsLoading(false);

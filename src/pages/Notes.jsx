@@ -111,7 +111,6 @@ const Notes = () => {
 
       setCategories(categoryList);
     } catch (error) {
-      toast.error("Failed to load categories");
       setCategories([]);
     }
   };
@@ -171,7 +170,7 @@ const Notes = () => {
           ),
       );
     } catch (error) {
-      toast.error("Failed to load notes");
+      toast.error(error.response?.data?.message || "Failed to load notes");
       setNotes([]);
     } finally {
       setIsLoading(false);
@@ -415,7 +414,7 @@ const Notes = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 md:p-6">
+        <div className="min-h-screen">
           {/* Header */}
           <div className="mb-8">
             {/* Title */}
@@ -423,8 +422,8 @@ const Notes = () => {
             {notes.length > 0 && (
               <>
                 <div className="mb-4">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
-                    <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                    <FileText className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                     {showOnlyFavorites ? "Favorite Notes" : "Secret Notes"}
                   </h1>
                   <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
@@ -670,7 +669,7 @@ const Notes = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleView(note)}
-                          className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center gap-2 text-sm font-medium"
+                          className="flex-1 px-3 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm font-medium"
                         >
                           <Eye className="w-4 h-4" />
                           View
@@ -764,7 +763,7 @@ const Notes = () => {
                     <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
                       <button
                         onClick={() => handleView(note)}
-                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
                       >
                         <Eye className="w-4 h-4" />
                         <span className="hidden sm:inline">View</span>

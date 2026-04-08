@@ -113,7 +113,7 @@ const SecretManager = () => {
       }
     } catch (error) {
       console.error("Error fetching projects:", error);
-      toast.error("Failed to load projects");
+      toast.error(error.response?.data?.message || "Failed to load projects");
       setProjects([]);
     } finally {
       setIsLoadingProjects(false);
@@ -139,7 +139,7 @@ const SecretManager = () => {
       }
     } catch (error) {
       console.error("Error fetching secrets:", error);
-      toast.error("Failed to load secrets");
+      toast.error(error.response?.data?.message || "Failed to load secrets");
       setSecrets([]);
     } finally {
       setIsLoadingSecrets(false);
@@ -164,7 +164,6 @@ const SecretManager = () => {
         setServiceAccounts(Array.isArray(saList) ? saList : []);
       }
     } catch (error) {
-      console.error("Error fetching service accounts:", error);
       toast.error("Failed to load service accounts");
       setServiceAccounts([]);
     } finally {
@@ -446,8 +445,8 @@ const SecretManager = () => {
             </button>
           )}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-              <FolderKey className="w-7 h-7 sm:w-8 sm:h-8 text-white-600 dark:text-white-400" />
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+              <FolderKey className="w-6 h-6 text-slate-600 dark:text-slate-400" />
               {selectedProject ? selectedProject.name : "Secret Manager"}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">

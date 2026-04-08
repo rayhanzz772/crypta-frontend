@@ -573,4 +573,68 @@ export const iamBindingsAPI = {
   },
 };
 
+// Files Encrypted API endpoints (Secure Files)
+export const filesAPI = {
+  createFolder: async (name) => {
+    const response = await api.post("/api/files/folders", { name });
+    return response.data;
+  },
+
+  listFolders: async () => {
+    const response = await api.get("/api/files/folders");
+    return response.data;
+  },
+
+  openFolder: async (folderId) => {
+    const response = await api.get(`/api/files/folders/${folderId}/files`);
+    return response.data;
+  },
+
+  uploadFile: async (formData) => {
+    const response = await api.post("/api/files/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  listAllFiles: async (page = 1, per_page = 10, q = "") => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page);
+    if (per_page) params.append("per_page", per_page);
+    if (q) params.append("q", q);
+
+    const queryString = params.toString();
+    const url = queryString ? `/api/files?${queryString}` : "/api/files";
+    
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  downloadFile: async (id, mek) => {
+    const response = await api.post(`/api/files/${id}/download`, { mek }, {
+      responseType: 'blob'
+    });
+    return response; // Return full response to access headers
+  },
+
+  downloadFolder: async (folderId, mek) => {
+    const response = await api.post(`/api/files/folders/${folderId}/download`, { mek }, {
+      responseType: 'blob'
+    });
+    return response; // Return full response to access headers
+  },
+
+  deleteFile: async (id) => {
+    const response = await api.delete(`/api/files/${id}/delete`);
+    return response.data;
+  },
+
+  deleteFolder: async (folderId) => {
+    const response = await api.delete(`/api/files/folders/${folderId}/delete`);
+    return response.data;
+  },
+};
+
 export default api;

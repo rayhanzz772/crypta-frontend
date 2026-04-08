@@ -19,6 +19,8 @@ import ActivityLogs from "./pages/ActivityLogs";
 import DeveloperKeys from "./pages/DeveloperKeys";
 import ApiDocumentation from "./pages/ApiDocumentation";
 import SecretManager from "./pages/SecretManager";
+import SecureFiles from "./pages/SecureFiles";
+import FolderDetail from "./pages/FolderDetail";
 
 function App() {
   return (
@@ -79,6 +81,8 @@ function App() {
               <Route path="secret-manager" element={<SecretManager />} />
               <Route path="developer" element={<DeveloperKeys />} />
               <Route path="api-docs" element={<ApiDocumentation />} />
+              <Route path="files" element={<SecureFiles />} />
+              <Route path="files/folders/:folderId" element={<FolderDetail />} />
             </Route>
 
             {/* Catch all - redirect to home */}
