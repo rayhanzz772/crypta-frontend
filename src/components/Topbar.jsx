@@ -26,8 +26,8 @@ const Topbar = ({
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout, lockVault, masterPassword } = useAuth();
-  const isVaultUnlocked = !!masterPassword;
+  const { user, logout, lockVault, mek } = useAuth();
+  const isVaultUnlocked = !!mek;
   const { theme, toggleTheme } = useTheme();
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
@@ -38,6 +38,9 @@ const Topbar = ({
     }
     if (location.pathname.includes("/secret-manager")) {
       return "Search projects and secrets...";
+    }
+    if (location.pathname.includes("/files")) {
+      return "Search Folder / file...";
     }
     return "Search passwords...";
   };

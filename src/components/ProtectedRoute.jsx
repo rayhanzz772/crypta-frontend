@@ -1,15 +1,9 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useEffect } from 'react';
+import BlockedVault from './BlockedVault';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  useEffect(() => {
-    const token = localStorage.getItem('jwt_token');
-    if (token) {
-    }
-  }, [isAuthenticated, isLoading]);
+  const { isAuthenticated, isBlocked, isLoading } = useAuth();
 
   // Show loading state while checking authentication
   if (isLoading) {
@@ -26,6 +20,11 @@ const ProtectedRoute = ({ children }) => {
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // Show blocked vault screen if account is blocked
+  if (isBlocked) {
+    return <BlockedVault />;
   }
 
   // Render children if authenticated

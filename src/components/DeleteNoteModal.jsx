@@ -5,7 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
 
 const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
   const [confirmText, setConfirmText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -17,7 +17,7 @@ const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
 
     try {
       setIsDeleting(true);
-      await notesAPI.delete(note.id, masterPassword);
+      await notesAPI.delete(note.id, mek);
       toast.success("Note deleted successfully");
       setConfirmText("");
       onSuccess();

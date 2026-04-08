@@ -1,4 +1,4 @@
-import { AlertTriangle, ShieldAlert, X } from "lucide-react";
+import { ShieldAlert, X } from "lucide-react";
 
 const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
@@ -32,12 +32,12 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
             <div className="flex gap-2 sm:gap-3">
               <div>
                 <p className="font-semibold text-red-900 dark:text-red-200 mb-1.5 sm:mb-2 text-sm sm:text-base">
-                  Your Master Password Cannot Be Recovered!
+                  Save Your Recovery Code Carefully
                 </p>
                 <p className="text-xs sm:text-sm text-red-800 dark:text-red-300">
-                  If you forget your master password, there is{" "}
-                  <strong>NO WAY</strong> to recover your encrypted data. All
-                  your passwords and notes will be permanently lost.
+                  If you forget your master password, you can reset it only
+                  with your recovery code. If you lose that recovery code,
+                  <strong> we cannot help you reset your password or restore access.</strong>
                 </p>
               </div>
             </div>
@@ -53,7 +53,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
                   ✓
                 </span>
                 <span>
-                  Write down your master password in a secure location
+                  Save your recovery code somewhere secure before continuing
                 </span>
               </li>
               <li className="flex items-start gap-1.5 sm:gap-2">
@@ -61,20 +61,20 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
                   ✓
                 </span>
                 <span>
-                  Store it in a physical safe or secure password manager
+                  Keep your master password and recovery code in trusted secure locations
                 </span>
               </li>
               <li className="flex items-start gap-1.5 sm:gap-2">
                 <span className="text-primary-600 dark:text-primary-400 mt-0.5">
                   ✓
                 </span>
-                <span>Never share it with anyone</span>
+                <span>Never share either one with anyone</span>
               </li>
               <li className="flex items-start gap-1.5 sm:gap-2">
                 <span className="text-primary-600 dark:text-primary-400 mt-0.5">
                   ✓
                 </span>
-                <span>Remember: We cannot reset or recover your password</span>
+                <span>Without the recovery code, password reset is not possible</span>
               </li>
             </ul>
           </div>
@@ -90,7 +90,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 sm:py-3 bg-slate-900 text-white rounded-lg sm:rounded-xl hover:from-primary-700 hover:to-purple-700 transition-all font-medium text-sm sm:text-base"
+            className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg sm:rounded-xl transition-all font-medium text-sm sm:text-base"
           >
             I Understand
           </button>

@@ -34,9 +34,9 @@ import Pagination from "../components/Pagination";
 const SecretManager = () => {
   // Get search query from layout context
   const { searchQuery = "" } = useOutletContext();
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
-  const isVaultLocked = !masterPassword;
+  const isVaultLocked = !mek;
 
   // State
   const [projects, setProjects] = useState([]);
@@ -113,7 +113,7 @@ const SecretManager = () => {
       }
     } catch (error) {
       console.error("Error fetching projects:", error);
-      toast.error("Failed to load projects");
+      toast.error(error.response?.data?.message || "Failed to load projects");
       setProjects([]);
     } finally {
       setIsLoadingProjects(false);
@@ -126,7 +126,7 @@ const SecretManager = () => {
       const response = await secretsAPI.getAll(
         projectId,
         secretsPage,
-        secretsPerPage
+        secretsPerPage,
       );
       // Handle response with metadata
       if (response.success && response.metadata) {
@@ -139,7 +139,7 @@ const SecretManager = () => {
       }
     } catch (error) {
       console.error("Error fetching secrets:", error);
-      toast.error("Failed to load secrets");
+      toast.error(error.response?.data?.message || "Failed to load secrets");
       setSecrets([]);
     } finally {
       setIsLoadingSecrets(false);
@@ -152,7 +152,7 @@ const SecretManager = () => {
       const response = await serviceAccountsAPI.getAll(
         projectId,
         serviceAccountsPage,
-        serviceAccountsPerPage
+        serviceAccountsPerPage,
       );
       // Handle response with metadata
       if (response.success && response.metadata) {
@@ -164,7 +164,6 @@ const SecretManager = () => {
         setServiceAccounts(Array.isArray(saList) ? saList : []);
       }
     } catch (error) {
-      console.error("Error fetching service accounts:", error);
       toast.error("Failed to load service accounts");
       setServiceAccounts([]);
     } finally {
@@ -199,7 +198,7 @@ const SecretManager = () => {
 
     if (
       !confirm(
-        "Are you sure you want to delete this project? This action cannot be undone."
+        "Are you sure you want to delete this project? This action cannot be undone.",
       )
     ) {
       return;
@@ -225,7 +224,7 @@ const SecretManager = () => {
   const handleDeleteSecret = async (secretId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this secret? This action cannot be undone."
+        "Are you sure you want to delete this secret? This action cannot be undone.",
       )
     ) {
       return;
@@ -259,7 +258,7 @@ const SecretManager = () => {
   const handleDeleteServiceAccount = async (serviceAccountId) => {
     if (
       !confirm(
-        "Are you sure you want to delete this service account? Applications using this service account will lose access."
+        "Are you sure you want to delete this service account? Applications using this service account will lose access.",
       )
     ) {
       return;
@@ -275,7 +274,7 @@ const SecretManager = () => {
     } catch (error) {
       console.error("Error deleting service account:", error);
       toast.error(
-        error.response?.data?.message || "Failed to delete service account"
+        error.response?.data?.message || "Failed to delete service account",
       );
     }
   };
@@ -302,19 +301,19 @@ const SecretManager = () => {
   const filteredProjects = projects.filter(
     (project) =>
       project.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      project.slug?.toLowerCase().includes(searchQuery.toLowerCase())
+      project.slug?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Filter secrets based on search
   const filteredSecrets = secrets.filter((secret) =>
-    secret.name?.toLowerCase().includes(searchQuery.toLowerCase())
+    secret.name?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Filter service accounts based on search
   const filteredServiceAccounts = serviceAccounts.filter(
     (sa) =>
       sa.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sa.client_id?.toLowerCase().includes(searchQuery.toLowerCase())
+      sa.client_id?.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   // Show locked screen if vault is locked
@@ -446,8 +445,8 @@ const SecretManager = () => {
             </button>
           )}
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-              <FolderKey className="w-7 h-7 sm:w-8 sm:h-8 text-white-600 dark:text-white-400" />
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
+              <FolderKey className="w-6 h-6 text-slate-600 dark:text-slate-400" />
               {selectedProject ? selectedProject.name : "Secret Manager"}
             </h1>
             <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">

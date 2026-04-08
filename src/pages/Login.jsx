@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Shield, ArrowRight } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
+import { consumeAuthRedirectMessage } from "../utils/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -14,6 +15,14 @@ const Login = () => {
       navigate("/app", { replace: true });
     }
   }, [isAuthenticated, authLoading, navigate]);
+
+  useEffect(() => {
+    const message = consumeAuthRedirectMessage();
+
+    if (message) {
+      toast.error(message);
+    }
+  }, []);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -27,14 +36,12 @@ const Login = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    // Email validation
     if (!formData.email) {
       newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
 
-    // Password validation
     if (!formData.master_password) {
       newErrors.master_password = "Master password is required";
     }
@@ -46,7 +53,6 @@ const Login = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error for this field when user types
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -62,7 +68,6 @@ const Login = () => {
 
     setIsLoading(true);
 
-    // Clear any existing invalid token first
     const existingToken = localStorage.getItem("jwt_token");
     if (existingToken) {
       localStorage.removeItem("jwt_token");
@@ -73,7 +78,6 @@ const Login = () => {
     if (result.success) {
       toast.success("Welcome back!");
 
-      // Small delay to ensure state is updated
       setTimeout(() => {
         navigate("/app");
       }, 100);
@@ -84,7 +88,6 @@ const Login = () => {
     setIsLoading(false);
   };
 
-  // Show loading while checking auth status
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -208,6 +211,16 @@ const Login = () => {
                   {errors.master_password}
                 </p>
               )}
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end mt-2">
+                <Link
+                  to="/recover-password"
+                  className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors"
+                >
+                  Forgot Master Password?
+                </Link>
+              </div>
             </div>
 
             {/* Submit Button */}

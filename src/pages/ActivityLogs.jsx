@@ -10,7 +10,8 @@ import {
   LockOpen,
   Shield,
   Calendar,
-  TrendingUp
+  TrendingUp,
+  StickyNote
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { logsAPI } from '../utils/api';
@@ -65,6 +66,9 @@ const ActivityLogs = () => {
     if (action === 'Create new password') return <Plus className={iconClass} />;
     if (action === 'Updated password') return <Edit className={iconClass} />;
     if (action === 'Deleted password') return <Trash2 className={iconClass} />;
+    if (action === 'Create new note') return <StickyNote className={iconClass} />;
+    if (action === 'Deleted note') return <Trash2 className={iconClass} />;
+    if (action === 'Updated note') return <Edit className={iconClass} />;
     
     return <Activity className={iconClass} />;
   };
@@ -76,6 +80,9 @@ const ActivityLogs = () => {
     if (action === 'Create new password') return 'text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/20';
     if (action === 'Updated password') return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
     if (action === 'Deleted password') return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
+    if (action === 'Create new note') return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+    if (action === 'Deleted note') return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
+    if (action === 'Updated note') return 'text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/20';
     
     return 'text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/20';
   };
@@ -204,7 +211,7 @@ const ActivityLogs = () => {
                           {log.action}
                         </h3>
                         <p className="text-sm text-slate-600 dark:text-slate-400">
-                          {getVaultDisplayName(log.action, log.vault_name)}
+                          {getVaultDisplayName(log.action, log.log_name)}
                         </p>
                       </div>
                       

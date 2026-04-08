@@ -19,7 +19,7 @@ const normalizeTags = (tags) => {
 };
 
 const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,7 +40,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
   const loadNoteData = async () => {
     try {
       setIsDecrypting(true);
-      const response = await notesAPI.decrypt(note.id, masterPassword);
+      const response = await notesAPI.decrypt(note.id, mek);
 
       const content =
         response.data?.note ||
@@ -56,7 +56,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
       let categoryId = note.category_id || note.category;
       if (!categoryId && note.category_name) {
         const matchedCategory = categories.find(
-          (cat) => cat.name.toLowerCase() === note.category_name.toLowerCase()
+          (cat) => cat.name.toLowerCase() === note.category_name.toLowerCase(),
         );
         categoryId = matchedCategory?.id || "personal";
       }
@@ -101,7 +101,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
           category: formData.category,
           tags: tagsArray,
         },
-        masterPassword
+        mek,
       );
 
       toast.success("Note updated successfully!");

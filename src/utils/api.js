@@ -1,5 +1,17 @@
 import axios from "axios";
 
+const AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
+const PUBLIC_AUTH_ROUTES = [
+  "/login",
+  "/register",
+  "/verify-email",
+  "/recover-password",
+];
+const AUTH_FAILURE_DEBOUNCE_MS = 1500;
+
+let authFailureHandler = null;
+let lastAuthFailureAt = 0;
+
 const api = axios.create({
   baseURL:
     import.meta.env.VITE_API_BASE_URL ||
@@ -8,17 +20,79 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true,
   timeout: 10000,
 });
 
-const clearAuthAndRedirect = () => {
+const clearStoredAuth = () => {
   localStorage.removeItem("jwt_token");
-  if (
-    !window.location.pathname.includes("/login") &&
-    !window.location.pathname.includes("/register")
-  ) {
-    window.location.href = "/login";
+  localStorage.removeItem("jwt_token_timestamp");
+};
+
+const isPublicAuthRoute = (pathname = window.location.pathname) => {
+  return PUBLIC_AUTH_ROUTES.some((route) => pathname.startsWith(route));
+};
+
+const getAuthFailureMessage = (error) => {
+  const rawMessage =
+    error.response?.data?.message || error.response?.data?.error || "";
+  const normalizedMessage = rawMessage.toLowerCase();
+
+  if (normalizedMessage.includes("session")) {
+    return "Your session has expired. Please sign in again.";
   }
+
+  if (
+    normalizedMessage.includes("jwt") ||
+    normalizedMessage.includes("token") ||
+    error.response?.status === 401
+  ) {
+    return "Your session has ended. Please sign in again.";
+  }
+
+  return "Your session has ended. Please sign in again.";
+};
+
+const clearAuthAndRedirect = (error) => {
+  clearStoredAuth();
+
+  if (isPublicAuthRoute()) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastAuthFailureAt < AUTH_FAILURE_DEBOUNCE_MS) {
+    return;
+  }
+
+  lastAuthFailureAt = now;
+
+  const message = getAuthFailureMessage(error);
+  sessionStorage.setItem(AUTH_REDIRECT_MESSAGE_KEY, message);
+
+  if (typeof authFailureHandler === "function") {
+    authFailureHandler({
+      message,
+      redirectTo: "/login",
+    });
+    return;
+  }
+
+  window.location.replace("/login");
+};
+
+export const registerAuthFailureHandler = (handler) => {
+  authFailureHandler = handler;
+};
+
+export const consumeAuthRedirectMessage = () => {
+  const message = sessionStorage.getItem(AUTH_REDIRECT_MESSAGE_KEY);
+
+  if (message) {
+    sessionStorage.removeItem(AUTH_REDIRECT_MESSAGE_KEY);
+  }
+
+  return message;
 };
 
 api.interceptors.request.use(
@@ -31,7 +105,7 @@ api.interceptors.request.use(
   },
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 api.interceptors.response.use(
@@ -39,20 +113,23 @@ api.interceptors.response.use(
     return response;
   },
   (error) => {
+    const authErrorText = (
+      error.response?.data?.message || error.response?.data?.error || ""
+    ).toLowerCase();
+
     if (
-      error.response?.data?.message?.includes("JWT") ||
-      error.response?.data?.message?.includes("jwt") ||
-      error.response?.data?.error?.includes("JWT") ||
-      error.response?.data?.error?.includes("jwt")
+      authErrorText.includes("jwt") ||
+      authErrorText.includes("token")
     ) {
-      clearAuthAndRedirect();
+      clearAuthAndRedirect(error);
     }
 
     if (error.response?.status === 401) {
-      clearAuthAndRedirect();
+      clearAuthAndRedirect(error);
     }
+
     return Promise.reject(error);
-  }
+  },
 );
 
 export const authAPI = {
@@ -72,15 +149,43 @@ export const authAPI = {
     return response.data;
   },
 
-  logout: () => {
-    localStorage.removeItem("jwt_token");
+  getMe: async () => {
+    const response = await api.get("/auth/me");
+    return response.data;
   },
 
-  checkPassword: async (masterPassword) => {
-    const response = await api.post("/api/users/check-password", {
-      master_password: masterPassword,
+  verifyRecoveryKey: async (email, recoveryKey) => {
+    const response = await api.post("/auth/verify-recovery-key", {
+      email,
+      recovery_key: recoveryKey,
     });
     return response.data;
+  },
+
+  verifyEmail: async (email, code) => {
+    const response = await api.post("/auth/verify-email", {
+      email,
+      code,
+    });
+    return response.data;
+  },
+
+  resendVerification: async (email) => {
+    const response = await api.post("/auth/resend-verification", {
+      email,
+    });
+    return response.data;
+  },
+
+  resetPassword: async (newPassword) => {
+    const response = await api.post("/auth/reset-password", {
+      new_password: newPassword,
+    });
+    return response.data;
+  },
+
+  logout: () => {
+    clearStoredAuth();
   },
 };
 
@@ -123,32 +228,32 @@ export const vaultAPI = {
     return response.data;
   },
 
-  create: async (vaultData, masterPassword) => {
+  create: async (vaultData, mek) => {
     const response = await api.post("/api/vault", {
       ...vaultData,
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  decrypt: async (id, masterPassword) => {
+  decrypt: async (id, mek) => {
     const response = await api.post(`/api/vault/${id}/decrypt`, {
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  update: async (id, vaultData, masterPassword) => {
+  update: async (id, vaultData, mek) => {
     const response = await api.put(`/api/vault/${id}/update`, {
       ...vaultData,
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
 
-  delete: async (id, masterPassword) => {
+  delete: async (id, mek) => {
     const response = await api.delete(`/api/vault/${id}/delete`, {
-      data: { master_password: masterPassword },
+      data: { mek },
     });
     return response.data;
   },
@@ -165,19 +270,19 @@ export const vaultAPI = {
 // Logs API endpoints
 export const logsAPI = {
   create: async (action) => {
-    const response = await api.post("/api/vault/logs", {
+    const response = await api.post("/api/activity/logs", {
       action: action,
     });
     return response.data;
   },
 
   getAll: async () => {
-    const response = await api.get("/api/vault/logs");
+    const response = await api.get("/api/activity/logs");
     return response.data;
   },
 
   getSummary: async () => {
-    const response = await api.get("/api/vault/recent-activity");
+    const response = await api.get("/api/activity/recent-activity");
     return response.data;
   },
 };
@@ -219,45 +324,43 @@ export const notesAPI = {
   },
 
   // Create new note
-  create: async (noteData, masterPassword) => {
-    // Encrypt the note content client-side (if encryption is enabled)
-    // For now, send to server as is - server will handle encryption
+  create: async (noteData, mek) => {
     const response = await api.post("/api/notes", {
       title: noteData.title,
       note: noteData.note,
-      category_id: noteData.category, // Send as category_id to match database schema
+      category_id: noteData.category,
       tags: noteData.tags || [],
-      master_password: masterPassword,
+      mek,
     });
 
     return response.data;
   },
 
   // Update existing note
-  update: async (id, noteData, masterPassword) => {
+  update: async (id, noteData, mek) => {
     const response = await api.put(`/api/notes/${id}/update`, {
       title: noteData.title,
       note: noteData.note,
-      category_id: noteData.category, // Send as category_id to match database schema
+      category_id: noteData.category,
       tags: noteData.tags || [],
-      master_password: masterPassword,
+      mek,
     });
 
     return response.data;
   },
 
   // Delete note
-  delete: async (id, masterPassword) => {
+  delete: async (id, mek) => {
     const response = await api.delete(`/api/notes/${id}/delete`, {
-      data: { master_password: masterPassword },
+      data: { mek },
     });
     return response.data;
   },
 
   // Decrypt note content
-  decrypt: async (id, masterPassword) => {
+  decrypt: async (id, mek) => {
     const response = await api.post(`/api/notes/${id}/decrypt`, {
-      master_password: masterPassword,
+      mek,
     });
     return response.data;
   },
@@ -351,12 +454,12 @@ export const secretsAPI = {
 
     console.log(
       "📡 API sending to POST /client/secret/" + projectId + "/create:",
-      JSON.stringify(payload, null, 2)
+      JSON.stringify(payload, null, 2),
     );
 
     const response = await api.post(
       `/client/secret/${projectId}/create`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -372,7 +475,7 @@ export const secretsAPI = {
 
     const response = await api.put(
       `/client/secret/${secretId}/update`,
-      payload
+      payload,
     );
     return response.data;
   },
@@ -398,7 +501,7 @@ export const secretVersionsAPI = {
       `/client/secret-version/${secretId}/create`,
       {
         plaintext: plaintext,
-      }
+      },
     );
     return response.data;
   },
@@ -407,7 +510,7 @@ export const secretVersionsAPI = {
   updateStatus: async (versionId, status) => {
     const response = await api.patch(
       `/client/secret-version/${versionId}/update`,
-      { status }
+      { status },
     );
     return response.data;
   },
@@ -434,7 +537,7 @@ export const serviceAccountsAPI = {
       `/client/service-account/${projectId}/create`,
       {
         name,
-      }
+      },
     );
     return response.data;
   },
@@ -442,7 +545,7 @@ export const serviceAccountsAPI = {
   // Delete service account
   delete: async (serviceAccountId) => {
     const response = await api.delete(
-      `/client/service-account/${serviceAccountId}/delete`
+      `/client/service-account/${serviceAccountId}/delete`,
     );
     return response.data;
   },
@@ -466,6 +569,70 @@ export const iamBindingsAPI = {
 
   delete: async (bindingId) => {
     const response = await api.delete(`/client/bindings/${bindingId}/delete`);
+    return response.data;
+  },
+};
+
+// Files Encrypted API endpoints (Secure Files)
+export const filesAPI = {
+  createFolder: async (name) => {
+    const response = await api.post("/api/files/folders", { name });
+    return response.data;
+  },
+
+  listFolders: async () => {
+    const response = await api.get("/api/files/folders");
+    return response.data;
+  },
+
+  openFolder: async (folderId) => {
+    const response = await api.get(`/api/files/folders/${folderId}/files`);
+    return response.data;
+  },
+
+  uploadFile: async (formData) => {
+    const response = await api.post("/api/files/upload", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+    return response.data;
+  },
+
+  listAllFiles: async (page = 1, per_page = 10, q = "") => {
+    const params = new URLSearchParams();
+    if (page) params.append("page", page);
+    if (per_page) params.append("per_page", per_page);
+    if (q) params.append("q", q);
+
+    const queryString = params.toString();
+    const url = queryString ? `/api/files?${queryString}` : "/api/files";
+    
+    const response = await api.get(url);
+    return response.data;
+  },
+
+  downloadFile: async (id, mek) => {
+    const response = await api.post(`/api/files/${id}/download`, { mek }, {
+      responseType: 'blob'
+    });
+    return response; // Return full response to access headers
+  },
+
+  downloadFolder: async (folderId, mek) => {
+    const response = await api.post(`/api/files/folders/${folderId}/download`, { mek }, {
+      responseType: 'blob'
+    });
+    return response; // Return full response to access headers
+  },
+
+  deleteFile: async (id) => {
+    const response = await api.delete(`/api/files/${id}/delete`);
+    return response.data;
+  },
+
+  deleteFolder: async (folderId) => {
+    const response = await api.delete(`/api/files/folders/${folderId}/delete`);
     return response.data;
   },
 };

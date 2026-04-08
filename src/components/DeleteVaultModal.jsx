@@ -10,7 +10,7 @@ const DeleteVaultModal = ({
   onDelete,
   isDeleting,
 }) => {
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState("");
 
@@ -28,13 +28,13 @@ const DeleteVaultModal = ({
     }
 
     setError("");
-    const result = await onDelete(vaultItem, masterPassword);
+    const result = await onDelete(vaultItem, mek);
 
     if (result.success) {
       onClose();
     } else {
       setError(
-        result.error || "Failed to delete. Please check your master password."
+        result.error || "Failed to delete. Please check your master password.",
       );
     }
   };
@@ -54,10 +54,10 @@ const DeleteVaultModal = ({
   if (!isOpen || !vaultItem) return null;
 
   const CategoryIcon = getCategoryIcon(
-    vaultItem?.category || vaultItem?.category_name
+    vaultItem?.category || vaultItem?.category_name,
   );
   const categoryGradient = getCategoryGradient(
-    vaultItem?.category || vaultItem?.category_name
+    vaultItem?.category || vaultItem?.category_name,
   );
 
   return (

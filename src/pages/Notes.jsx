@@ -42,9 +42,9 @@ const normalizeTags = (tags) => {
 
 const Notes = () => {
   const { searchQuery } = useOutletContext();
-  const { masterPassword } = useAuth();
+  const { mek } = useAuth();
 
-  const isVaultLocked = !masterPassword;
+  const isVaultLocked = !mek;
 
   const [notes, setNotes] = useState([]);
   const [filteredNotes, setFilteredNotes] = useState([]);
@@ -111,7 +111,6 @@ const Notes = () => {
 
       setCategories(categoryList);
     } catch (error) {
-      toast.error("Failed to load categories");
       setCategories([]);
     }
   };
@@ -160,18 +159,18 @@ const Notes = () => {
 
       // Update pagination state
       setTotalItems(
-        paginationData.total || paginationData.total_items || notesData.length
+        paginationData.total || paginationData.total_items || notesData.length,
       );
       setTotalPages(
         paginationData.total_pages ||
           Math.ceil(
             (paginationData.total ||
               paginationData.total_items ||
-              notesData.length) / perPage
-          )
+              notesData.length) / perPage,
+          ),
       );
     } catch (error) {
-      toast.error("Failed to load notes");
+      toast.error(error.response?.data?.message || "Failed to load notes");
       setNotes([]);
     } finally {
       setIsLoading(false);
@@ -203,7 +202,7 @@ const Notes = () => {
         if (note.category_id === selectedCategory) return true;
 
         const selectedCategoryData = categories.find(
-          (cat) => cat.id === selectedCategory
+          (cat) => cat.id === selectedCategory,
         );
         if (
           selectedCategoryData &&
@@ -225,7 +224,7 @@ const Notes = () => {
         (note) =>
           note.title?.toLowerCase().includes(query) ||
           note.preview?.toLowerCase().includes(query) ||
-          note.tags?.some((tag) => tag.toLowerCase().includes(query))
+          note.tags?.some((tag) => tag.toLowerCase().includes(query)),
       );
     }
 
@@ -234,7 +233,7 @@ const Notes = () => {
 
   const getCategoryData = (categoryNameOrId) => {
     let category = categories.find(
-      (cat) => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase()
+      (cat) => cat.name.toLowerCase() === categoryNameOrId?.toLowerCase(),
     );
     if (!category) {
       category = categories.find((cat) => cat.id === categoryNameOrId);
@@ -415,7 +414,7 @@ const Notes = () => {
   return (
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto">
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900 dark:to-slate-800 p-3 sm:p-4 md:p-6">
+        <div className="min-h-screen">
           {/* Header */}
           <div className="mb-8">
             {/* Title */}
@@ -423,8 +422,8 @@ const Notes = () => {
             {notes.length > 0 && (
               <>
                 <div className="mb-4">
-                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
-                    <FileText className="w-6 h-6 sm:w-8 sm:h-8" />
+                  <h1 className="text-2xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                    <FileText className="w-6 h-6 text-slate-600 dark:text-slate-400" />
                     {showOnlyFavorites ? "Favorite Notes" : "Secret Notes"}
                   </h1>
                   <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
@@ -588,7 +587,7 @@ const Notes = () => {
               {filteredNotes.map((note) => {
                 // Backend returns category_name, fallback to category_id or category
                 const categoryData = getCategoryData(
-                  note.category_name || note.category_id || note.category
+                  note.category_name || note.category_id || note.category,
                 );
                 const Icon = getCategoryIcon(categoryData?.name);
                 const gradient = getCategoryGradient(categoryData?.name);
@@ -670,7 +669,7 @@ const Notes = () => {
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleView(note)}
-                          className="flex-1 px-3 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-all flex items-center justify-center gap-2 text-sm font-medium"
+                          className="flex-1 px-3 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 text-sm font-medium"
                         >
                           <Eye className="w-4 h-4" />
                           View
@@ -699,7 +698,7 @@ const Notes = () => {
               {filteredNotes.map((note) => {
                 // Backend returns category_name, fallback to category_id or category
                 const categoryData = getCategoryData(
-                  note.category_name || note.category_id || note.category
+                  note.category_name || note.category_id || note.category,
                 );
                 const Icon = getCategoryIcon(categoryData?.name);
                 const gradient = getCategoryGradient(categoryData?.name);
@@ -764,7 +763,7 @@ const Notes = () => {
                     <div className="flex gap-2 flex-shrink-0 w-full sm:w-auto">
                       <button
                         onClick={() => handleView(note)}
-                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
+                        className="flex-1 sm:flex-none px-3 sm:px-4 py-2 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-lg hover:shadow-lg transition-all flex items-center justify-center gap-2 text-xs sm:text-sm font-medium"
                       >
                         <Eye className="w-4 h-4" />
                         <span className="hidden sm:inline">View</span>
