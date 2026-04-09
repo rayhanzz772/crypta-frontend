@@ -285,8 +285,9 @@ const ManageAccessModal = ({
               </div>
 
               {isLoadingBindings ? (
-                <div className="flex items-center justify-center py-10">
-                  <Loader2 className="w-8 h-8 text-purple-500 animate-spin" />
+                <div className="flex flex-col items-center justify-center py-12">
+                  <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
+                  <p className="text-sm text-slate-500">Loading access data...</p>
                 </div>
               ) : bindings.length === 0 ? (
                 <div className="text-center py-10 bg-slate-50 dark:bg-slate-900 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700">

@@ -155,7 +155,7 @@ const DeveloperKeys = () => {
           >
             {isGenerating ? (
               <>
-                <RefreshCw className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
                 Generating...
               </>
             ) : (
@@ -272,7 +272,7 @@ const DeveloperKeys = () => {
 
           {isLoading ? (
             <div className="p-12 flex flex-col items-center justify-center">
-              <RefreshCw className="w-8 h-8 text-primary-500 animate-spin mb-4" />
+              <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
               <p className="text-slate-600 dark:text-slate-400">Loading API keys...</p>
             </div>
           ) : apiKeys.length === 0 ? (

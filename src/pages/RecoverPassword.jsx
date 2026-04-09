@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, KeyRound, Lock, Eye, EyeOff, ArrowRight } from "lucide-react";
+import { Mail, KeyRound, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { authAPI } from "../utils/api";
 
@@ -322,7 +322,7 @@ const RecoverPassword = () => {
                 >
                   {isLoading ? (
                     <>
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       {step === 1 ? "Verifying..." : "Resetting..."}
                     </>
                   ) : (

@@ -7,6 +7,7 @@ import {
   Shield,
   CheckCircle,
   AlertTriangle,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
@@ -248,7 +249,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Verifying...
                 </>
               ) : (

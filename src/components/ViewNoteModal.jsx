@@ -11,6 +11,7 @@ import {
   Tag,
   FileText,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
@@ -303,7 +304,7 @@ const ViewNoteModal = ({
               {isDecrypting ? (
                 <div className="flex items-center justify-center py-8 sm:py-12">
                   <div className="text-center">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-3 sm:mb-4"></div>
+                    <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-500 animate-spin mx-auto mb-3 sm:mb-4" />
                     <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
                       Decrypting note...
                     </p>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, AlertTriangle, Trash2 } from "lucide-react";
+import { X, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import { useAuth } from "../contexts/AuthContext";
 
@@ -189,7 +189,7 @@ const DeleteVaultModal = ({
             >
               {isDeleting ? (
                 <>
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Deleting...
                 </>
               ) : (
