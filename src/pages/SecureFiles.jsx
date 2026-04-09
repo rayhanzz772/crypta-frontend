@@ -180,9 +180,13 @@ const SecureFiles = () => {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-          <Loader2 className="w-8 h-8 animate-spin text-primary-500 mb-4" />
-          <p>Decrypting storage access...</p>
+        <div className="flex items-center justify-center min-h-[60vh]">
+          <div className="text-center">
+            <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
+            <p className="text-slate-600 dark:text-slate-400">
+              Decrypting storage acces..
+            </p>
+          </div>
         </div>
       ) : (
         <>
@@ -218,56 +222,58 @@ const SecureFiles = () => {
                         .map((folder) => (
                           <tr
                             key={folder.id}
-                          onClick={() =>
-                            navigate(`/app/files/folders/${folder.id}`)
-                          }
-                          className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer"
-                        >
-                          <td className="px-6 py-4">
-                            <div className="flex items-center gap-3">
-                              <div className="w-8 h-8 flex items-center justify-center">
-                                <img
-                                  src="/folder_icon.png"
-                                  alt="Folder"
-                                  className="w-full h-full object-contain"
-                                />
+                            onClick={() =>
+                              navigate(`/app/files/folders/${folder.id}`)
+                            }
+                            className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-pointer"
+                          >
+                            <td className="px-6 py-4">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 flex items-center justify-center">
+                                  <img
+                                    src="/folder_icon.png"
+                                    alt="Folder"
+                                    className="w-full h-full object-contain"
+                                  />
+                                </div>
+                                <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
+                                  {folder.name}
+                                </span>
                               </div>
-                              <span className="text-sm font-medium text-slate-800 dark:text-slate-200">
-                                {folder.name}
-                              </span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                            {new Date(folder.created_at).toLocaleDateString()}
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-2 transition-opacity">
-                              <button
-                                onClick={(e) => handleDownloadFolder(folder, e)}
-                                disabled={downloading === folder.id}
-                                className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
-                              >
-                                {downloading === folder.id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Download className="w-4 h-4" />
-                                )}
-                              </button>
-                              <button
-                                onClick={(e) => handleDeleteFolder(folder, e)}
-                                disabled={deleting === folder.id}
-                                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                              >
-                                {deleting === folder.id ? (
-                                  <Loader2 className="w-4 h-4 animate-spin" />
-                                ) : (
-                                  <Trash2 className="w-4 h-4" />
-                                )}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
+                            </td>
+                            <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                              {new Date(folder.created_at).toLocaleDateString()}
+                            </td>
+                            <td className="px-6 py-4 text-right">
+                              <div className="flex items-center justify-end gap-2 transition-opacity">
+                                <button
+                                  onClick={(e) =>
+                                    handleDownloadFolder(folder, e)
+                                  }
+                                  disabled={downloading === folder.id}
+                                  className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                                >
+                                  {downloading === folder.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Download className="w-4 h-4" />
+                                  )}
+                                </button>
+                                <button
+                                  onClick={(e) => handleDeleteFolder(folder, e)}
+                                  disabled={deleting === folder.id}
+                                  className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                >
+                                  {deleting === folder.id ? (
+                                    <Loader2 className="w-4 h-4 animate-spin" />
+                                  ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                  )}
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                     </tbody>
                   </table>
                 </div>

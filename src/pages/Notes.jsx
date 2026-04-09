@@ -549,11 +549,11 @@ const Notes = () => {
 
           {/* Notes Display */}
           {isLoading ? (
-            <div className="flex items-center justify-center py-20">
+            <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
-                <Loader2 className="w-16 h-16 text-primary-500 animate-spin mx-auto mb-4" />
+                <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
                 <p className="text-slate-600 dark:text-slate-400">
-                  Loading notes...
+                  Loading notes..
                 </p>
               </div>
             </div>
