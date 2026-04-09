@@ -485,8 +485,13 @@ const SecretManager = () => {
         // Projects List
         <div>
           {isLoadingProjects ? (
-            <div className="flex items-center justify-center py-20">
-              <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
+                <p className="text-slate-600 dark:text-slate-400">
+                  Loading secret managers..
+                </p>
+              </div>
             </div>
           ) : filteredProjects.length === 0 ? (
             <div className="text-center py-20">

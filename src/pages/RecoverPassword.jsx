@@ -1,6 +1,14 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Mail, KeyRound, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import {
+  Mail,
+  KeyRound,
+  Lock,
+  Eye,
+  EyeOff,
+  ArrowRight,
+  Loader2,
+} from "lucide-react";
 import toast from "react-hot-toast";
 import { authAPI } from "../utils/api";
 
@@ -332,6 +340,26 @@ const RecoverPassword = () => {
                     </>
                   )}
                 </button>
+
+                {step === 1 && (
+                  <div className="mt-8 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-800 transition-all">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0">
+                        <KeyRound className="w-5 h-5 text-blue-500" />
+                      </div>
+                      <div>
+                        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+                          What is a Recovery Key?
+                        </h4>
+                        <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">
+                          A unique security code generated when you created your
+                          account. It is your only way to regain access to your
+                          encrypted data if you forget your master password.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </form>
           ) : (

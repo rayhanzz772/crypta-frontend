@@ -194,9 +194,13 @@ const FolderDetail = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin text-primary-500 mb-4" />
-        <p>Decrypting folder...</p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
+          <p className="text-slate-600 dark:text-slate-400">
+            Decrypting files..
+          </p>
+        </div>
       </div>
     );
   }
@@ -304,53 +308,53 @@ const FolderDetail = () => {
                             <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 text-blue-500 dark:text-blue-400 flex items-center justify-center group-hover:scale-105 transition-transform">
                               <FileIcon className="w-5 h-5" />
                             </div>
-                          <div>
-                            <span className="text-sm font-medium text-slate-800 dark:text-slate-200 block truncate max-w-[200px] sm:max-w-xs">
-                              {file.original_filename}
-                            </span>
-                            <span className="text-xs text-slate-400 hidden sm:block">
-                              Encrypted ({file.encryption})
-                            </span>
+                            <div>
+                              <span className="text-sm font-medium text-slate-800 dark:text-slate-200 block truncate max-w-[200px] sm:max-w-xs">
+                                {file.original_filename}
+                              </span>
+                              <span className="text-xs text-slate-400 hidden sm:block">
+                                Encrypted ({file.encryption})
+                              </span>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
-                        {formatFileSize(file.original_size)}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
-                        {file.mime_type}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 text-right">
-                        {new Date(file.created_at).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 transition-opacity">
-                          <button
-                            onClick={() => handleDownloadFile(file)}
-                            disabled={downloading === file.id}
-                            className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
-                          >
-                            {downloading === file.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Download className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={() => handleDeleteFile(file)}
-                            disabled={deleting === file.id}
-                            className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
-                          >
-                            {deleting === file.id ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Trash2 className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                          {formatFileSize(file.original_size)}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
+                          {file.mime_type}
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 text-right">
+                          {new Date(file.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2 transition-opacity">
+                            <button
+                              onClick={() => handleDownloadFile(file)}
+                              disabled={downloading === file.id}
+                              className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                            >
+                              {downloading === file.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Download className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteFile(file)}
+                              disabled={deleting === file.id}
+                              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                            >
+                              {deleting === file.id ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Trash2 className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
