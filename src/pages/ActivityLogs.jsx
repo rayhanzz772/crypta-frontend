@@ -11,7 +11,8 @@ import {
   Shield,
   Calendar,
   TrendingUp,
-  StickyNote
+  StickyNote,
+  Loader2,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { logsAPI } from '../utils/api';
@@ -120,7 +121,7 @@ const ActivityLogs = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <div className="w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
           <p className="text-slate-600 dark:text-slate-400">Loading activity logs...</p>
         </div>
       </div>

@@ -195,7 +195,7 @@ const FolderDetail = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-        <Loader2 className="w-8 h-8 animate-spin mb-4 text-blue-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-primary-500 mb-4" />
         <p>Decrypting folder...</p>
       </div>
     );
@@ -324,7 +324,7 @@ const FolderDetail = () => {
                         {new Date(file.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex items-center justify-end gap-2 transition-opacity">
                           <button
                             onClick={() => handleDownloadFile(file)}
                             disabled={downloading === file.id}

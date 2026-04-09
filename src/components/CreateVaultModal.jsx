@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Shield,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
@@ -459,7 +460,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             {/* Breach Check Notification */}
             {isCheckingBreach && formData.password && (
               <div className="mt-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500 animate-spin" />
                 <span>Checking password breach database...</span>
               </div>
             )}
@@ -659,7 +660,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             >
               {isLoading ? (
                 <>
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Saving...
                 </>
               ) : (

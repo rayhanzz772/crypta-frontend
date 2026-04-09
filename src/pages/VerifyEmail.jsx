@@ -5,7 +5,7 @@ import {
   CheckCircle2,
   Mail,
   MailCheck,
-  RefreshCw,
+  Loader2,
   ShieldCheck,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -330,7 +330,7 @@ const VerifyEmail = () => {
             >
               {isSubmitting ? (
                 <>
-                  <div className="h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin sm:h-5 sm:w-5"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Verifying...
                 </>
               ) : (
@@ -357,7 +357,7 @@ const VerifyEmail = () => {
             disabled={isResending || resendCooldown > 0 || isVerified}
             className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
           >
-            <RefreshCw className={`h-4 w-4 ${isResending ? "animate-spin" : ""}`} />
+            <Loader2 className={`h-4 w-4 ${isResending ? "animate-spin" : ""}`} />
             {isResending
               ? "Sending..."
               : resendCooldown > 0

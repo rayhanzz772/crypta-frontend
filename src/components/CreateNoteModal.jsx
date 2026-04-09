@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { X, FileText, Tag, Lock, Save, AlertCircle } from "lucide-react";
+import { X, FileText, Tag, Lock, Save, AlertCircle, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
@@ -304,7 +304,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
             >
               {isLoading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Creating...
                 </>
               ) : (

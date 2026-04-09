@@ -18,6 +18,7 @@ import {
   Star,
   ChevronLeft,
   ChevronRight,
+  Loader2,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
@@ -550,7 +551,7 @@ const Notes = () => {
           {isLoading ? (
             <div className="flex items-center justify-center py-20">
               <div className="text-center">
-                <div className="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <Loader2 className="w-16 h-16 text-primary-500 animate-spin mx-auto mb-4" />
                 <p className="text-slate-600 dark:text-slate-400">
                   Loading notes...
                 </p>

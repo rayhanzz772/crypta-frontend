@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Save, Tag, AlertCircle } from "lucide-react";
+import { X, Save, Tag, AlertCircle, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
@@ -139,7 +139,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
         >
           {isDecrypting ? (
             <div className="flex items-center justify-center py-8 sm:py-12">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 border-4 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
+              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-500 animate-spin" />
             </div>
           ) : (
             <>
@@ -257,7 +257,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
                 >
                   {isLoading ? (
                     <>
-                      <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <Loader2 className="w-4 h-4 animate-spin" />
                       Saving...
                     </>
                   ) : (
