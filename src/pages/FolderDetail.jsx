@@ -9,12 +9,15 @@ import {
   Trash2,
   Lock,
   Shield,
+  Eye,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { filesAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import FileUploadModal from "../components/FileUploadModal";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
+import FilePreviewModal from "../components/FilePreviewModal";
 
 const FolderDetail = () => {
   const { folderId } = useParams();
@@ -29,6 +32,12 @@ const FolderDetail = () => {
   const [downloading, setDownloading] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState(null);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [loadingPreview, setLoadingPreview] = useState(null);
 
   const fetchFolderData = async () => {
     setLoading(true);
@@ -88,17 +97,20 @@ const FolderDetail = () => {
     }
   };
 
-  const handleDeleteFile = async (file) => {
-    if (
-      !window.confirm(
-        `Are you sure you want to delete "${file.original_filename}"?`,
-      )
-    )
-      return;
-    setDeleting(file.id);
+  const handleDeleteFile = (file) => {
+    setFileToDelete(file);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!fileToDelete) return;
+
+    setDeleting(fileToDelete.id);
     try {
-      await filesAPI.deleteFile(file.id);
+      await filesAPI.deleteFile(fileToDelete.id);
       toast.success("File deleted");
+      setIsDeleteModalOpen(false);
+      setFileToDelete(null);
       fetchFolderData();
     } catch (error) {
       toast.error("Failed to delete file");
@@ -136,6 +148,41 @@ const FolderDetail = () => {
     } finally {
       setDownloading(null);
     }
+  };
+
+  const handlePreviewFile = async (file) => {
+    if (!mek) {
+      toast.error("Vault must be unlocked to preview files");
+      return;
+    }
+
+    setPreviewFile(file);
+    setIsPreviewModalOpen(true);
+    setLoadingPreview(file.id);
+    setPreviewUrl(null);
+
+    try {
+      const response = await filesAPI.downloadFile(file.id, mek);
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"] || file.mime_type,
+      });
+      const url = window.URL.createObjectURL(blob);
+      setPreviewUrl(url);
+    } catch (error) {
+      toast.error("Failed to load preview");
+      setIsPreviewModalOpen(false);
+    } finally {
+      setLoadingPreview(null);
+    }
+  };
+
+  const handleClosePreview = () => {
+    setIsPreviewModalOpen(false);
+    if (previewUrl) {
+      window.URL.revokeObjectURL(previewUrl);
+    }
+    setPreviewUrl(null);
+    setPreviewFile(null);
   };
 
   const isVaultLocked = !mek;
@@ -329,10 +376,28 @@ const FolderDetail = () => {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2 transition-opacity">
+                            {file.mime_type?.startsWith("image/") ||
+                            file.mime_type === "application/pdf" ? (
+                              <button
+                                onClick={() => handlePreviewFile(file)}
+                                disabled={
+                                  loadingPreview === file.id ||
+                                  downloading === file.id
+                                }
+                                className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                                title="Preview"
+                              >
+                                {loadingPreview === file.id ? (
+                                  <Loader2 className="w-4 h-4 animate-spin" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </button>
+                            ) : null}
                             <button
                               onClick={() => handleDownloadFile(file)}
                               disabled={downloading === file.id}
-                              className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                               className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
                             >
                               {downloading === file.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -367,6 +432,25 @@ const FolderDetail = () => {
         onClose={() => setIsUploadModalOpen(false)}
         onSuccess={fetchFolderData}
         folderId={folderId}
+      />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setFileToDelete(null);
+        }}
+        title="Delete File?"
+        itemName={fileToDelete?.original_filename}
+        warningText="This file will be permanently deleted and cannot be recovered."
+        onConfirm={handleConfirmDelete}
+        isLoading={deleting === fileToDelete?.id}
+      />
+      <FilePreviewModal
+        isOpen={isPreviewModalOpen}
+        onClose={handleClosePreview}
+        file={previewFile}
+        blobUrl={previewUrl}
+        onDownload={() => handleDownloadFile(previewFile)}
       />
     </div>
   );

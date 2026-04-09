@@ -17,6 +17,7 @@ import { filesAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import CreateFolderModal from "../components/CreateFolderModal";
 import FileUploadModal from "../components/FileUploadModal";
+import DeleteConfirmModal from "../components/DeleteConfirmModal";
 
 const SecureFiles = () => {
   const navigate = useNavigate();
@@ -29,6 +30,8 @@ const SecureFiles = () => {
 
   const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [folderToDelete, setFolderToDelete] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -81,18 +84,21 @@ const SecureFiles = () => {
     }
   };
 
-  const handleDeleteFolder = async (folder, e) => {
+  const handleDeleteFolder = (folder, e) => {
     e.stopPropagation();
-    if (
-      !window.confirm(
-        `Are you sure you want to delete folder "${folder.name}"? All files inside will be deleted.`,
-      )
-    )
-      return;
-    setDeleting(folder.id);
+    setFolderToDelete(folder);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!folderToDelete) return;
+
+    setDeleting(folderToDelete.id);
     try {
-      await filesAPI.deleteFolder(folder.id);
+      await filesAPI.deleteFolder(folderToDelete.id);
       toast.success("Folder deleted");
+      setIsDeleteModalOpen(false);
+      setFolderToDelete(null);
       fetchData();
     } catch (error) {
       toast.error("Failed to delete folder");
@@ -168,13 +174,6 @@ const SecureFiles = () => {
           >
             <FolderPlus className="w-4 h-4 text-blue-500" />
             New Folder
-          </button>
-          <button
-            onClick={() => setIsUploadModalOpen(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl rounded-xl transition-all text-sm"
-          >
-            <UploadCloud className="w-4 h-4" />
-            Upload File
           </button>
         </div>
       </div>
@@ -314,6 +313,18 @@ const SecureFiles = () => {
         isOpen={isUploadModalOpen}
         onClose={() => setIsUploadModalOpen(false)}
         onSuccess={fetchData}
+      />
+      <DeleteConfirmModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false);
+          setFolderToDelete(null);
+        }}
+        title="Delete Folder?"
+        itemName={folderToDelete?.name}
+        warningText="All files inside this folder will be permanently deleted and cannot be recovered."
+        onConfirm={handleConfirmDelete}
+        isLoading={deleting === folderToDelete?.id}
       />
     </div>
   );
