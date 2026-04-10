@@ -595,6 +595,7 @@ export const filesAPI = {
       headers: {
         "Content-Type": "multipart/form-data",
       },
+      timeout: 0, // No timeout for large uploads
     });
     return response.data;
   },
@@ -614,14 +615,16 @@ export const filesAPI = {
 
   downloadFile: async (id, mek) => {
     const response = await api.post(`/api/files/${id}/download`, { mek }, {
-      responseType: 'blob'
+      responseType: 'blob',
+      timeout: 0, // No timeout for large downloads
     });
     return response; // Return full response to access headers
   },
 
   downloadFolder: async (folderId, mek) => {
     const response = await api.post(`/api/files/folders/${folderId}/download`, { mek }, {
-      responseType: 'blob'
+      responseType: 'blob',
+      timeout: 0, // No timeout for large downloads
     });
     return response; // Return full response to access headers
   },
