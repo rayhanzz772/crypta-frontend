@@ -7,6 +7,7 @@ import {
 } from "../utils/api";
 
 const AuthContext = createContext();
+const AUTH_EMAIL_STORAGE_KEY = "auth_email";
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -57,6 +58,7 @@ export const AuthProvider = ({ children }) => {
     setIsAuthenticated(false);
     localStorage.removeItem("jwt_token");
     localStorage.removeItem("jwt_token_timestamp");
+    localStorage.removeItem(AUTH_EMAIL_STORAGE_KEY);
   };
 
   // Check if user is authenticated on mount
@@ -149,6 +151,11 @@ export const AuthProvider = ({ children }) => {
 
       const authMeData = await authAPI.getMe();
       const currentUser = extractCurrentUser(authMeData, email);
+      const normalizedEmail = (currentUser?.email || email || "").trim();
+
+      if (normalizedEmail) {
+        localStorage.setItem(AUTH_EMAIL_STORAGE_KEY, normalizedEmail);
+      }
 
       // Store MEK in React state ONLY — never persisted to localStorage
       const receivedMek = data?.data?.mek || null;
@@ -206,7 +213,17 @@ export const AuthProvider = ({ children }) => {
   // There is no way to reconstruct the MEK client-side — the server must derive it.
   const unlockVault = async (email, password) => {
     try {
-      const data = await authAPI.login(email, password);
+      const persistedEmail = localStorage.getItem(AUTH_EMAIL_STORAGE_KEY);
+      const resolvedEmail = (email || persistedEmail || "").trim();
+
+      if (!resolvedEmail) {
+        return {
+          success: false,
+          error: "Email is missing. Please sign in again.",
+        };
+      }
+
+      const data = await authAPI.login(resolvedEmail, password);
       const freshMek = data?.data?.mek || null;
 
       if (!freshMek) {
