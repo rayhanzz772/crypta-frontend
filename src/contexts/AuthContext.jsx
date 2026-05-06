@@ -9,6 +9,31 @@ import {
 const AuthContext = createContext();
 const AUTH_EMAIL_STORAGE_KEY = "auth_email";
 
+const persistAuthEmail = (email) => {
+  const normalizedEmail = (email || "").trim();
+  if (normalizedEmail) {
+    localStorage.setItem(AUTH_EMAIL_STORAGE_KEY, normalizedEmail);
+  }
+};
+
+const getFriendlyAuthError = (error, fallbackMessage) => {
+  const rawMessage = (
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    ""
+  ).toLowerCase();
+
+  if (
+    rawMessage.includes("getaddrinfo") &&
+    rawMessage.includes("ip-api.com")
+  ) {
+    return "Your login was temporarily interrupted because the server location service was unavailable. Please try again later.";
+  }
+
+  return error?.response?.data?.message || fallbackMessage;
+};
+
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -56,32 +81,31 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     setMek(null);
     setIsAuthenticated(false);
+    // Legacy cleanup for old localStorage token mode.
     localStorage.removeItem("jwt_token");
     localStorage.removeItem("jwt_token_timestamp");
     localStorage.removeItem(AUTH_EMAIL_STORAGE_KEY);
   };
 
-  // Check if user is authenticated on mount
+  // Check cookie-backed session on mount.
   useEffect(() => {
-    const token = localStorage.getItem("jwt_token");
-    const tokenTimestamp = localStorage.getItem("jwt_token_timestamp");
+    const initializeSession = async () => {
+      try {
+        const authMeData = await authAPI.getMe();
+        const currentUser = extractCurrentUser(authMeData);
 
-    if (token && tokenTimestamp) {
-      const now = Date.now();
-      const tokenAge = now - parseInt(tokenTimestamp);
-      const oneSecond = 1000; // 1 second in milliseconds
-
-      // Check if token is older than 1 second since last page close
-      if (tokenAge > oneSecond) {
-        localStorage.removeItem("jwt_token");
-        localStorage.removeItem("jwt_token_timestamp");
-        setIsAuthenticated(false);
-      } else {
+        setUser(currentUser);
         setIsAuthenticated(true);
-        // You might want to fetch user details here
+        persistAuthEmail(currentUser?.email);
+      } catch {
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
+    };
+
+    initializeSession();
   }, []);
 
   useEffect(() => {
@@ -95,67 +119,34 @@ export const AuthProvider = ({ children }) => {
     };
   }, [navigate]);
 
-  // Update timestamp when page becomes visible (page is opened/active)
+  // Ensure sensitive key material is cleared from memory when tab/window closes.
   useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && isAuthenticated) {
-        // Reset timestamp when page becomes visible again
-        localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-      }
+    const clearSensitiveMemory = () => {
+      setMek(null);
     };
 
-    // Update timestamp before page closes/hides
-    const handleBeforeUnload = () => {
-      if (isAuthenticated) {
-        localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-      }
-    };
-
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", clearSensitiveMemory);
+    window.addEventListener("pagehide", clearSensitiveMemory);
 
     return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("beforeunload", clearSensitiveMemory);
+      window.removeEventListener("pagehide", clearSensitiveMemory);
     };
-  }, [isAuthenticated]);
+  }, []);
 
   const login = async (email, password) => {
     try {
       const data = await authAPI.login(email, password);
 
-      // Check all possible token field names
-      const token = data?.data?.token;
-
-      // Validate token exists
-      if (!token) {
-        return {
-          success: false,
-          error:
-            "No authentication token received from server. Please check backend response format.",
-        };
+      let authMeData = null;
+      try {
+        authMeData = await authAPI.getMe();
+      } catch {
+        // Fallback to login response structure when /auth/me is temporarily unavailable.
       }
 
-      // Basic JWT format check (should have 3 parts separated by dots)
-      const tokenParts = token.split(".");
-      if (tokenParts.length !== 3) {
-        return {
-          success: false,
-          error: "Invalid token format received from server",
-        };
-      }
-
-      // Save JWT token to localStorage with timestamp
-      localStorage.setItem("jwt_token", token);
-      localStorage.setItem("jwt_token_timestamp", Date.now().toString());
-
-      const authMeData = await authAPI.getMe();
-      const currentUser = extractCurrentUser(authMeData, email);
-      const normalizedEmail = (currentUser?.email || email || "").trim();
-
-      if (normalizedEmail) {
-        localStorage.setItem(AUTH_EMAIL_STORAGE_KEY, normalizedEmail);
-      }
+      const currentUser = extractCurrentUser(authMeData || data, email);
+      persistAuthEmail(currentUser?.email || email);
 
       // Store MEK in React state ONLY — never persisted to localStorage
       const receivedMek = data?.data?.mek || null;
@@ -171,8 +162,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error:
-          error.response?.data?.message || "Login failed. Please try again.",
+        error: getFriendlyAuthError(error, "Login failed. Please try again."),
       };
     }
   };
@@ -246,9 +236,10 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       return {
         success: false,
-        error:
-          error.response?.data?.message ||
+        error: getFriendlyAuthError(
+          error,
           "Invalid password. Please try again.",
+        ),
       };
     }
   };

@@ -68,11 +68,6 @@ const Login = () => {
 
     setIsLoading(true);
 
-    const existingToken = localStorage.getItem("jwt_token");
-    if (existingToken) {
-      localStorage.removeItem("jwt_token");
-    }
-
     const result = await login(formData.email, formData.master_password);
 
     if (result.success) {

@@ -5,6 +5,10 @@
     <link rel="icon" type="image/svg+xml" href="/logo_shield.png" />
     <link rel="manifest" href="/manifest.json" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https: http://localhost:* ws://localhost:* wss:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'"
+    />
 
     <!-- Primary Meta Tags -->
     <title>Crypta - Secure Password Manager & Encrypted Notes Vault</title>
@@ -70,43 +74,6 @@
     <!-- Canonical URL -->
     <link rel="canonical" href="https://crypta-vault.vercel.app/" />
 
-    <!-- Structured Data / JSON-LD -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Crypta",
-        "applicationCategory": "SecurityApplication",
-        "applicationSubCategory": "Password Manager",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "description": "Open-source password manager with military-grade Argon2id encryption. Securely store passwords, encrypted notes, and protect against data breaches.",
-        "image": "https://crypta-vault.vercel.app/logo_shield.png",
-        "aggregateRating": {
-          "@type": "AggregateRating",
-          "ratingValue": "4.8",
-          "ratingCount": "100"
-        },
-        "author": {
-          "@type": "Organization",
-          "name": "Crypta"
-        },
-        "featureList": [
-          "Argon2id Encryption",
-          "Password Breach Detection",
-          "Encrypted Notes",
-          "Zero-Knowledge Architecture",
-          "Open Source",
-          "Category Organization",
-          "Activity Logs",
-          "Dark Mode Support"
-        ]
-      }
-    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -1,4 +1,5 @@
 import axios from "axios";
+import { sanitizeStringArray, sanitizeText } from "./sanitize";
 
 const AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
 const PUBLIC_AUTH_ROUTES = [
@@ -14,8 +15,8 @@ let lastAuthFailureAt = 0;
 
 const api = axios.create({
   baseURL:
-    import.meta.env.VITE_API_BASE_URL ||
-    import.meta.env.VITE_API_URL ||
+    // import.meta.env.VITE_API_BASE_URL ||
+    // import.meta.env.VITE_API_URL ||
     "http://localhost:5000",
   headers: {
     "Content-Type": "application/json",
@@ -25,6 +26,7 @@ const api = axios.create({
 });
 
 const clearStoredAuth = () => {
+  // Legacy cleanup for projects that previously stored JWT in localStorage.
   localStorage.removeItem("jwt_token");
   localStorage.removeItem("jwt_token_timestamp");
 };
@@ -97,10 +99,6 @@ export const consumeAuthRedirectMessage = () => {
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("jwt_token");
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
     return config;
   },
   (error) => {
@@ -326,10 +324,10 @@ export const notesAPI = {
   // Create new note
   create: async (noteData, mek) => {
     const response = await api.post("/api/notes", {
-      title: noteData.title,
-      note: noteData.note,
+      title: sanitizeText(noteData.title),
+      note: sanitizeText(noteData.note),
       category_id: noteData.category,
-      tags: noteData.tags || [],
+      tags: sanitizeStringArray(noteData.tags),
       mek,
     });
 
@@ -339,10 +337,10 @@ export const notesAPI = {
   // Update existing note
   update: async (id, noteData, mek) => {
     const response = await api.put(`/api/notes/${id}/update`, {
-      title: noteData.title,
-      note: noteData.note,
+      title: sanitizeText(noteData.title),
+      note: sanitizeText(noteData.note),
       category_id: noteData.category,
-      tags: noteData.tags || [],
+      tags: sanitizeStringArray(noteData.tags),
       mek,
     });
 
@@ -395,18 +393,18 @@ export const projectsAPI = {
 
   create: async (projectData) => {
     const response = await api.post("/client/project-secret/create", {
-      name: projectData.name,
-      slug: projectData.slug,
-      description: projectData.description || "",
+      name: sanitizeText(projectData.name),
+      slug: sanitizeText(projectData.slug),
+      description: sanitizeText(projectData.description || ""),
     });
     return response.data;
   },
 
   update: async (id, projectData) => {
     const response = await api.put(`/client/project-secret/${id}/update`, {
-      name: projectData.name,
-      slug: projectData.slug,
-      description: projectData.description || "",
+      name: sanitizeText(projectData.name),
+      slug: sanitizeText(projectData.slug),
+      description: sanitizeText(projectData.description || ""),
     });
     return response.data;
   },
@@ -445,11 +443,11 @@ export const secretsAPI = {
 
   // Create new secret
   create: async (projectId, secretData) => {
-    const payload = { name: secretData.name };
+    const payload = { name: sanitizeText(secretData.name) };
 
     // Only include labels if provided and not empty
     if (secretData.labels && secretData.labels.length > 0) {
-      payload.labels = secretData.labels;
+      payload.labels = sanitizeStringArray(secretData.labels);
     }
 
     console.log(
@@ -466,11 +464,11 @@ export const secretsAPI = {
 
   // Update secret
   update: async (secretId, secretData) => {
-    const payload = { name: secretData.name };
+    const payload = { name: sanitizeText(secretData.name) };
 
     // Only include labels if provided and not empty
     if (secretData.labels && secretData.labels.length > 0) {
-      payload.labels = secretData.labels;
+      payload.labels = sanitizeStringArray(secretData.labels);
     }
 
     const response = await api.put(
@@ -536,7 +534,7 @@ export const serviceAccountsAPI = {
     const response = await api.post(
       `/client/service-account/${projectId}/create`,
       {
-        name,
+        name: sanitizeText(name),
       },
     );
     return response.data;
@@ -576,7 +574,9 @@ export const iamBindingsAPI = {
 // Files Encrypted API endpoints (Secure Files)
 export const filesAPI = {
   createFolder: async (name) => {
-    const response = await api.post("/api/files/folders", { name });
+    const response = await api.post("/api/files/folders", {
+      name: sanitizeText(name),
+    });
     return response.data;
   },
 
