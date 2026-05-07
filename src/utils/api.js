@@ -224,6 +224,63 @@ export const vaultAPI = {
     return response.data;
   },
 
+  exportCsv: async (mek, filters = {}) => {
+    const params = new URLSearchParams();
+
+    if (filters.category) {
+      params.append("category", filters.category);
+    }
+
+    if (filters.search || filters.q) {
+      params.append("q", filters.search || filters.q);
+    }
+
+    if (filters.favorites !== undefined) {
+      params.append("favorites", filters.favorites ? "true" : "false");
+    }
+
+    const queryString = params.toString();
+    const exportPaths = [
+      queryString ? `/vault/export?${queryString}` : "/vault/export",
+      queryString ? `/api/vault/export?${queryString}` : "/api/vault/export",
+    ];
+
+    const requestConfig = {
+      responseType: "blob",
+      timeout: 0,
+      headers: {
+        Accept: "text/csv",
+      },
+    };
+
+    let lastError;
+
+    for (const path of exportPaths) {
+      // Prefer POST so we can pass MEK in body (avoid querystring secrets)
+      try {
+        return await api.post(path, { mek }, requestConfig);
+      } catch (error) {
+        lastError = error;
+        const status = error?.response?.status;
+        // If method not allowed, retry with GET.
+        if (status === 405) {
+          try {
+            return await api.get(path, requestConfig);
+          } catch (getError) {
+            lastError = getError;
+          }
+        }
+
+        // Try next path on 404; otherwise stop early.
+        if (status !== 404) {
+          break;
+        }
+      }
+    }
+
+    throw lastError;
+  },
+
   create: async (vaultData, mek) => {
     const response = await api.post("/api/vault", {
       ...vaultData,

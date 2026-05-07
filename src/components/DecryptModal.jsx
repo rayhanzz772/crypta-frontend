@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   X,
   Eye,
@@ -18,6 +18,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const { mek } = useAuth();
 
   const [decryptedPassword, setDecryptedPassword] = useState("");
+  const [decryptedVaultItem, setDecryptedVaultItem] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -28,6 +29,59 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const countdownRef = useRef(null);
   const clearTimerRef = useRef(null);
+
+  const vaultItemId = vaultItem?.id;
+
+  const handleDecrypt = useCallback(
+    async (password) => {
+      if (!vaultItemId) return;
+
+      setIsLoading(true);
+
+      try {
+        const result = await vaultAPI.decrypt(vaultItemId, password);
+
+        const resolvedVaultItem =
+          result?.data?.data || result?.data || result?.vault || null;
+        if (resolvedVaultItem) {
+          setDecryptedVaultItem(resolvedVaultItem);
+        }
+
+        const decrypted =
+          result?.decrypted_password ??
+          result?.password ??
+          result?.data?.decrypted_password ??
+          result?.data?.password ??
+          result?.data?.data?.decrypted_password ??
+          result?.data?.data?.password ??
+          resolvedVaultItem?.decrypted_password ??
+          resolvedVaultItem?.password ??
+          null;
+
+        if (!decrypted) {
+          toast.error("Failed to extract decrypted password from response");
+          return;
+        }
+
+        setDecryptedPassword(decrypted);
+        toast.success("Password decrypted!");
+      } catch (error) {
+        if (error.response?.status === 429) {
+          const retryAfter = error.response?.data?.retry_after || 60;
+          setIsRateLimited(true);
+          setCountdown(retryAfter);
+          toast.error(`Too many requests. Please wait ${retryAfter} seconds.`);
+        } else {
+          const errorMsg =
+            error.response?.data?.message || "Failed to decrypt password";
+          toast.error(errorMsg);
+        }
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [vaultItemId],
+  );
 
   // Check if master password is available
   useEffect(() => {
@@ -41,10 +95,10 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   // Auto-decrypt on open if mek is available
   useEffect(() => {
-    if (isOpen && vaultItem && mek) {
+    if (isOpen && vaultItem && vaultItemId && mek) {
       handleDecrypt(mek);
     }
-  }, [isOpen, vaultItem?.id]);
+  }, [isOpen, vaultItem, vaultItemId, mek, handleDecrypt]);
 
   // Auto-clear after 30 seconds
   useEffect(() => {
@@ -90,55 +144,6 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     };
   }, [isRateLimited, countdown]);
 
-  const handleDecrypt = async (password) => {
-    if (!vaultItem) return;
-
-    setIsLoading(true);
-
-    try {
-      const result = await vaultAPI.decrypt(vaultItem.id, password);
-      let decrypted = null;
-
-      if (result.decrypted_password) {
-        decrypted = result.decrypted_password;
-      } else if (result.password) {
-        decrypted = result.password;
-      } else if (result.data?.decrypted_password) {
-        decrypted = result.data.decrypted_password;
-      } else if (result.data?.password) {
-        decrypted = result.data.password;
-      } else if (result.data?.data?.decrypted_password) {
-        decrypted = result.data.data.decrypted_password;
-      } else if (result.data?.data?.password) {
-        decrypted = result.data.data.password;
-      }
-
-      if (!decrypted) {
-        if (result.data) {
-          // Try to extract from nested data
-        }
-        toast.error("Failed to extract decrypted password from response");
-        return;
-      }
-
-      setDecryptedPassword(decrypted);
-      toast.success("Password decrypted!");
-    } catch (error) {
-      if (error.response?.status === 429) {
-        const retryAfter = error.response?.data?.retry_after || 60;
-        setIsRateLimited(true);
-        setCountdown(retryAfter);
-        toast.error(`Too many requests. Please wait ${retryAfter} seconds.`);
-      } else {
-        const errorMsg =
-          error.response?.data?.message || "Failed to decrypt password";
-        toast.error(errorMsg);
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleSubmitMasterPassword = (e) => {
     e.preventDefault();
     if (inputMasterPassword) {
@@ -156,6 +161,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const handleClearPassword = () => {
     setDecryptedPassword("");
+    setDecryptedVaultItem(null);
     setTimeRemaining(30);
     if (clearTimerRef.current) {
       clearInterval(clearTimerRef.current);
@@ -174,12 +180,13 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   };
 
   // Get category icon and gradient
-  const CategoryIcon = getCategoryIcon(
-    vaultItem?.category || vaultItem?.category_name,
-  );
-  const categoryGradient = getCategoryGradient(
-    vaultItem?.category || vaultItem?.category_name,
-  );
+  const resolvedCategory =
+    decryptedVaultItem?.category ||
+    decryptedVaultItem?.category_name ||
+    vaultItem?.category ||
+    vaultItem?.category_name;
+  const CategoryIcon = getCategoryIcon(resolvedCategory);
+  const categoryGradient = getCategoryGradient(resolvedCategory);
 
   if (!isOpen || !vaultItem) return null;
 
@@ -224,7 +231,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             </label>
             <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
               <p className="text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                {vaultItem.username}
+                {decryptedVaultItem?.username || vaultItem.username || ""}
               </p>
             </div>
           </div>
@@ -363,7 +370,13 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               <div>
                 <p className="text-slate-500 dark:text-slate-400">Category</p>
                 <p className="font-medium text-slate-800 dark:text-white mt-0.5">
-                  {vaultItem.category_name || "Uncategorized"}
+                  {(
+                    decryptedVaultItem?.category_name ||
+                    decryptedVaultItem?.category ||
+                    vaultItem.category_name ||
+                    vaultItem.category ||
+                    "Uncategorized"
+                  )}
                 </p>
               </div>
               <div>
@@ -371,7 +384,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                   Last Updated
                 </p>
                 <p className="font-medium text-slate-800 dark:text-white mt-0.5 truncate">
-                  {vaultItem.updated_at || "N/A"}
+                  {decryptedVaultItem?.updated_at || vaultItem.updated_at || "N/A"}
                 </p>
               </div>
             </div>

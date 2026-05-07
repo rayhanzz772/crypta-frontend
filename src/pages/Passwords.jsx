@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
+import * as XLSX from "xlsx";
 import {
   Plus,
+  Download,
   Eye,
   Copy,
   MoreVertical,
@@ -32,6 +34,7 @@ const Passwords = () => {
   const [filteredPasswords, setFilteredPasswords] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFiltering, setIsFiltering] = useState(false); // Separate state for filter operations
+  const [isExporting, setIsExporting] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDecryptModalOpen, setIsDecryptModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -59,6 +62,89 @@ const Passwords = () => {
 
   const baseBtn =
     "flex items-center gap-2 h-[44px] px-4 rounded-xl transition-all";
+
+  const getFilenameFromContentDisposition = (contentDisposition) => {
+    if (!contentDisposition) return null;
+
+    // RFC 5987: filename*=UTF-8''...
+    const utf8Match = contentDisposition.match(/filename\*=UTF-8''([^;]+)/i);
+    if (utf8Match?.[1]) {
+      try {
+        return decodeURIComponent(utf8Match[1].trim());
+      } catch {
+        return utf8Match[1].trim();
+      }
+    }
+
+    // filename="..." or filename=...
+    const simpleMatch = contentDisposition.match(/filename="?([^";]+)"?/i);
+    return simpleMatch?.[1]?.trim() || null;
+  };
+
+  const handleExportCsv = async () => {
+    if (!mek || isExporting) return;
+
+    try {
+      setIsExporting(true);
+
+      const exportFilters = {};
+      if (selectedCategory) exportFilters.category = selectedCategory;
+      if (searchQuery) exportFilters.search = searchQuery;
+      if (showOnlyFavorites) exportFilters.favorites = true;
+
+      const response = await vaultAPI.exportCsv(mek, exportFilters);
+
+      const contentType = (response?.headers?.["content-type"] || "").toLowerCase();
+      const contentDisposition = response?.headers?.["content-disposition"];
+      const filenameFromHeader = getFilenameFromContentDisposition(contentDisposition);
+
+      const rawBlob =
+        response?.data instanceof Blob
+          ? response.data
+          : new Blob([response?.data], { type: "text/csv" });
+
+      // If BE already returns an Excel file, download as-is.
+      const isExcelResponse =
+        contentType.includes("spreadsheetml") ||
+        contentType.includes("application/vnd.ms-excel") ||
+        (filenameFromHeader || "").toLowerCase().endsWith(".xlsx");
+
+      let downloadBlob;
+      let filename;
+
+      if (isExcelResponse) {
+        downloadBlob = rawBlob;
+        filename =
+          filenameFromHeader ||
+          `vault-export-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      } else {
+        const csvText = await rawBlob.text();
+        const workbook = XLSX.read(csvText, { type: "string" });
+        const xlsxArray = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+        downloadBlob = new Blob([xlsxArray], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        });
+
+        const baseName = (filenameFromHeader || "vault-export").replace(/\.csv$/i, "");
+        filename = `${baseName}-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      }
+
+      const url = URL.createObjectURL(downloadBlob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+
+      toast.success("Excel exported");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to export Excel");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const fetchPasswords = async (isInitialLoad = false) => {
     try {
@@ -337,6 +423,23 @@ const Passwords = () => {
               }`}
             />
             <span className="hidden sm:inline">Favorites</span>
+          </button>
+
+          {/* Export Excel */}
+          <button
+            onClick={handleExportCsv}
+            disabled={isExporting}
+            className={`${baseBtn} font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed`}
+            title="Export passwords to Excel"
+          >
+            {isExporting ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+            <span className="hidden sm:inline">
+              {isExporting ? "Exporting..." : "Export Excel"}
+            </span>
           </button>
 
           <motion.button
