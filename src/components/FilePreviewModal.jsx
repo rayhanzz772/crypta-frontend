@@ -30,7 +30,7 @@ const FilePreviewModal = ({ isOpen, onClose, file, blobUrl, onDownload }) => {
   if (!isOpen) return null;
 
   const isImage = file?.mime_type?.startsWith("image/");
-  const isPdf = file?.mime_type === "application/pdf";
+  const isPdf = file?.mime_type?.startsWith("application/pdf");
 
   return (
     <Portal>

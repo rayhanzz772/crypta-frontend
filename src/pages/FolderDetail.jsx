@@ -163,11 +163,23 @@ const FolderDetail = () => {
 
     try {
       const response = await filesAPI.downloadFile(file.id, mek);
-      const blob = new Blob([response.data], {
-        type: response.headers["content-type"] || file.mime_type,
-      });
-      const url = window.URL.createObjectURL(blob);
+      const headerContentType = response.headers["content-type"];
+      const normalizedContentType = (headerContentType || file.mime_type || "")
+        .split(";")[0]
+        .trim();
+
+      const resolvedBlob =
+        response.data instanceof Blob
+          ? normalizedContentType && response.data.type !== normalizedContentType
+            ? response.data.slice(0, response.data.size, normalizedContentType)
+            : response.data
+          : new Blob([response.data], {
+              type: normalizedContentType || file.mime_type,
+            });
+
+      const url = window.URL.createObjectURL(resolvedBlob);
       setPreviewUrl(url);
+      setPreviewFile((prev) => (prev ? { ...prev, mime_type: normalizedContentType || prev.mime_type } : prev));
     } catch (error) {
       toast.error("Failed to load preview");
       setIsPreviewModalOpen(false);
