@@ -19,6 +19,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const [decryptedPassword, setDecryptedPassword] = useState("");
   const [decryptedVaultItem, setDecryptedVaultItem] = useState(null);
+  const [hasDecryptedOnce, setHasDecryptedOnce] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRateLimited, setIsRateLimited] = useState(false);
@@ -64,6 +65,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
         }
 
         setDecryptedPassword(decrypted);
+        setHasDecryptedOnce(true);
         toast.success("Password decrypted!");
       } catch (error) {
         if (error.response?.status === 429) {
@@ -163,6 +165,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     setDecryptedPassword("");
     setDecryptedVaultItem(null);
     setTimeRemaining(30);
+    setShowPassword(false);
     if (clearTimerRef.current) {
       clearInterval(clearTimerRef.current);
       clearTimerRef.current = null;
@@ -172,6 +175,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const handleClose = () => {
     handleClearPassword();
     setShowPassword(false);
+    setHasDecryptedOnce(false);
     setIsRateLimited(false);
     setCountdown(0);
     setInputMasterPassword("");
@@ -188,6 +192,9 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const CategoryIcon = getCategoryIcon(resolvedCategory);
   const categoryGradient = getCategoryGradient(resolvedCategory);
 
+  const isDecryptedLayout = Boolean(decryptedPassword) || hasDecryptedOnce;
+  const isSensitiveBlurred = hasDecryptedOnce && !decryptedPassword;
+
   if (!isOpen || !vaultItem) return null;
 
   return (
@@ -199,8 +206,12 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             <div
               className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
             >
-              {decryptedPassword ? (
-                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+              {isDecryptedLayout ? (
+                decryptedPassword ? (
+                  <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                ) : (
+                  <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                )
               ) : (
                 <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
               )}
@@ -210,7 +221,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 {vaultItem.name}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                {decryptedPassword ? "Password Decrypted" : "Decrypt Password"}
+                {isDecryptedLayout ? "Password Decrypted" : "Decrypt Password"}
               </p>
             </div>
           </div>
@@ -229,15 +240,18 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
               Username / Email
             </label>
-            <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+            <div className="relative overflow-hidden px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
               <p className="text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                {decryptedVaultItem?.username || vaultItem.username || ""}
+                {decryptedVaultItem?.username || vaultItem.username || "Username"}
               </p>
+              {isSensitiveBlurred && (
+                <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm pointer-events-none" />
+              )}
             </div>
           </div>
 
           {/* Master Password Input (if not in memory) */}
-          {showMasterPasswordInput && !decryptedPassword && (
+          {showMasterPasswordInput && !decryptedPassword && !hasDecryptedOnce && (
             <form
               onSubmit={handleSubmitMasterPassword}
               className="space-y-3 sm:space-y-4"
@@ -275,7 +289,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
           )}
 
           {/* Decrypted Password Display */}
-          {decryptedPassword && (
+          {isDecryptedLayout && (
             <div className="space-y-3 sm:space-y-4">
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -283,8 +297,8 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 </label>
                 <div className="relative">
                   <input
-                    type={showPassword ? "text" : "password"}
-                    value={decryptedPassword}
+                    type={showPassword && decryptedPassword ? "text" : "password"}
+                    value={decryptedPassword || "••••••••"}
                     readOnly
                     className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
                   />
@@ -292,7 +306,8 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      disabled={!decryptedPassword}
+                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {showPassword ? (
                         <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
@@ -303,11 +318,16 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                     <button
                       type="button"
                       onClick={handleCopy}
-                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                      disabled={!decryptedPassword}
+                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
                     </button>
                   </div>
+
+                  {isSensitiveBlurred && (
+                    <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-xl pointer-events-none" />
+                  )}
                 </div>
               </div>
 
@@ -316,15 +336,23 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
                   <span className="text-xs sm:text-sm text-blue-800 dark:text-blue-300">
-                    Auto-clear in {timeRemaining}s
+                    {decryptedPassword
+                      ? `Auto-clear in ${timeRemaining}s`
+                      : "Password cleared"}
                   </span>
                 </div>
-                <button
-                  onClick={handleClearPassword}
-                  className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
-                >
-                  Clear Now
-                </button>
+                {decryptedPassword ? (
+                  <button
+                    onClick={handleClearPassword}
+                    className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
+                  >
+                    Clear Now
+                  </button>
+                ) : (
+                  <span className="text-xs sm:text-sm text-blue-600 dark:text-blue-400 font-medium">
+                    Cleared
+                  </span>
+                )}
               </div>
             </div>
           )}
