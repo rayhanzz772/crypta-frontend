@@ -193,7 +193,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const categoryGradient = getCategoryGradient(resolvedCategory);
 
   const isDecryptedLayout = Boolean(decryptedPassword) || hasDecryptedOnce;
-  const isSensitiveBlurred = hasDecryptedOnce && !decryptedPassword;
+  const isSensitiveBlurred = !decryptedPassword;
 
   if (!isOpen || !vaultItem) return null;
 
@@ -241,11 +241,15 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               Username / Email
             </label>
             <div className="relative overflow-hidden px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
-              <p className="text-sm sm:text-base text-slate-900 dark:text-white truncate">
-                {decryptedVaultItem?.username || vaultItem.username || "Username"}
-              </p>
+              <input
+                type="text"
+                value={decryptedVaultItem?.username || vaultItem.username || "Username"}
+                readOnly
+                tabIndex={isSensitiveBlurred ? -1 : 0}
+                className="w-full bg-transparent text-sm sm:text-base text-slate-900 dark:text-white truncate focus:outline-none"
+              />
               {isSensitiveBlurred && (
-                <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm pointer-events-none" />
+                <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm pointer-events-auto cursor-not-allowed" />
               )}
             </div>
           </div>
@@ -288,50 +292,50 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             </form>
           )}
 
-          {/* Decrypted Password Display */}
-          {isDecryptedLayout && (
-            <div className="space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword && decryptedPassword ? "text" : "password"}
-                    value={decryptedPassword || "••••••••"}
-                    readOnly
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
-                  />
-                  <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      disabled={!decryptedPassword}
-                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      {showPassword ? (
-                        <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
-                      ) : (
-                        <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
-                      )}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleCopy}
-                      disabled={!decryptedPassword}
-                      className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
-                    </button>
-                  </div>
-
-                  {isSensitiveBlurred && (
-                    <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-xl pointer-events-none" />
-                  )}
+          {/* Password Field (always visible) */}
+          <div className="space-y-3 sm:space-y-4">
+            <div>
+              <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword && decryptedPassword ? "text" : "password"}
+                  value={decryptedPassword || "••••••••"}
+                  readOnly
+                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white font-mono focus:outline-none"
+                />
+                <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={!decryptedPassword}
+                    className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                    ) : (
+                      <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleCopy}
+                    disabled={!decryptedPassword}
+                    className="p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                  </button>
                 </div>
-              </div>
 
-              {/* Auto-clear Timer */}
+                {isSensitiveBlurred && (
+                  <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm rounded-xl pointer-events-none" />
+                )}
+              </div>
+            </div>
+
+            {/* Auto-clear Timer (only after decrypt at least once) */}
+            {isDecryptedLayout && (
               <div className="flex items-center justify-between p-2.5 sm:p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
                 <div className="flex items-center gap-1.5 sm:gap-2">
                   <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-600 dark:text-blue-400" />
@@ -354,8 +358,8 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                   </span>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Rate Limit Warning */}
           {isRateLimited && (
