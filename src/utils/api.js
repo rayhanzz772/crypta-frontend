@@ -129,19 +129,47 @@ api.interceptors.response.use(
 );
 
 export const authAPI = {
-  register: async (email, masterPassword) => {
+  /**
+   * Register a new ZKE account. The caller must derive all crypto material
+   * client-side before calling this. No plaintext password is sent.
+   *
+   * @param {string} email
+   * @param {object} zkePayload - { master_hash, kek_salt,
+   *   encrypted_mek_by_password, mek_pw_iv, mek_pw_tag,
+   *   encrypted_mek_by_recovery, mek_rc_iv, mek_rc_tag }
+   */
+  register: async (email, zkePayload) => {
     const response = await api.post("/auth/register", {
       email,
-      master_password: masterPassword,
+      ...zkePayload,
     });
     return response.data;
   },
 
-  login: async (email, masterPassword) => {
+  /**
+   * Log in by sending the SHA-256 hash of the master password.
+   * The plaintext password is NEVER sent to the server.
+   *
+   * @param {string} email
+   * @param {string} masterHash - Hex-encoded SHA-256(master_password)
+   */
+  login: async (email, masterHash) => {
     const response = await api.post("/auth/login", {
       email,
-      master_password: masterPassword,
+      master_hash: masterHash,
     });
+    return response.data;
+  },
+
+  /**
+   * Retrieve the KEK salt (and mek_version) for an email address.
+   * Called before login/unlock to obtain the salt needed for Argon2 derivation.
+   *
+   * @param {string} email
+   * @returns {Promise<{kek_salt: string|null}>}
+   */
+  getSalt: async (email) => {
+    const response = await api.get(`/auth/salt?email=${encodeURIComponent(email)}`);
     return response.data;
   },
 
@@ -150,37 +178,60 @@ export const authAPI = {
     return response.data;
   },
 
-  verifyRecoveryKey: async (email, recoveryKey) => {
-    const response = await api.post("/auth/verify-recovery-key", {
-      email,
-      recovery_key: recoveryKey,
-    });
+  /**
+   * Retrieve the recovery-encrypted MEK blob for an account.
+   * Only requires email; verification is done client-side by attempting decryption
+   * with the Recovery Key the user provides.
+   *
+   * @param {string} email
+   * @returns {Promise<{data: {encrypted_mek_by_recovery, mek_rc_iv, mek_rc_tag}}>}
+   */
+  verifyRecovery: async (email) => {
+    const response = await api.post("/auth/verify-recovery-key", { email });
     return response.data;
   },
 
   verifyEmail: async (email, code) => {
-    const response = await api.post("/auth/verify-email", {
-      email,
-      code,
-    });
+    const response = await api.post("/auth/verify-email", { email, code });
     return response.data;
   },
 
   resendVerification: async (email) => {
-    const response = await api.post("/auth/resend-verification", {
-      email,
-    });
+    const response = await api.post("/auth/resend-verification", { email });
     return response.data;
   },
 
-  resetPassword: async (newPassword) => {
-    const response = await api.post("/auth/reset-password", {
-      new_password: newPassword,
-    });
+  /**
+   * Reset the master password. All re-encryption is done client-side
+   * before calling this endpoint.
+   *
+   * @param {object} payload - { email, new_master_hash, new_kek_salt,
+   *   encrypted_mek_by_password, mek_pw_iv, mek_pw_tag }
+   */
+  resetPassword: async (payload) => {
+    const response = await api.post("/auth/reset-password", payload);
     return response.data;
   },
 
-  logout: () => {
+  /**
+   * Migrate a legacy (mek_version=0) account to the Pure ZKE model.
+   * Sends the new ZKE key blobs to the server.
+   *
+   * @param {object} payload - { master_hash, kek_salt,
+   *   encrypted_mek_by_password, mek_pw_iv, mek_pw_tag,
+   *   encrypted_mek_by_recovery, mek_rc_iv, mek_rc_tag }
+   */
+  migrateToMek: async (payload) => {
+    const response = await api.post("/auth/migrate-to-mek", payload);
+    return response.data;
+  },
+
+  logout: async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch {
+      // Ignore logout errors — always clear local state.
+    }
     clearStoredAuth();
   },
 };
@@ -224,90 +275,25 @@ export const vaultAPI = {
     return response.data;
   },
 
-  exportCsv: async (mek, filters = {}) => {
-    const params = new URLSearchParams();
-
-    if (filters.category) {
-      params.append("category", filters.category);
-    }
-
-    if (filters.search || filters.q) {
-      params.append("q", filters.search || filters.q);
-    }
-
-    if (filters.favorites !== undefined) {
-      params.append("favorites", filters.favorites ? "true" : "false");
-    }
-
-    const queryString = params.toString();
-    const exportPaths = [
-      queryString ? `/vault/export?${queryString}` : "/vault/export",
-      queryString ? `/api/vault/export?${queryString}` : "/api/vault/export",
-    ];
-
-    const requestConfig = {
-      responseType: "blob",
-      timeout: 0,
-      headers: {
-        Accept: "text/csv",
-      },
-    };
-
-    let lastError;
-
-    for (const path of exportPaths) {
-      // Prefer POST so we can pass MEK in body (avoid querystring secrets)
-      try {
-        return await api.post(path, { mek }, requestConfig);
-      } catch (error) {
-        lastError = error;
-        const status = error?.response?.status;
-        // If method not allowed, retry with GET.
-        if (status === 405) {
-          try {
-            return await api.get(path, requestConfig);
-          } catch (getError) {
-            lastError = getError;
-          }
-        }
-
-        // Try next path on 404; otherwise stop early.
-        if (status !== 404) {
-          break;
-        }
-      }
-    }
-
-    throw lastError;
-  },
-
-  create: async (vaultData, mek) => {
-    const response = await api.post("/api/vault", {
-      ...vaultData,
-      mek,
-    });
+  /**
+   * Create a new vault item. The caller must encrypt all sensitive fields
+   * client-side before calling this. No MEK is sent to the server.
+   *
+   * @param {object} vaultData - { name, password_encrypted, username, note, category_id }
+   *   All sensitive fields must already be JSON-encoded AES-256-GCM ciphertexts.
+   */
+  create: async (vaultData) => {
+    const response = await api.post("/api/vault", vaultData);
     return response.data;
   },
 
-  decrypt: async (id, mek) => {
-    const response = await api.post(`/api/vault/${id}/decrypt`, {
-      mek,
-    });
+  update: async (id, vaultData) => {
+    const response = await api.put(`/api/vault/${id}/update`, vaultData);
     return response.data;
   },
 
-  update: async (id, vaultData, mek) => {
-    const response = await api.put(`/api/vault/${id}/update`, {
-      ...vaultData,
-      mek,
-    });
-    return response.data;
-  },
-
-  delete: async (id, mek) => {
-    const response = await api.delete(`/api/vault/${id}/delete`, {
-      data: { mek },
-    });
+  delete: async (id) => {
+    const response = await api.delete(`/api/vault/${id}/delete`);
     return response.data;
   },
 
@@ -376,45 +362,33 @@ export const notesAPI = {
     return response.data;
   },
 
-  // Create new note
-  create: async (noteData, mek) => {
+  // Create new note — all sensitive fields must be pre-encrypted client-side.
+  create: async (noteData) => {
     const response = await api.post("/api/notes", {
       title: sanitizeText(noteData.title),
-      note: sanitizeText(noteData.note),
+      note: noteData.note, // already an encrypted JSON string
       category_id: noteData.category,
       tags: sanitizeStringArray(noteData.tags),
-      mek,
     });
 
     return response.data;
   },
 
-  // Update existing note
-  update: async (id, noteData, mek) => {
+  // Update existing note — all sensitive fields must be pre-encrypted client-side.
+  update: async (id, noteData) => {
     const response = await api.put(`/api/notes/${id}/update`, {
       title: sanitizeText(noteData.title),
-      note: sanitizeText(noteData.note),
+      note: noteData.note, // already an encrypted JSON string
       category_id: noteData.category,
       tags: sanitizeStringArray(noteData.tags),
-      mek,
     });
 
     return response.data;
   },
 
   // Delete note
-  delete: async (id, mek) => {
-    const response = await api.delete(`/api/notes/${id}/delete`, {
-      data: { mek },
-    });
-    return response.data;
-  },
-
-  // Decrypt note content
-  decrypt: async (id, mek) => {
-    const response = await api.post(`/api/notes/${id}/decrypt`, {
-      mek,
-    });
+  delete: async (id) => {
+    const response = await api.delete(`/api/notes/${id}/delete`);
     return response.data;
   },
 

@@ -31,6 +31,7 @@ const Login = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDerivingKeys, setIsDerivingKeys] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
@@ -67,15 +68,21 @@ const Login = () => {
     }
 
     setIsLoading(true);
+    setIsDerivingKeys(true);
 
     const result = await login(formData.email, formData.master_password);
 
-    if (result.success) {
-      toast.success("Welcome back!");
+    setIsDerivingKeys(false);
 
-      setTimeout(() => {
-        navigate("/app");
-      }, 100);
+    if (result.success) {
+      if (result.needsMigration) {
+        // Legacy account — redirect to the migration wizard page.
+        toast.success("Welcome back! Please complete your account upgrade.");
+        setTimeout(() => navigate("/app"), 100);
+      } else {
+        toast.success("Welcome back!");
+        setTimeout(() => navigate("/app"), 100);
+      }
     } else {
       toast.error(result.error);
     }
@@ -227,7 +234,7 @@ const Login = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Signing in...
+                  {isDerivingKeys ? "Deriving keys…" : "Signing in..."}
                 </>
               ) : (
                 <>

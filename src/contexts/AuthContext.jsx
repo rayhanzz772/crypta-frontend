@@ -1,10 +1,13 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { authAPI, logsAPI, registerAuthFailureHandler } from "../utils/api";
 import {
-  authAPI,
-  logsAPI,
-  registerAuthFailureHandler,
-} from "../utils/api";
+  sha256Hex,
+  deriveKEK,
+  generateRandomHex,
+  wrapMEK,
+  unwrapMEK,
+} from "../utils/crypto";
 
 const AuthContext = createContext();
 const AUTH_EMAIL_STORAGE_KEY = "auth_email";
@@ -24,10 +27,7 @@ const getFriendlyAuthError = (error, fallbackMessage) => {
     ""
   ).toLowerCase();
 
-  if (
-    rawMessage.includes("getaddrinfo") &&
-    rawMessage.includes("ip-api.com")
-  ) {
+  if (rawMessage.includes("getaddrinfo") && rawMessage.includes("ip-api.com")) {
     return "Your login was temporarily interrupted because the server location service was unavailable. Please try again later.";
   }
 
@@ -37,9 +37,23 @@ const getFriendlyAuthError = (error, fallbackMessage) => {
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
-  const [mek, setMek] = useState(null); // Master Encryption Key — in-memory only, never persisted
+
+  // Master Encryption Key — in-memory only, NEVER persisted.
+  const [mek, setMek] = useState(null);
+
+  // The mek_data blob from the login response (needed for vault unlock).
+  // Stored in React state only — cleared on logout/lock.
+  const [mekData, setMekData] = useState(null);
+
+  // Stores email during legacy migration so the modal can use it.
+  const [legacyMigrationState, setLegacyMigrationState] = useState(null);
+
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  // -------------------------------------------------------------------------
+  // Helpers
+  // -------------------------------------------------------------------------
 
   const extractCurrentUser = (authMeData, fallbackEmail) => {
     const authMePayload = authMeData?.data;
@@ -47,11 +61,9 @@ export const AuthProvider = ({ children }) => {
     if (authMePayload?.user && typeof authMePayload.user === "object") {
       return authMePayload.user;
     }
-
     if (authMeData?.user && typeof authMeData.user === "object") {
       return authMeData.user;
     }
-
     if (
       authMePayload &&
       typeof authMePayload === "object" &&
@@ -59,15 +71,11 @@ export const AuthProvider = ({ children }) => {
     ) {
       return authMePayload;
     }
-
     return { email: fallbackEmail };
   };
 
   const isBlockedUser = (currentUser) => {
-    if (!currentUser || typeof currentUser !== "object") {
-      return false;
-    }
-
+    if (!currentUser || typeof currentUser !== "object") return false;
     return (
       currentUser.blocked === true ||
       currentUser.is_blocked === true ||
@@ -80,20 +88,25 @@ export const AuthProvider = ({ children }) => {
   const clearClientAuthState = () => {
     setUser(null);
     setMek(null);
+    setMekData(null);
+    setLegacyMigrationState(null);
     setIsAuthenticated(false);
-    // Legacy cleanup for old localStorage token mode.
     localStorage.removeItem("jwt_token");
     localStorage.removeItem("jwt_token_timestamp");
     localStorage.removeItem(AUTH_EMAIL_STORAGE_KEY);
   };
 
-  // Check cookie-backed session on mount.
+  // -------------------------------------------------------------------------
+  // Session initialisation — check cookie-backed session on mount.
+  // NOTE: After a page refresh the MEK is gone. The vault will be locked
+  // until the user explicitly unlocks it with their master password.
+  // -------------------------------------------------------------------------
+
   useEffect(() => {
     const initializeSession = async () => {
       try {
         const authMeData = await authAPI.getMe();
         const currentUser = extractCurrentUser(authMeData);
-
         setUser(currentUser);
         setIsAuthenticated(true);
         persistAuthEmail(currentUser?.email);
@@ -119,10 +132,11 @@ export const AuthProvider = ({ children }) => {
     };
   }, [navigate]);
 
-  // Ensure sensitive key material is cleared from memory when tab/window closes.
+  // Ensure sensitive key material is cleared when the tab closes.
   useEffect(() => {
     const clearSensitiveMemory = () => {
       setMek(null);
+      setMekData(null);
     };
 
     window.addEventListener("beforeunload", clearSensitiveMemory);
@@ -134,43 +148,13 @@ export const AuthProvider = ({ children }) => {
     };
   }, []);
 
-  const login = async (email, password) => {
+  // -------------------------------------------------------------------------
+  // Register — full ZKE key generation client-side.
+  // -------------------------------------------------------------------------
+
+  const register = async (email, zkePayload) => {
     try {
-      const data = await authAPI.login(email, password);
-
-      let authMeData = null;
-      try {
-        authMeData = await authAPI.getMe();
-      } catch {
-        // Fallback to login response structure when /auth/me is temporarily unavailable.
-      }
-
-      const currentUser = extractCurrentUser(authMeData || data, email);
-      persistAuthEmail(currentUser?.email || email);
-
-      // Store MEK in React state ONLY — never persisted to localStorage
-      const receivedMek = data?.data?.mek || null;
-      if (!isBlockedUser(currentUser)) {
-        setMek(receivedMek);
-      }
-
-      // Update auth state (blocked users can log in but see a blocked screen)
-      setUser(currentUser);
-      setIsAuthenticated(true);
-
-      return { success: true, data, user: currentUser, authMe: authMeData };
-    } catch (error) {
-      return {
-        success: false,
-        error: getFriendlyAuthError(error, "Login failed. Please try again."),
-      };
-    }
-  };
-
-  const register = async (email, password) => {
-    try {
-      const data = await authAPI.register(email, password);
-
+      const data = await authAPI.register(email, zkePayload);
       return { success: true, data };
     } catch (error) {
       return {
@@ -182,81 +166,236 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Login — hash password client-side, then unwrap MEK locally.
+  // -------------------------------------------------------------------------
+
+  const login = async (email, password) => {
+    try {
+      // 1. Derive master_hash for the ZKE path
+      const masterHash = await sha256Hex(password);
+
+      let loginData;
+      let isLegacy = false;
+
+      try {
+        loginData = await authAPI.login(email, masterHash);
+      } catch (hashLoginError) {
+        // If the hashed login fails with 401, try the legacy plaintext path.
+        if (hashLoginError?.response?.status === 401) {
+          try {
+            loginData = await authAPI.login(email, password);
+            isLegacy = true;
+          } catch {
+            // Both paths failed — re-throw the original hash-based error.
+            throw hashLoginError;
+          }
+        } else {
+          throw hashLoginError;
+        }
+      }
+
+      // 2. Fetch full user profile
+      let authMeData = null;
+      try {
+        authMeData = await authAPI.getMe();
+      } catch {
+        // Non-fatal — fall back to login response data
+      }
+
+      const currentUser = extractCurrentUser(authMeData || loginData, email);
+      persistAuthEmail(currentUser?.email || email);
+
+      setUser(currentUser);
+      setIsAuthenticated(true);
+
+      const mekVersion = loginData?.data?.user?.mek_version ?? (isLegacy ? 0 : 1);
+
+      // 3. Legacy migration path (mek_version = 0)
+      if (isLegacy || mekVersion === 0) {
+        // Store state for the migration wizard — MEK will be set after migration.
+        setLegacyMigrationState({
+          email,
+          password, // needed to decrypt per-item legacy keys
+        });
+        return { success: true, needsMigration: true, user: currentUser };
+      }
+
+      // 4. Normal ZKE path — unwrap MEK client-side
+      const mekDataFromServer = loginData?.data?.mek_data;
+      if (!mekDataFromServer) {
+        throw new Error("Server did not return mek_data. Cannot unlock vault.");
+      }
+
+      const { kek_salt, encrypted_mek_by_password, mek_pw_iv, mek_pw_tag } =
+        mekDataFromServer;
+
+      if (!kek_salt || !encrypted_mek_by_password) {
+        throw new Error("Incomplete mek_data from server.");
+      }
+
+      const kek = await deriveKEK(password, kek_salt);
+      const unwrappedMek = await unwrapMEK(
+        encrypted_mek_by_password,
+        mek_pw_iv,
+        mek_pw_tag,
+        kek,
+      );
+
+      if (!isBlockedUser(currentUser)) {
+        setMek(unwrappedMek);
+        setMekData(mekDataFromServer);
+      }
+
+      return { success: true, data: loginData, user: currentUser };
+    } catch (error) {
+      return {
+        success: false,
+        error: getFriendlyAuthError(error, "Login failed. Please try again."),
+      };
+    }
+  };
+
+  // -------------------------------------------------------------------------
+  // Logout
+  // -------------------------------------------------------------------------
+
   const logout = () => {
     authAPI.logout();
     clearClientAuthState();
   };
 
+  // -------------------------------------------------------------------------
+  // Lock Vault — clears MEK from memory; session cookie stays valid.
+  // -------------------------------------------------------------------------
+
   const lockVault = async () => {
-    // Lock vault by clearing MEK from memory — JWT token remains valid
     setMek(null);
 
-    // Log the action to the backend
     try {
       await logsAPI.create("Locked Vault");
     } catch {
-      // Don't throw error, locking should still work even if logging fails
+      // Non-fatal
     }
   };
 
-  // Re-login to retrieve a fresh MEK from the server.
-  // There is no way to reconstruct the MEK client-side — the server must derive it.
+  // -------------------------------------------------------------------------
+  // Unlock Vault — re-derive KEK and unwrap MEK locally.
+  // No server round-trip needed beyond fetching the salt.
+  // -------------------------------------------------------------------------
+
   const unlockVault = async (email, password) => {
     try {
       const persistedEmail = localStorage.getItem(AUTH_EMAIL_STORAGE_KEY);
       const resolvedEmail = (email || persistedEmail || "").trim();
 
       if (!resolvedEmail) {
+        return { success: false, error: "Email is missing. Please sign in again." };
+      }
+
+      // Fetch the KEK salt for this account
+      let saltResponse;
+      try {
+        saltResponse = await authAPI.getSalt(resolvedEmail);
+      } catch {
         return {
           success: false,
-          error: "Email is missing. Please sign in again.",
+          error: "Could not retrieve account salt. Please check your connection.",
         };
       }
 
-      const data = await authAPI.login(resolvedEmail, password);
-      const freshMek = data?.data?.mek || null;
-
-      if (!freshMek) {
+      const kekSalt = saltResponse?.data?.kek_salt;
+      if (!kekSalt) {
         return {
           success: false,
-          error: "Server did not return an encryption key.",
+          error: "Account salt unavailable. Please sign in again.",
         };
       }
 
-      setMek(freshMek);
+      // We need the mek_data blob to unwrap the MEK. If we don't have it in
+      // memory (e.g. after a hard refresh), re-derive by logging in fully.
+      let resolvedMekData = mekData;
 
-      // Log the action to the backend
+      if (!resolvedMekData) {
+        const masterHash = await sha256Hex(password);
+        const loginResponse = await authAPI.login(resolvedEmail, masterHash);
+        resolvedMekData = loginResponse?.data?.mek_data;
+        if (resolvedMekData) {
+          setMekData(resolvedMekData);
+        }
+      }
+
+      if (!resolvedMekData) {
+        return {
+          success: false,
+          error: "Encryption metadata unavailable. Please sign in again.",
+        };
+      }
+
+      const { encrypted_mek_by_password, mek_pw_iv, mek_pw_tag } =
+        resolvedMekData;
+
+      const kek = await deriveKEK(password, kekSalt);
+      const unwrappedMek = await unwrapMEK(
+        encrypted_mek_by_password,
+        mek_pw_iv,
+        mek_pw_tag,
+        kek,
+      );
+
+      setMek(unwrappedMek);
+
       try {
         await logsAPI.create("Unlocked Vault");
       } catch {
-        // Don't throw error, unlocking should still work even if logging fails
+        // Non-fatal
       }
 
       return { success: true };
     } catch (error) {
+      // Decryption error (wrong password) will be a generic DOMException.
+      const isWrongPassword =
+        error instanceof DOMException ||
+        error?.message?.toLowerCase().includes("decrypt");
+
       return {
         success: false,
-        error: getFriendlyAuthError(
-          error,
-          "Invalid password. Please try again.",
-        ),
+        error: isWrongPassword
+          ? "Invalid password. Please try again."
+          : getFriendlyAuthError(error, "Invalid password. Please try again."),
       };
     }
   };
+
+  // -------------------------------------------------------------------------
+  // completeMigration — called by the LegacyMigrationModal when done.
+  // Receives the freshly generated MEK to set in context.
+  // -------------------------------------------------------------------------
+
+  const completeMigration = (newMek, newMekData) => {
+    setMek(newMek);
+    setMekData(newMekData);
+    setLegacyMigrationState(null);
+  };
+
+  // -------------------------------------------------------------------------
 
   const isBlocked = isBlockedUser(user);
 
   const value = {
     user,
-    mek, // Master Encryption Key — in-memory only
+    mek,
+    mekData,
     isAuthenticated,
     isBlocked,
     isLoading,
+    legacyMigrationState,
     login,
     register,
     logout,
     lockVault,
     unlockVault,
+    completeMigration,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -3,6 +3,7 @@ import { X, Save, Tag, AlertCircle, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
+import { decryptField, encryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
 // Utility function to normalize tags (convert string to array)
@@ -40,15 +41,17 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
   const loadNoteData = async () => {
     try {
       setIsDecrypting(true);
-      const response = await notesAPI.decrypt(note.id, mek);
 
-      const content =
-        response.data?.note ||
-        response.data?.decrypted_content ||
-        response.data?.content ||
-        response.note ||
-        response.decrypted_content ||
-        response.content;
+      // Decrypt the note content client-side.
+      let content = "";
+      if (note.note && mek) {
+        try {
+          content = await decryptField(note.note, mek);
+        } catch {
+          // Note may still be plaintext on legacy items
+          content = note.note;
+        }
+      }
 
       const tagsArray = normalizeTags(note.tags);
 
@@ -63,7 +66,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
 
       setFormData({
         title: note.title || "",
-        note: content || "",
+        note: content,
         category: categoryId || "personal",
         tags: tagsArray.join(", "),
       });
@@ -93,15 +96,17 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
         .map((tag) => tag.trim())
         .filter((tag) => tag);
 
+      // Re-encrypt the note content before saving.
+      const encryptedNote = await encryptField(formData.note.trim(), mek);
+
       await notesAPI.update(
         note.id,
         {
           title: formData.title.trim(),
-          note: formData.note.trim(),
+          note: encryptedNote,
           category: formData.category,
           tags: tagsArray,
         },
-        mek,
       );
 
       toast.success("Note updated successfully!");

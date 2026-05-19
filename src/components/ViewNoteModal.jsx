@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
-import { notesAPI } from "../utils/api";
+import { decryptField, safeDecryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
 const normalizeTags = (tags) => {
@@ -42,115 +42,31 @@ const ViewNoteModal = ({
   const [decryptedContent, setDecryptedContent] = useState("");
   const [isDecrypting, setIsDecrypting] = useState(false);
   const [decryptError, setDecryptError] = useState("");
-  const [retryCount, setRetryCount] = useState(0);
-  const [canRetry, setCanRetry] = useState(true);
-  const [retryCountdown, setRetryCountdown] = useState(0);
 
   useEffect(() => {
     if (isOpen && note) {
       decryptNote();
-      setRetryCount(0);
-      setCanRetry(true);
-      setRetryCountdown(0);
     } else {
       setDecryptedContent("");
       setDecryptError("");
-      setRetryCount(0);
-      setCanRetry(true);
-      setRetryCountdown(0);
     }
   }, [isOpen, note]);
 
-  useEffect(() => {
-    if (retryCountdown > 0) {
-      const timer = setTimeout(() => {
-        setRetryCountdown(retryCountdown - 1);
-        if (retryCountdown - 1 === 0) {
-          setCanRetry(true);
-        }
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [retryCountdown]);
 
+  // Pure client-side decryption.
   const decryptNote = async () => {
-    if (!note || !mek || !canRetry) return;
+    if (!note?.note || !mek) return;
 
     try {
       setIsDecrypting(true);
       setDecryptError("");
-
-      const response = await notesAPI.decrypt(note.id, mek);
-
-      const content =
-        response.data?.note ||
-        response.data?.decrypted_content ||
-        response.data?.content ||
-        response.note ||
-        response.decrypted_content ||
-        response.content;
-
-      setDecryptedContent(content || "");
-      setRetryCount(0); // Reset retry count on success
+      const content = await safeDecryptField(note.note, mek);
+      setDecryptedContent(content);
     } catch (error) {
-      // Increment retry count
-      const newRetryCount = retryCount + 1;
-      setRetryCount(newRetryCount);
-
-      // Handle specific error messages
-      let errorMessage =
-        "Failed to decrypt note. Please check your master password.";
-      let shouldCooldown = false;
-      let cooldownSeconds = 5;
-
-      if (error.response) {
-        const status = error.response.status;
-        const data = error.response.data;
-
-        if (
-          status === 429 ||
-          data?.message?.toLowerCase().includes("too many")
-        ) {
-          errorMessage =
-            "Too many decrypt attempts. Please wait before trying again.";
-          toast.error("Too many attempts - Please wait");
-          shouldCooldown = true;
-          cooldownSeconds = 60;
-        } else if (
-          status === 401 ||
-          data?.message?.toLowerCase().includes("incorrect") ||
-          data?.message?.toLowerCase().includes("invalid")
-        ) {
-          errorMessage = "Incorrect master password. Please try again.";
-          toast.error("Incorrect password");
-          if (newRetryCount >= 3) {
-            shouldCooldown = true;
-            cooldownSeconds = Math.min(5 * Math.pow(2, newRetryCount - 3), 60);
-            errorMessage += ` (${newRetryCount} failed attempts - please wait ${cooldownSeconds}s)`;
-          }
-        } else if (status === 404) {
-          errorMessage = "Note not found.";
-          toast.error("Note not found");
-        } else if (data?.message) {
-          errorMessage = data.message;
-          toast.error(data.message);
-        } else {
-          toast.error("Failed to decrypt");
-        }
-      } else if (error.message) {
-        errorMessage = error.message;
-        toast.error("Failed to decrypt");
-      } else {
-        toast.error("Failed to decrypt");
-      }
-
-      // Apply cooldown if needed
-      if (shouldCooldown) {
-        setCanRetry(false);
-        setRetryCountdown(cooldownSeconds);
-      }
-
+      const errorMessage = "Failed to decrypt note. Is your vault unlocked?";
       setDecryptError(errorMessage);
+      toast.error("Decryption failed");
+      console.error("Note decrypt error:", error);
     } finally {
       setIsDecrypting(false);
     }
@@ -317,25 +233,12 @@ const ViewNoteModal = ({
                     <p className="text-sm sm:text-base text-red-600 dark:text-red-400 mb-3 sm:mb-4">
                       {decryptError}
                     </p>
-
-                    {!canRetry && retryCountdown > 0 ? (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-slate-400">
-                          <Lock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                          <span className="text-xs sm:text-sm font-medium">
-                            Please wait {retryCountdown}s before retrying
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <button
-                        onClick={decryptNote}
-                        disabled={!canRetry}
-                        className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        Try Again
-                      </button>
-                    )}
+                    <button
+                      onClick={decryptNote}
+                      className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:underline"
+                    >
+                      Try Again
+                    </button>
                   </div>
                 </div>
               ) : decryptedContent ? (
