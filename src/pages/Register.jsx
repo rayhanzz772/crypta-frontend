@@ -5,6 +5,12 @@ import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import PasswordWarningModal from "../components/PasswordWarningModal";
 import RecoveryKeyModal from "../components/RecoveryKeyModal";
+import {
+  sha256Hex,
+  deriveKEK,
+  generateRandomHex,
+  wrapMEK,
+} from "../utils/crypto";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -93,36 +99,58 @@ const Register = () => {
   const handleConfirmRegistration = async () => {
     if (!pendingRegistration) return;
 
-    const email = pendingRegistration.email;
+    const { email, password } = pendingRegistration;
 
     setIsLoading(true);
     setShowWarningModal(false);
 
-    const result = await register(
-      pendingRegistration.email,
-      pendingRegistration.password,
-    );
+    try {
+      // 1. Generate random material
+      const kekSalt = generateRandomHex(16); // 16 bytes for Argon2 salt
+      const rawMek = generateRandomHex(32); // 32-byte MEK
+      const recoveryKey = generateRandomHex(32); // 32-byte Recovery Key
 
-    if (result.success) {
-      setIsRegistered(true);
-      setRegisteredEmail(email);
-      toast.success("Account created. Check your email for the 6-digit code.");
+      // 2. Derive master_hash (used for server-side bcrypt)
+      const masterHash = await sha256Hex(password);
 
-      // Extract recovery key from various possible response structures
-      const key = result.data?.data?.recovery_key || result.data?.recovery_key;
+      // 3. Derive KEK from the master password
+      const kek = await deriveKEK(password, kekSalt);
 
-      if (key) {
-        setRecoveryKey(key);
+      // 4. Wrap MEK with KEK
+      const pwWrap = await wrapMEK(rawMek, kek);
+
+      // 5. Wrap MEK with Recovery Key
+      const rcWrap = await wrapMEK(rawMek, recoveryKey);
+
+      // 6. Call register from context with the ZKE payload
+      const result = await register(email, {
+        master_hash: masterHash,
+        kek_salt: kekSalt,
+        encrypted_mek_by_password: pwWrap.encryptedMek,
+        mek_pw_iv: pwWrap.iv,
+        mek_pw_tag: pwWrap.tag,
+        encrypted_mek_by_recovery: rcWrap.encryptedMek,
+        mek_rc_iv: rcWrap.iv,
+        mek_rc_tag: rcWrap.tag,
+      });
+
+      if (result.success) {
+        setIsRegistered(true);
+        setRegisteredEmail(email);
+        toast.success("Account created. Check your email for the 6-digit code.");
+
+        setRecoveryKey(recoveryKey);
         setShowRecoveryModal(true);
       } else {
-        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+        toast.error(result.error);
       }
-    } else {
-      toast.error(result.error);
+    } catch (error) {
+      console.error("ZKE registration error:", error);
+      toast.error("An error occurred during secure key generation.");
+    } finally {
+      setIsLoading(false);
+      setPendingRegistration(null);
     }
-
-    setIsLoading(false);
-    setPendingRegistration(null);
   };
 
   const handleCancelRegistration = () => {

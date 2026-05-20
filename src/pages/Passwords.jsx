@@ -20,6 +20,7 @@ import {
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { vaultAPI } from "../utils/api";
+import { safeDecryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import CreateVaultModal from "../components/CreateVaultModal";
 import DecryptModal from "../components/DecryptModal";
@@ -81,55 +82,67 @@ const Passwords = () => {
     return simpleMatch?.[1]?.trim() || null;
   };
 
+  /**
+   * Export vault passwords to Excel — fully client-side.
+   * Fetches all items, decrypts them locally with the MEK, then builds
+   * an XLSX file in the browser and triggers a download via Blob URL.
+   */
   const handleExportCsv = async () => {
     if (!mek || isExporting) return;
 
+    setIsExporting(true);
     try {
-      setIsExporting(true);
-
-      const exportFilters = {};
+      // Fetch ALL items (large per_page) with current filters applied.
+      const exportFilters = { per_page: 1000, page: 1 };
       if (selectedCategory) exportFilters.category = selectedCategory;
       if (searchQuery) exportFilters.search = searchQuery;
-      if (showOnlyFavorites) exportFilters.favorites = true;
 
-      const response = await vaultAPI.exportCsv(mek, exportFilters);
+      const data = await vaultAPI.getAll(exportFilters);
 
-      const contentType = (response?.headers?.["content-type"] || "").toLowerCase();
-      const contentDisposition = response?.headers?.["content-disposition"];
-      const filenameFromHeader = getFilenameFromContentDisposition(contentDisposition);
+      let vaultList = [];
+      if (Array.isArray(data)) vaultList = data;
+      else if (data?.data?.vaults) vaultList = data.data.vaults;
+      else if (data?.data && Array.isArray(data.data)) vaultList = data.data;
+      else if (data?.vaults) vaultList = data.vaults;
 
-      const rawBlob =
-        response?.data instanceof Blob
-          ? response.data
-          : new Blob([response?.data], { type: "text/csv" });
+      // Decrypt every item client-side.
+      const decrypted = await Promise.all(
+        vaultList.map(async (item) => {
+          const password = await safeDecryptField(
+            item.password_encrypted,
+            mek,
+            "[encrypted]",
+          );
+          const username = await safeDecryptField(
+            item.username,
+            mek,
+            item.username || "",
+          );
+          const note = await safeDecryptField(item.note, mek, item.note || "");
+          return {
+            Name: item.name || "",
+            Username: username,
+            Password: password,
+            Note: note,
+            Category: item.category_name || "Uncategorized",
+            "Created At": item.created_at || "",
+            "Updated At": item.updated_at || "",
+          };
+        }),
+      );
 
-      // If BE already returns an Excel file, download as-is.
-      const isExcelResponse =
-        contentType.includes("spreadsheetml") ||
-        contentType.includes("application/vnd.ms-excel") ||
-        (filenameFromHeader || "").toLowerCase().endsWith(".xlsx");
+      // Build XLSX workbook.
+      const ws = XLSX.utils.json_to_sheet(decrypted);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, "Passwords");
 
-      let downloadBlob;
-      let filename;
+      const xlsxArray = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+      const blob = new Blob([xlsxArray], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
 
-      if (isExcelResponse) {
-        downloadBlob = rawBlob;
-        filename =
-          filenameFromHeader ||
-          `vault-export-${new Date().toISOString().slice(0, 10)}.xlsx`;
-      } else {
-        const csvText = await rawBlob.text();
-        const workbook = XLSX.read(csvText, { type: "string" });
-        const xlsxArray = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-        downloadBlob = new Blob([xlsxArray], {
-          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        });
-
-        const baseName = (filenameFromHeader || "vault-export").replace(/\.csv$/i, "");
-        filename = `${baseName}-${new Date().toISOString().slice(0, 10)}.xlsx`;
-      }
-
-      const url = URL.createObjectURL(downloadBlob);
+      const filename = `crypta-vault-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
       a.download = filename;
@@ -138,9 +151,9 @@ const Passwords = () => {
       a.remove();
       URL.revokeObjectURL(url);
 
-      toast.success("Excel exported");
+      toast.success(`Exported ${decrypted.length} passwords to Excel`);
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to export Excel");
+      toast.error(error.message || "Failed to export Excel");
     } finally {
       setIsExporting(false);
     }
@@ -272,11 +285,11 @@ const Passwords = () => {
     setCurrentPage(1); // Reset to first page when changing items per page
   };
 
-  const handleDeleteConfirm = async (vault, password) => {
+  const handleDeleteConfirm = async (vault) => {
     try {
       setDeletingId(vault.id);
 
-      await vaultAPI.delete(vault.id, password);
+      await vaultAPI.delete(vault.id);
 
       toast.success("Password deleted successfully!");
       fetchPasswords(); // Refresh list
@@ -661,9 +674,6 @@ const PasswordCard = ({
             <h3 className="font-semibold text-slate-800 dark:text-white">
               {password.name || password.title}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {password.username}
-            </p>
           </div>
         </div>
 

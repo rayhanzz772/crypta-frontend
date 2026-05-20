@@ -13,6 +13,7 @@ import {
 import toast from "react-hot-toast";
 import { vaultAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
+import { encryptField } from "../utils/crypto";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
@@ -98,16 +99,30 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
 
       const updateData = {
         name: formData.name.trim(),
-        username: formData.username.trim(),
-        note: formData.note.trim(),
         category: formData.category_name.trim(),
       };
 
+      // Encrypt username (always re-encrypt on update)
+      if (formData.username.trim()) {
+        updateData.username = await encryptField(formData.username.trim(), mek);
+      }
+
       // Only include password if it was changed
       if (formData.password.trim()) {
-        updateData.password = formData.password.trim();
+        updateData.password_encrypted = await encryptField(
+          formData.password.trim(),
+          mek,
+        );
       }
-      await vaultAPI.update(vaultItem.id, updateData, mek);
+
+      // Only include note if provided
+      if (formData.note.trim()) {
+        updateData.note = await encryptField(formData.note.trim(), mek);
+      } else {
+        updateData.note = formData.note.trim();
+      }
+
+      await vaultAPI.update(vaultItem.id, updateData);
 
       toast.success("Password updated successfully!");
 
@@ -304,15 +319,15 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
           </div>
 
           {/* Master Password Warning */}
-          <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-amber-800 dark:text-amber-200">
+          <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <div className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
               <p className="font-semibold mb-0.5 sm:mb-1">
-                Master Password Required
+                End-to-End Encrypted
               </p>
-              <p className="text-amber-700 dark:text-amber-300">
-                Your master password will be used to re-encrypt this password
-                entry.
+              <p className="text-blue-700 dark:text-blue-300">
+                All fields are encrypted locally in your browser before being
+                saved. The server never sees your data.
               </p>
             </div>
           </div>

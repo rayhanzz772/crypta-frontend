@@ -3,6 +3,7 @@ import { X, FileText, Tag, Lock, Save, AlertCircle, Loader2 } from "lucide-react
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
+import { encryptField } from "../utils/crypto";
 import { getCategoryIcon } from "../utils/categoryIcons";
 
 const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
@@ -62,14 +63,17 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
+      // Encrypt the note body client-side — title stays plaintext for search.
+      const encryptedNote = await encryptField(formData.note.trim(), mek);
+
       const noteData = {
         title: formData.title.trim(),
-        note: formData.note.trim(),
+        note: encryptedNote,
         category: formData.category,
         tags: tagsArray,
       };
 
-      await notesAPI.create(noteData, mek);
+      await notesAPI.create(noteData);
 
       toast.success("Note created successfully!", {
         icon: "📝",

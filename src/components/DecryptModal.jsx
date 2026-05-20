@@ -10,95 +10,53 @@ import {
   AlertCircle,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { vaultAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import { decryptField, safeDecryptField } from "../utils/crypto";
 
 const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const { mek } = useAuth();
 
   const [decryptedPassword, setDecryptedPassword] = useState("");
-  const [decryptedVaultItem, setDecryptedVaultItem] = useState(null);
+  const [decryptedUsername, setDecryptedUsername] = useState("");
   const [hasDecryptedOnce, setHasDecryptedOnce] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(30);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [countdown, setCountdown] = useState(0);
-  const [timeRemaining, setTimeRemaining] = useState(30);
-  const [inputMasterPassword, setInputMasterPassword] = useState("");
-  const [showMasterPasswordInput, setShowMasterPasswordInput] = useState(false);
 
-  const countdownRef = useRef(null);
   const clearTimerRef = useRef(null);
-
   const vaultItemId = vaultItem?.id;
 
-  const handleDecrypt = useCallback(
-    async (password) => {
-      if (!vaultItemId) return;
+  // Pure client-side decryption — no server round-trip needed.
+  const handleDecrypt = useCallback(async () => {
+    if (!vaultItemId || !mek) return;
 
-      setIsLoading(true);
+    setIsLoading(true);
+    try {
+      const pwd = await safeDecryptField(vaultItem.password_encrypted, mek);
+      setDecryptedPassword(pwd);
 
-      try {
-        const result = await vaultAPI.decrypt(vaultItemId, password);
-
-        const resolvedVaultItem =
-          result?.data?.data || result?.data || result?.vault || null;
-        if (resolvedVaultItem) {
-          setDecryptedVaultItem(resolvedVaultItem);
-        }
-
-        const decrypted =
-          result?.decrypted_password ??
-          result?.password ??
-          result?.data?.decrypted_password ??
-          result?.data?.password ??
-          result?.data?.data?.decrypted_password ??
-          result?.data?.data?.password ??
-          resolvedVaultItem?.decrypted_password ??
-          resolvedVaultItem?.password ??
-          null;
-
-        if (!decrypted) {
-          toast.error("Failed to extract decrypted password from response");
-          return;
-        }
-
-        setDecryptedPassword(decrypted);
-        setHasDecryptedOnce(true);
-        toast.success("Password decrypted!");
-      } catch (error) {
-        if (error.response?.status === 429) {
-          const retryAfter = error.response?.data?.retry_after || 60;
-          setIsRateLimited(true);
-          setCountdown(retryAfter);
-          toast.error(`Too many requests. Please wait ${retryAfter} seconds.`);
-        } else {
-          const errorMsg =
-            error.response?.data?.message || "Failed to decrypt password";
-          toast.error(errorMsg);
-        }
-      } finally {
-        setIsLoading(false);
+      if (vaultItem.username) {
+        const uname = await safeDecryptField(vaultItem.username, mek);
+        setDecryptedUsername(uname);
       }
-    },
-    [vaultItemId],
-  );
 
-  // Check if master password is available
-  useEffect(() => {
-    if (isOpen && !mek) {
-      setShowMasterPasswordInput(true);
-    } else {
-      setShowMasterPasswordInput(false);
-      setInputMasterPassword("");
+      setHasDecryptedOnce(true);
+      toast.success("Password decrypted!");
+    } catch (error) {
+      toast.error("Failed to decrypt password. Is the vault unlocked?");
+      console.error("Decryption error:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [isOpen, mek]);
+  }, [vaultItemId, mek, vaultItem]);
 
-  // Auto-decrypt on open if mek is available
+  // Auto-decrypt on open if MEK is available
   useEffect(() => {
     if (isOpen && vaultItem && vaultItemId && mek) {
-      handleDecrypt(mek);
+      handleDecrypt();
     }
   }, [isOpen, vaultItem, vaultItemId, mek, handleDecrypt]);
 
@@ -125,35 +83,6 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     };
   }, [decryptedPassword]);
 
-  // Rate limit countdown
-  useEffect(() => {
-    if (isRateLimited && countdown > 0) {
-      countdownRef.current = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            setIsRateLimited(false);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-
-    return () => {
-      if (countdownRef.current) {
-        clearInterval(countdownRef.current);
-      }
-    };
-  }, [isRateLimited, countdown]);
-
-  const handleSubmitMasterPassword = (e) => {
-    e.preventDefault();
-    if (inputMasterPassword) {
-      handleDecrypt(inputMasterPassword);
-      setShowMasterPasswordInput(false);
-    }
-  };
-
   const handleCopy = () => {
     if (decryptedPassword) {
       navigator.clipboard.writeText(decryptedPassword);
@@ -163,7 +92,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const handleClearPassword = () => {
     setDecryptedPassword("");
-    setDecryptedVaultItem(null);
+    setDecryptedUsername("");
     setTimeRemaining(30);
     setShowPassword(false);
     if (clearTimerRef.current) {
@@ -176,19 +105,10 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
     handleClearPassword();
     setShowPassword(false);
     setHasDecryptedOnce(false);
-    setIsRateLimited(false);
-    setCountdown(0);
-    setInputMasterPassword("");
-    setShowMasterPasswordInput(false);
     onClose();
   };
 
-  // Get category icon and gradient
-  const resolvedCategory =
-    decryptedVaultItem?.category ||
-    decryptedVaultItem?.category_name ||
-    vaultItem?.category ||
-    vaultItem?.category_name;
+  const resolvedCategory = vaultItem?.category || vaultItem?.category_name;
   const CategoryIcon = getCategoryIcon(resolvedCategory);
   const categoryGradient = getCategoryGradient(resolvedCategory);
 
@@ -243,56 +163,22 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
             <div className="relative overflow-hidden px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
               <input
                 type="text"
-                value={decryptedVaultItem?.username || vaultItem.username || "Username"}
+                value={
+                  decryptedUsername ||
+                  (vaultItem.username?.startsWith("{")
+                    ? "••••••••"
+                    : vaultItem.username || "")
+                }
                 readOnly
-                tabIndex={isSensitiveBlurred ? -1 : 0}
                 className="w-full bg-transparent text-sm sm:text-base text-slate-900 dark:text-white truncate focus:outline-none"
               />
-              {isSensitiveBlurred && (
+              {!hasDecryptedOnce && (
                 <div className="absolute inset-0 bg-slate-50/60 dark:bg-slate-900/60 backdrop-blur-sm pointer-events-auto cursor-not-allowed" />
               )}
             </div>
           </div>
 
-          {/* Master Password Input (if not in memory) */}
-          {showMasterPasswordInput && !decryptedPassword && !hasDecryptedOnce && (
-            <form
-              onSubmit={handleSubmitMasterPassword}
-              className="space-y-3 sm:space-y-4"
-            >
-              <div className="p-3 sm:p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl flex items-start gap-2 sm:gap-3">
-                <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                <p className="text-xs sm:text-sm text-yellow-800 dark:text-yellow-300">
-                  Master password is not in memory. Please re-enter it to
-                  decrypt.
-                </p>
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                  Master Password
-                </label>
-                <input
-                  type="password"
-                  value={inputMasterPassword}
-                  onChange={(e) => setInputMasterPassword(e.target.value)}
-                  placeholder="Enter your master password"
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
-                  autoFocus
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={!inputMasterPassword || isLoading}
-                className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "Decrypting..." : "Decrypt Password"}
-              </button>
-            </form>
-          )}
-
-          {/* Password Field (always visible) */}
+          {/* Password Field */}
           <div className="space-y-3 sm:space-y-4">
             <div>
               <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
@@ -402,13 +288,9 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               <div>
                 <p className="text-slate-500 dark:text-slate-400">Category</p>
                 <p className="font-medium text-slate-800 dark:text-white mt-0.5">
-                  {(
-                    decryptedVaultItem?.category_name ||
-                    decryptedVaultItem?.category ||
-                    vaultItem.category_name ||
+                  {vaultItem.category_name ||
                     vaultItem.category ||
-                    "Uncategorized"
-                  )}
+                    "Uncategorized"}
                 </p>
               </div>
               <div>
@@ -416,7 +298,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
                   Last Updated
                 </p>
                 <p className="font-medium text-slate-800 dark:text-white mt-0.5 truncate">
-                  {decryptedVaultItem?.updated_at || vaultItem.updated_at || "N/A"}
+                  {vaultItem.updated_at || "N/A"}
                 </p>
               </div>
             </div>
