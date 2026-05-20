@@ -11,17 +11,30 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { authAPI } from "../utils/api";
+import {
+  sha256Hex,
+  deriveKEK,
+  generateRandomHex,
+  wrapMEK,
+  unwrapMEK,
+} from "../utils/crypto";
 
 const RecoverPassword = () => {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1); // 1: Verify, 2: Reset
+  // step 1: enter email + recovery key → client-side MEK unwrap
+  // step 2: enter new password → re-wrap + submit
+  const [step, setStep] = useState(1);
+
   const [formData, setFormData] = useState({
     email: "",
     recovery_key: "",
     new_password: "",
     confirm_password: "",
   });
+
+  // The MEK unwrapped in step 1 — kept in local state only, never persisted.
+  const [unwrappedMek, setUnwrappedMek] = useState(null);
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -36,7 +49,7 @@ const RecoverPassword = () => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = "Email is invalid";
     }
-    if (!formData.recovery_key) {
+    if (!formData.recovery_key.trim()) {
       newErrors.recovery_key = "Recovery key is required";
     }
     setErrors(newErrors);
@@ -65,76 +78,114 @@ const RecoverPassword = () => {
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Step 1: Fetch the recovery-encrypted MEK from server, then unwrap locally.
+  // -------------------------------------------------------------------------
+
   const handleVerify = async (e) => {
     e.preventDefault();
     if (!validateStep1()) return;
 
     setIsLoading(true);
     try {
-      const result = await authAPI.verifyRecoveryKey(
-        formData.email,
-        formData.recovery_key,
-      );
+      // Fetch the encrypted MEK blob — server only requires email.
+      const result = await authAPI.verifyRecovery(formData.email);
 
-      if (result.success) {
-        setStep(2);
-        toast.success("Recovery key verified!");
-      } else {
-        toast.error(result.message || "Invalid recovery key or email");
+      if (!result.success) {
+        toast.error(result.message || "Recovery is not available for this account");
+        return;
       }
+
+      const { encrypted_mek_by_recovery, mek_rc_iv, mek_rc_tag } =
+        result.data ?? {};
+
+      if (!encrypted_mek_by_recovery) {
+        toast.error("Server did not return encrypted recovery data.");
+        return;
+      }
+
+      // Unwrap the MEK using the recovery key entered by the user.
+      // This is done entirely client-side — the recovery key is never sent to the server.
+      const recoveryKeyHex = formData.recovery_key.trim().replace(/-/g, "");
+
+      let mek;
+      try {
+        mek = await unwrapMEK(
+          encrypted_mek_by_recovery,
+          mek_rc_iv,
+          mek_rc_tag,
+          recoveryKeyHex,
+        );
+      } catch {
+        toast.error(
+          "Invalid recovery key. Please check that you have entered it correctly.",
+        );
+        return;
+      }
+
+      setUnwrappedMek(mek);
+      setStep(2);
+      toast.success("Recovery key verified! Please set your new master password.");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Verification failed");
+      toast.error(
+        error.response?.data?.message ||
+          "Verification failed. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
   };
 
+  // -------------------------------------------------------------------------
+  // Step 2: Re-wrap MEK with the new KEK and submit to server.
+  // -------------------------------------------------------------------------
+
   const handleReset = async (e) => {
     e.preventDefault();
     if (!validateStep2()) return;
+    if (!unwrappedMek) {
+      toast.error("MEK is missing. Please restart the recovery process.");
+      setStep(1);
+      return;
+    }
 
     setIsLoading(true);
     try {
-      const result = await authAPI.resetPassword(formData.new_password);
+      const newPassword = formData.new_password;
+
+      // Generate new KEK material
+      const newKekSalt = generateRandomHex(16);
+      const newMasterHash = await sha256Hex(newPassword);
+      const newKek = await deriveKEK(newPassword, newKekSalt);
+
+      // Re-wrap the original MEK with the new KEK
+      const pwWrap = await wrapMEK(unwrappedMek, newKek);
+
+      // Submit to server
+      const result = await authAPI.resetPassword({
+        email: formData.email,
+        new_master_hash: newMasterHash,
+        new_kek_salt: newKekSalt,
+        encrypted_mek_by_password: pwWrap.encryptedMek,
+        mek_pw_iv: pwWrap.iv,
+        mek_pw_tag: pwWrap.tag,
+      });
 
       if (result.success) {
         setIsSuccess(true);
+        // Clear the in-memory MEK now that it's been saved server-side.
+        setUnwrappedMek(null);
         toast.success("Password reset successfully!");
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
+        setTimeout(() => navigate("/login"), 2000);
       } else {
-        const errorMessage = result.message || "";
-        if (errorMessage.toLowerCase().includes("session expired")) {
-          toast.error(
-            "Recovery session expired. Please verify your recovery key again.",
-          );
-          setStep(1);
-          // Clear password fields but keep email for convenience
-          setFormData((prev) => ({
-            ...prev,
-            new_password: "",
-            confirm_password: "",
-          }));
-        } else {
-          toast.error(errorMessage || "Failed to reset password");
-        }
+        toast.error(result.message || "Failed to reset password");
       }
     } catch (error) {
-      const errorText = error.response?.data?.message || error.message || "";
-      if (errorText.toLowerCase().includes("session expired")) {
-        toast.error(
-          "Recovery session expired. Please verify your recovery key again.",
-        );
-        setStep(1);
-        setFormData((prev) => ({
-          ...prev,
-          new_password: "",
-          confirm_password: "",
-        }));
-      } else {
-        toast.error(errorText || "Reset failed");
-      }
+      toast.error(
+        error.response?.data?.message ||
+          error.message ||
+          "Reset failed. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -167,14 +218,14 @@ const RecoverPassword = () => {
             </Link>
           </div>
 
-          {/* Logo & Title */}
+          {/* Title */}
           <div className="text-center mb-6 sm:mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2">
               {step === 1 ? "Recover Password" : "Reset Password"}
             </h1>
             <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
               {step === 1
-                ? "Verify your identity with recovery key"
+                ? "Verify your identity with your recovery key"
                 : "Choose a new strong master password"}
             </p>
           </div>
@@ -230,7 +281,8 @@ const RecoverPassword = () => {
                             ? "border-red-500 focus:ring-red-500"
                             : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
                         } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none font-mono text-[13px]`}
-                        placeholder="A1B2C3D4-..."
+                        placeholder="Paste your 64-character recovery key"
+                        autoComplete="off"
                       />
                     </div>
                     {errors.recovery_key && (
@@ -331,7 +383,7 @@ const RecoverPassword = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {step === 1 ? "Verifying..." : "Resetting..."}
+                      {step === 1 ? "Verifying…" : "Resetting…"}
                     </>
                   ) : (
                     <>
@@ -352,9 +404,10 @@ const RecoverPassword = () => {
                           What is a Recovery Key?
                         </h4>
                         <p className="text-[13px] text-gray-600 dark:text-gray-400 leading-relaxed">
-                          A unique security code generated when you created your
-                          account. It is your only way to regain access to your
-                          encrypted data if you forget your master password.
+                          A unique 64-character hex code generated when you
+                          created your account. It is your only way to regain
+                          access to your encrypted data if you forget your
+                          master password. The server never sees this key.
                         </p>
                       </div>
                     </div>
@@ -385,7 +438,7 @@ const RecoverPassword = () => {
               <p className="text-gray-600 dark:text-gray-400 mb-6">
                 Your master password has been successfully reset.
               </p>
-              <p className="text-sm text-gray-500">Redirecting to login...</p>
+              <p className="text-sm text-gray-500">Redirecting to login…</p>
             </div>
           )}
         </div>

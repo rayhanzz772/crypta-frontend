@@ -4,6 +4,7 @@ import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import CreateVaultModal from "../components/CreateVaultModal";
 import UnlockVaultModal from "../components/UnlockVaultModal";
+import LegacyMigrationModal from "../components/LegacyMigrationModal";
 import { X } from "lucide-react";
 
 const AppLayout = () => {
@@ -133,6 +134,9 @@ const AppLayout = () => {
         isOpen={isUnlockModalOpen}
         onClose={() => setIsUnlockModalOpen(false)}
       />
+
+      {/* Legacy Migration Modal — auto-shows for mek_version=0 accounts */}
+      <LegacyMigrationModal />
     </div>
   );
 };

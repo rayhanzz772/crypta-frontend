@@ -15,6 +15,7 @@ import {
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { vaultAPI, categoriesAPI } from "../utils/api";
+import { encryptField } from "../utils/crypto";
 import {
   generatePassword,
   calculatePasswordStrength,
@@ -214,15 +215,22 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
     setBreachWarning(null);
 
     try {
-      const result = await vaultAPI.create(formData, mek);
+      // Encrypt sensitive fields client-side before sending to the server.
+      const password_encrypted = await encryptField(formData.password, mek);
+      const encryptedUsername = formData.username
+        ? await encryptField(formData.username, mek)
+        : formData.username;
+      const encryptedNote = formData.note
+        ? await encryptField(formData.note, mek)
+        : formData.note;
 
-      // Check for breach warning in response
-      if (result.message && result.message.includes("ditemukan")) {
-        setBreachWarning(result.message);
-        toast.warning("Password breach detected!");
-        setIsLoading(false);
-        return; // Keep modal open
-      }
+      const result = await vaultAPI.create({
+        name: formData.name,
+        password_encrypted,
+        username: encryptedUsername,
+        note: encryptedNote,
+        category_id: formData.category_id,
+      });
 
       toast.success("Password saved successfully!");
       onSuccess?.();
