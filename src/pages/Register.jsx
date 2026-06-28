@@ -141,6 +141,13 @@ const Register = () => {
 
         setRecoveryKey(recoveryKey);
         setShowRecoveryModal(true);
+      } else if (result.errorCode === "UNVERIFIED_EMAIL") {
+        const targetEmail = result.data?.email || email;
+        toast("A new verification code has been sent to your inbox.", {
+          icon: "📬",
+          duration: 4000,
+        });
+        navigate(`/verify-email?email=${encodeURIComponent(targetEmail)}`);
       } else {
         toast.error(result.error);
       }
@@ -245,11 +252,10 @@ const Register = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleChange}
-                    className={`w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
-                      errors.email
+                    className={`w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${errors.email
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
-                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                     placeholder="you@example.com"
                   />
                 </div>
@@ -276,11 +282,10 @@ const Register = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
-                      errors.password
+                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${errors.password
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
-                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                     placeholder="••••••••"
                   />
                   <button
@@ -318,11 +323,10 @@ const Register = () => {
                     name="confirm_password"
                     value={formData.confirm_password}
                     onChange={handleChange}
-                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${
-                      errors.confirm_password
+                    className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base rounded-lg sm:rounded-xl border ${errors.confirm_password
                         ? "border-red-500 focus:ring-red-500"
                         : "border-gray-300 dark:border-gray-600 focus:ring-primary-500"
-                    } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                      } bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
                     placeholder="••••••••"
                   />
                   <button
