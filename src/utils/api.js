@@ -205,11 +205,24 @@ export const authAPI = {
    * Reset the master password. All re-encryption is done client-side
    * before calling this endpoint.
    *
-   * @param {object} payload - { email, new_master_hash, new_kek_salt,
+   * @param {object} payload - { email, otp_token, new_master_hash, new_kek_salt,
    *   encrypted_mek_by_password, mek_pw_iv, mek_pw_tag }
    */
   resetPassword: async (payload) => {
     const response = await api.post("/auth/reset-password", payload);
+    return response.data;
+  },
+
+  /**
+   * Verify the 6-digit OTP sent to email during the recovery flow.
+   * Returns a short-lived otp_token to authorize the password reset.
+   *
+   * @param {string} email
+   * @param {string} otp - 6-digit code
+   * @returns {Promise<{data: {otp_token: string}}>}
+   */
+  verifyRecoveryOtp: async (email, otp) => {
+    const response = await api.post("/auth/verify-recovery-otp", { email, otp });
     return response.data;
   },
 
