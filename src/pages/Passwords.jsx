@@ -210,11 +210,11 @@ const Passwords = () => {
       );
       setTotalPages(
         paginationData.total_pages ||
-          Math.ceil(
-            (paginationData.total ||
-              paginationData.total_items ||
-              vaultList.length) / perPage,
-          ),
+        Math.ceil(
+          (paginationData.total ||
+            paginationData.total_items ||
+            vaultList.length) / perPage,
+        ),
       );
       setCurrentPage(paginationData.current_page || currentPage);
     } catch (error) {
@@ -424,35 +424,16 @@ const Passwords = () => {
           {/* Favorites Filter */}
           <button
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-            className={`${baseBtn} font-semibold ${
-              showOnlyFavorites
+            className={`${baseBtn} font-semibold ${showOnlyFavorites
                 ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
                 : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-            }`}
+              }`}
           >
             <Star
-              className={`w-5 h-5 ${
-                showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
-              }`}
+              className={`w-5 h-5 ${showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
+                }`}
             />
             <span className="hidden sm:inline">Favorites</span>
-          </button>
-
-          {/* Export Excel */}
-          <button
-            onClick={handleExportCsv}
-            disabled={isExporting}
-            className={`${baseBtn} font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed`}
-            title="Export passwords to Excel"
-          >
-            {isExporting ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <Download className="w-5 h-5" />
-            )}
-            <span className="hidden sm:inline">
-              {isExporting ? "Exporting..." : "Export Excel"}
-            </span>
           </button>
 
           <motion.button
@@ -560,11 +541,10 @@ const Passwords = () => {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                      currentPage === pageNum
+                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${currentPage === pageNum
                         ? "bg-blue-500 text-white"
                         : "text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600"
-                    }`}
+                      }`}
                   >
                     {pageNum}
                   </button>
@@ -688,11 +668,10 @@ const PasswordCard = ({
             }
           >
             <Star
-              className={`w-4 h-4 ${
-                password.is_favorite
+              className={`w-4 h-4 ${password.is_favorite
                   ? "text-yellow-500 fill-yellow-500"
                   : "text-slate-400 hover:text-yellow-500"
-              }`}
+                }`}
             />
           </button>
           <div className="relative" ref={menuRef}>
