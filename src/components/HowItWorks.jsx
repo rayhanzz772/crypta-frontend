@@ -8,8 +8,7 @@ const steps = [
     title: "Register & Create a Master Password",
     description:
       "Sign up and create a strong master password. This is the only password you'll need to remember. We never store or transmit it.",
-    color: "from-blue-500 to-cyan-500",
-    image: "👤",
+    color: "from-blue-500 to-cyan-500"
   },
   {
     number: "02",
@@ -17,8 +16,7 @@ const steps = [
     title: "Encrypt & Save Your Secrets",
     description:
       "Add your passwords and notes, and we'll encrypt each one with AES-256-GCM using your master password. Each entry gets unique Argon2id salt.",
-    color: "from-purple-500 to-pink-500",
-    image: "🔒",
+    color: "from-purple-500 to-pink-500"
   },
   {
     number: "03",
@@ -27,7 +25,6 @@ const steps = [
     description:
       "Unlock your vault with your master password. Decryption happens instantly on your device - your secrets never leave unencrypted.",
     color: "from-green-500 to-emerald-500",
-    image: "✨",
   },
 ];
 

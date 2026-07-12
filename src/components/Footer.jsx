@@ -45,12 +45,11 @@ const Footer = () => {
           {/* Brand */}
           <div className="col-span-2 md:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 flex items-center justify-center shadow-lg">
-                <Lock
-                  className="w-5 h-5 sm:w-6 sm:h-6 text-white"
-                  strokeWidth={2.5}
-                />
-              </div>
+              <img
+                src="/logo_shield.png"
+                alt="Crypta Logo"
+                className="w-9 h-9 sm:w-10 sm:h-10"
+              />
               <span className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
                 Crypta
               </span>

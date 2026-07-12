@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import CreateVaultModal from "../components/CreateVaultModal";
@@ -55,45 +56,56 @@ const AppLayout = () => {
       </div>
 
       {/* Mobile Sidebar Overlay */}
-      {isMobileSidebarOpen && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-            onClick={() => setIsMobileSidebarOpen(false)}
-          />
+      <AnimatePresence>
+        {isMobileSidebarOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+              onClick={() => setIsMobileSidebarOpen(false)}
+            />
 
-          {/* Sidebar */}
-          <div className="fixed inset-y-0 left-0 z-50 w-64 lg:hidden">
-            <div className="relative h-full">
-              <Sidebar
-                onNewPassword={() => {
-                  setIsCreateModalOpen(true);
-                  setIsMobileSidebarOpen(false);
-                }}
-                selectedCategory={selectedCategory}
-                onCategoryChange={(category) => {
-                  handleCategoryChange(category);
-                  setIsMobileSidebarOpen(false);
-                }}
-                onUnlock={() => {
-                  handleUnlock();
-                  setIsMobileSidebarOpen(false);
-                }}
-                onNavigate={() => setIsMobileSidebarOpen(false)}
-              />
-              {/* Close button */}
-              <button
-                onClick={() => setIsMobileSidebarOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-                aria-label="Close menu"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+            {/* Sidebar */}
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
+              className="fixed inset-y-0 left-0 z-50 w-72 lg:hidden shadow-2xl"
+            >
+              <div className="relative h-full bg-white dark:bg-slate-900">
+                <Sidebar
+                  onNewPassword={() => {
+                    setIsCreateModalOpen(true);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  selectedCategory={selectedCategory}
+                  onCategoryChange={(category) => {
+                    handleCategoryChange(category);
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  onUnlock={() => {
+                    handleUnlock();
+                    setIsMobileSidebarOpen(false);
+                  }}
+                  onNavigate={() => setIsMobileSidebarOpen(false)}
+                />
+                {/* Close button */}
+                <button
+                  onClick={() => setIsMobileSidebarOpen(false)}
+                  className="absolute top-4 -right-12 p-2 rounded-full bg-white/10 text-white hover:bg-white/20 backdrop-blur-md transition-colors"
+                  aria-label="Close menu"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">

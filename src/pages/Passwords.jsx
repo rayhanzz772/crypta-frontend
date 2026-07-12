@@ -336,12 +336,50 @@ const Passwords = () => {
   // Empty State
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-600 dark:text-slate-400">
-            Loading passwords...
-          </p>
+      <div className="w-full">
+        {/* Header Skeleton */}
+        <div className="flex items-center justify-between mb-6">
+          <div className="space-y-2">
+            <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+            <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" />
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="h-11 w-28 bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse hidden sm:block" />
+            <div className="h-11 w-40 bg-blue-200 dark:bg-blue-900/50 rounded-xl animate-pulse" />
+          </div>
+        </div>
+
+        {/* Grid Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div
+              key={i}
+              className="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200/50 dark:border-slate-700/50"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse" />
+                  <div className="h-5 w-32 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                </div>
+                <div className="flex gap-2">
+                  <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                  <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                </div>
+              </div>
+              
+              <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-3 mb-3 flex justify-between items-center">
+                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+              </div>
+              
+              <div className="h-9 w-full bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse mb-3" />
+              
+              <div className="pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex justify-between">
+                <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                <div className="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -440,7 +478,7 @@ const Passwords = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreateModal}
-            className={`${baseBtn} bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl`}
+            className={`${baseBtn} bg-gradient-to-r from-blue-600 to-primary-500 text-white font-semibold shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40`}
           >
             <Plus className="w-5 h-5" />
             <span className="hidden sm:inline">Add Password</span>
@@ -637,9 +675,11 @@ const PasswordCard = ({
 
   return (
     <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all group relative"
+      className="glass-panel p-5 group relative"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">

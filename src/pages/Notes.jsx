@@ -549,13 +549,33 @@ const Notes = () => {
 
           {/* Notes Display */}
           {isLoading ? (
-            <div className="flex items-center justify-center min-h-[60vh]">
-              <div className="text-center">
-                <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-400">
-                  Loading notes..
-                </p>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white/50 dark:bg-slate-800/50 rounded-xl border border-slate-200/50 dark:border-slate-700/50 overflow-hidden"
+                >
+                  <div className="h-14 bg-slate-200 dark:bg-slate-700 animate-pulse" />
+                  <div className="p-4">
+                    <div className="h-6 w-3/4 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse mb-3" />
+                    <div className="space-y-2 mb-4">
+                      <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                      <div className="h-4 w-5/6 bg-slate-100 dark:bg-slate-800 rounded animate-pulse" />
+                    </div>
+                    <div className="flex gap-2 mb-4">
+                      <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                      <div className="h-6 w-20 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                    </div>
+                    <div className="flex justify-between items-center pt-4 border-t border-slate-100 dark:border-slate-700/50">
+                      <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+                      <div className="flex gap-2">
+                        <div className="h-8 w-8 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                        <div className="h-8 w-8 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredNotes.length === 0 ? (
             <div className="flex items-center justify-center py-20">
@@ -596,11 +616,11 @@ const Notes = () => {
                 return (
                   <div
                     key={note.id}
-                    className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 hover:shadow-xl transition-all overflow-hidden group"
+                    className="glass-panel hover:shadow-xl transition-all overflow-hidden group border-0"
                   >
                     {/* Header */}
                     <div
-                      className={`bg-gradient-to-r ${gradient} p-4 flex items-center justify-between`}
+                      className={`bg-gradient-to-r ${gradient} p-4 flex items-center justify-between opacity-90 group-hover:opacity-100 transition-opacity`}
                     >
                       <div className="flex items-center gap-2 text-white">
                         <Icon className="w-5 h-5" />

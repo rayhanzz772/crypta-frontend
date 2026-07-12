@@ -68,17 +68,24 @@ const Sidebar = ({
   ];
 
   return (
-    <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
+    <aside className="w-64 glass-panel border-r-0 lg:border-r border-slate-200/50 dark:border-slate-800/50 flex flex-col h-full rounded-none">
       {/* Logo & Brand */}
-      <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center gap-2 justify-center">
-        <img
+      <div className="p-4 border-b border-slate-200/50 dark:border-slate-800/50 flex items-center gap-3 justify-center mt-2">
+        <motion.img
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", bounce: 0.5 }}
           src="/logo_shield.png"
           alt="Crypta Logo"
-          className="w-8 h-8 object-contain"
+          className="w-10 h-10 object-contain drop-shadow-md"
         />
-        <p className="text-xl font-bold text-gray-900 dark:text-white">
+        <motion.p 
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-primary-500 dark:from-blue-400 dark:to-primary-300"
+        >
           Crypta
-        </p>
+        </motion.p>
       </div>
 
       {/* Categories */}
@@ -96,10 +103,10 @@ const Sidebar = ({
                 key={category.value}
                 to="/app"
                 onClick={() => handleCategoryClick(category.value)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg transition-all group ${
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group hover:scale-[1.02] active:scale-[0.98] ${
                   isActive
-                    ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
-                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                    ? "bg-gradient-to-r from-primary-500/10 to-blue-500/10 dark:from-primary-900/30 dark:to-blue-900/30 text-primary-700 dark:text-primary-300 shadow-sm border border-primary-100/50 dark:border-primary-800/30"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
                 }`}
               >
                 <div className="flex items-center gap-3">
@@ -148,10 +155,10 @@ const Sidebar = ({
                   }
                 }}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
                     isActive
-                      ? "bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800"
+                      ? "bg-gradient-to-r from-primary-500/10 to-blue-500/10 dark:from-primary-900/30 dark:to-blue-900/30 text-primary-700 dark:text-primary-300 shadow-sm border border-primary-100/50 dark:border-primary-800/30"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
                   }`
                 }
               >
