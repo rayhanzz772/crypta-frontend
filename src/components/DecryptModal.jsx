@@ -19,6 +19,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const [decryptedPassword, setDecryptedPassword] = useState("");
   const [decryptedUsername, setDecryptedUsername] = useState("");
+  const [decryptedNote, setDecryptedNote] = useState("");
   const [hasDecryptedOnce, setHasDecryptedOnce] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +42,11 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
       if (vaultItem.username) {
         const uname = await safeDecryptField(vaultItem.username, mek);
         setDecryptedUsername(uname);
+      }
+
+      if (vaultItem.note) {
+        const note = await safeDecryptField(vaultItem.note, mek);
+        setDecryptedNote(note);
       }
 
       setHasDecryptedOnce(true);
@@ -93,6 +99,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
   const handleClearPassword = () => {
     setDecryptedPassword("");
     setDecryptedUsername("");
+    setDecryptedNote("");
     setTimeRemaining(30);
     setShowPassword(false);
     if (clearTimerRef.current) {
@@ -263,7 +270,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
           )}
 
           {/* Note */}
-          {vaultItem.note && (
+          {(vaultItem.note || decryptedNote) && (
             <div>
               <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Note
@@ -271,11 +278,11 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
               <div className="relative">
                 <div className="px-3 sm:px-4 py-2.5 sm:py-3 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 max-h-40 sm:max-h-48 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
                   <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap break-words">
-                    {vaultItem.note}
+                    {decryptedNote || (hasDecryptedOnce ? "" : "••••••••")}
                   </p>
                 </div>
                 {/* Scroll indicator - shows if content is scrollable */}
-                {vaultItem.note.length > 200 && (
+                {decryptedNote.length > 200 && (
                   <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-50 dark:from-slate-900 to-transparent rounded-b-xl pointer-events-none"></div>
                 )}
               </div>
