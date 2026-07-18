@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { X, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import { useAuth } from "../contexts/AuthContext";
+import { safeDecryptField } from "../utils/crypto";
 
 const DeleteVaultModal = ({
   isOpen,
@@ -13,6 +14,23 @@ const DeleteVaultModal = ({
   const { mek } = useAuth();
   const [confirmText, setConfirmText] = useState("");
   const [error, setError] = useState("");
+  const [decryptedUsername, setDecryptedUsername] = useState("");
+
+  useEffect(() => {
+    const decryptDetails = async () => {
+      if (vaultItem && mek) {
+        try {
+          const username = await safeDecryptField(vaultItem.username, mek);
+          setDecryptedUsername(username);
+        } catch (e) {
+          setDecryptedUsername(vaultItem.username);
+        }
+      } else if (vaultItem) {
+        setDecryptedUsername(vaultItem.username);
+      }
+    };
+    decryptDetails();
+  }, [vaultItem, mek]);
 
   useEffect(() => {
     if (isOpen) {
@@ -101,7 +119,7 @@ const DeleteVaultModal = ({
                   {vaultItem.name}
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
-                  {vaultItem.username}
+                  {decryptedUsername}
                 </p>
               </div>
             </div>
