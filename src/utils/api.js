@@ -682,4 +682,59 @@ export const filesAPI = {
   },
 };
 
+// Vault Backup API endpoints
+export const vaultBackupAPI = {
+  /**
+   * Export vault as encrypted JSON file download.
+   * Uses axios with responseType:'blob' so the request goes through
+   * the configured baseURL (VITE_API_BASE_URL) and auth interceptors.
+   * Returns the full axios response: { data: Blob, headers: {...} }
+   */
+  exportBackup: async (includeNotes = false) => {
+    const response = await api.post(
+      `/api/vault/backup/export?include_notes=${includeNotes}`,
+      {},
+      {
+        responseType: "blob",
+        timeout: 0,
+      }
+    );
+    return response;
+  },
+
+  importBackup: async (bundle) => {
+    const response = await api.post("/api/vault/backup/import", bundle);
+    return response.data?.data || response.data;
+  },
+
+  getHistory: async (page = 1, perPage = 10) => {
+    const params = new URLSearchParams({ page, per_page: perPage });
+    const response = await api.get(`/api/vault/backup/history?${params.toString()}`);
+    return response.data;
+  },
+};
+
+// Trash API endpoints
+export const trashAPI = {
+  getAll: async () => {
+    const response = await api.get("/api/vault/trash");
+    return response.data;
+  },
+
+  restore: async (id, type) => {
+    const response = await api.post(`/api/vault/trash/${id}/restore`, { type });
+    return response.data;
+  },
+
+  deletePermanently: async (id, type) => {
+    const response = await api.delete(`/api/vault/trash/${id}`, { params: { type } });
+    return response.data;
+  },
+
+  empty: async () => {
+    const response = await api.delete("/api/vault/trash/empty");
+    return response.data;
+  },
+};
+
 export default api;

@@ -21,6 +21,7 @@ import ApiDocumentation from "./pages/ApiDocumentation";
 import SecretManager from "./pages/SecretManager";
 import SecureFiles from "./pages/SecureFiles";
 import FolderDetail from "./pages/FolderDetail";
+import Trash from "./pages/Trash";
 
 function App() {
   return (
@@ -83,6 +84,7 @@ function App() {
               <Route path="api-docs" element={<ApiDocumentation />} />
               <Route path="files" element={<SecureFiles />} />
               <Route path="files/folders/:folderId" element={<FolderDetail />} />
+              <Route path="trash" element={<Trash />} />
             </Route>
 
             {/* Catch all - redirect to home */}

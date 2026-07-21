@@ -6,12 +6,14 @@ import Sidebar from "../components/Sidebar";
 import CreateVaultModal from "../components/CreateVaultModal";
 import UnlockVaultModal from "../components/UnlockVaultModal";
 import LegacyMigrationModal from "../components/LegacyMigrationModal";
+import VaultBackupModal from "../components/VaultBackupModal";
 import { X } from "lucide-react";
 
 const AppLayout = () => {
   const location = useLocation();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isUnlockModalOpen, setIsUnlockModalOpen] = useState(false);
+  const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,6 +54,11 @@ const AppLayout = () => {
           selectedCategory={selectedCategory}
           onCategoryChange={handleCategoryChange}
           onUnlock={handleUnlock}
+          onNavigate={(action) => {
+            if (action === "open_backup_modal") {
+              setIsBackupModalOpen(true);
+            }
+          }}
         />
       </div>
 
@@ -91,7 +98,12 @@ const AppLayout = () => {
                     handleUnlock();
                     setIsMobileSidebarOpen(false);
                   }}
-                  onNavigate={() => setIsMobileSidebarOpen(false)}
+                  onNavigate={(action) => {
+                    if (action === "open_backup_modal") {
+                      setIsBackupModalOpen(true);
+                    }
+                    setIsMobileSidebarOpen(false);
+                  }}
                 />
                 {/* Close button */}
                 <button
@@ -115,6 +127,7 @@ const AppLayout = () => {
           onSearchChange={handleSearch}
           onMenuToggle={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
           onUnlock={handleUnlock}
+          onBackup={() => setIsBackupModalOpen(true)}
         />
 
         {/* Page Content */}
@@ -124,6 +137,7 @@ const AppLayout = () => {
               context={{
                 refreshTrigger,
                 openCreateModal: () => setIsCreateModalOpen(true),
+                openBackupModal: () => setIsBackupModalOpen(true),
                 searchQuery,
                 selectedCategory,
                 onSearchChange: handleSearch,
@@ -149,6 +163,13 @@ const AppLayout = () => {
 
       {/* Legacy Migration Modal — auto-shows for mek_version=0 accounts */}
       <LegacyMigrationModal />
+
+      {/* Vault Backup Modal */}
+      <VaultBackupModal 
+        isOpen={isBackupModalOpen}
+        onClose={() => setIsBackupModalOpen(false)}
+        onUnlock={handleUnlock}
+      />
     </div>
   );
 };

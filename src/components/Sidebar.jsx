@@ -79,7 +79,7 @@ const Sidebar = ({
           alt="Crypta Logo"
           className="w-10 h-10 object-contain drop-shadow-md"
         />
-        <motion.p 
+        <motion.p
           initial={{ x: -20, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-primary-500 dark:from-blue-400 dark:to-primary-300"
@@ -103,29 +103,26 @@ const Sidebar = ({
                 key={category.value}
                 to="/app"
                 onClick={() => handleCategoryClick(category.value)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group hover:scale-[1.02] active:scale-[0.98] ${
-                  isActive
+                className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group hover:scale-[1.02] active:scale-[0.98] ${isActive
                     ? "bg-gradient-to-r from-primary-500/10 to-blue-500/10 dark:from-primary-900/30 dark:to-blue-900/30 text-primary-700 dark:text-primary-300 shadow-sm border border-primary-100/50 dark:border-primary-800/30"
                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon
-                    className={`w-5 h-5 ${
-                      isActive
+                    className={`w-5 h-5 ${isActive
                         ? "text-primary-600 dark:text-primary-400"
                         : "text-slate-500 dark:text-slate-500"
-                    }`}
+                      }`}
                   />
                   <span className="font-medium text-sm">{category.name}</span>
                 </div>
                 {category.count > 0 && (
                   <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                      isActive
+                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${isActive
                         ? "bg-primary-100 dark:bg-primary-800 text-primary-700 dark:text-primary-300"
                         : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                    }`}
+                      }`}
                   >
                     {category.count}
                   </span>
@@ -143,8 +140,27 @@ const Sidebar = ({
           <p className="px-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
             Other
           </p>
-          {secondaryLinks.map((link) => {
+          {secondaryLinks.map((link, idx) => {
             const Icon = link.icon;
+
+            if (link.action === "open_backup_modal") {
+              return (
+                <button
+                  key={`action-${idx}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (onNavigate) {
+                      onNavigate(link.action);
+                    }
+                  }}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
+                >
+                  <Icon className="w-5 h-5 text-slate-500 dark:text-slate-500" />
+                  <span className="font-medium text-sm">{link.name}</span>
+                </button>
+              );
+            }
+
             return (
               <NavLink
                 key={link.path}
@@ -155,21 +171,19 @@ const Sidebar = ({
                   }
                 }}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${
-                    isActive
-                      ? "bg-gradient-to-r from-primary-500/10 to-blue-500/10 dark:from-primary-900/30 dark:to-blue-900/30 text-primary-700 dark:text-primary-300 shadow-sm border border-primary-100/50 dark:border-primary-800/30"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${isActive
+                    ? "bg-gradient-to-r from-primary-500/10 to-blue-500/10 dark:from-primary-900/30 dark:to-blue-900/30 text-primary-700 dark:text-primary-300 shadow-sm border border-primary-100/50 dark:border-primary-800/30"
+                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-100/50 dark:hover:bg-slate-800/50 border border-transparent"
                   }`
                 }
               >
                 {({ isActive }) => (
                   <>
                     <Icon
-                      className={`w-5 h-5 ${
-                        isActive
+                      className={`w-5 h-5 ${isActive
                           ? "text-primary-600 dark:text-primary-400"
                           : "text-slate-500 dark:text-slate-500"
-                      }`}
+                        }`}
                     />
                     <span className="font-medium text-sm">{link.name}</span>
                   </>
@@ -192,11 +206,10 @@ const Sidebar = ({
               repeat: isVaultUnlocked ? 0 : Infinity,
               repeatDelay: 1,
             }}
-            className={`rounded-xl p-3 transition-all ${
-              isVaultUnlocked
+            className={`rounded-xl p-3 transition-all ${isVaultUnlocked
                 ? "bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-800"
                 : "bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800"
-            }`}
+              }`}
           >
             <div className="flex items-center gap-2 mb-1">
               <motion.div
@@ -217,21 +230,19 @@ const Sidebar = ({
                 )}
               </motion.div>
               <span
-                className={`text-xs font-semibold ${
-                  isVaultUnlocked
+                className={`text-xs font-semibold ${isVaultUnlocked
                     ? "text-green-700 dark:text-green-300"
                     : "text-blue-700 dark:text-blue-300"
-                }`}
+                  }`}
               >
                 {isVaultUnlocked ? "Vault Unlocked" : "Vault Locked"}
               </span>
             </div>
             <p
-              className={`text-xs ${
-                isVaultUnlocked
+              className={`text-xs ${isVaultUnlocked
                   ? "text-green-600 dark:text-green-400"
                   : "text-blue-600 dark:text-blue-400"
-              }`}
+                }`}
             >
               {isVaultUnlocked
                 ? "All passwords encrypted"

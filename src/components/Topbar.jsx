@@ -10,6 +10,7 @@ import {
   Code,
   Menu,
   LockOpen,
+  HardDriveDownload,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
@@ -23,6 +24,7 @@ const Topbar = ({
   onSearchChange,
   onMenuToggle,
   onUnlock,
+  onBackup,
 }) => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -91,7 +93,7 @@ const Topbar = ({
   };
 
   return (
-    <header className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40">
+    <header className="bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/50 dark:border-slate-800/50 sticky top-0 z-40">
       <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
         {/* Left: Hamburger Menu (mobile only) */}
         <button
@@ -141,9 +143,8 @@ const Topbar = ({
                 <User className="w-4 h-4 text-white" />
               </div>
               <ChevronDown
-                className={`w-4 h-4 text-slate-500 transition-transform ${
-                  isUserMenuOpen ? "rotate-180" : ""
-                }`}
+                className={`w-4 h-4 text-slate-500 transition-transform ${isUserMenuOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -206,6 +207,19 @@ const Topbar = ({
 
                     <button
                       onClick={() => {
+                        if (onBackup) onBackup();
+                        setIsUserMenuOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                    >
+                      <HardDriveDownload className="w-4 h-4" />
+                      <span className="text-sm font-medium">
+                        Vault Backup
+                      </span>
+                    </button>
+
+                    <button
+                      onClick={() => {
                         handleLogout();
                         setIsUserMenuOpen(false);
                       }}
@@ -226,13 +240,13 @@ const Topbar = ({
       <div className="px-4 pb-3 md:hidden">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="text"
-              placeholder={getSearchPlaceholder()}
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none shadow-sm"
-            />
+          <input
+            type="text"
+            placeholder={getSearchPlaceholder()}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 bg-slate-50/50 dark:bg-slate-800/50 text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-primary-500/50 focus:border-primary-500 transition-all outline-none shadow-sm"
+          />
         </div>
       </div>
     </header>
