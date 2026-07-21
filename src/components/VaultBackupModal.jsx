@@ -13,10 +13,12 @@ import {
   ShieldAlert,
   Info,
   Lock,
+  AlertTriangle,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { vaultBackupAPI } from "../utils/api";
+import { decryptField } from "../utils/crypto";
 import Pagination from "./Pagination";
 
 const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
@@ -31,6 +33,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
   const [importFile, setImportFile] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [importResult, setImportResult] = useState(null);
+  const [importError, setImportError] = useState(null);
   const fileInputRef = useRef(null);
 
   // History State
@@ -44,6 +47,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
       setActiveTab("export");
       setImportFile(null);
       setImportResult(null);
+      setImportError(null);
     }
   }, [isOpen]);
 
@@ -117,8 +121,49 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
         return;
       }
       setImportFile(file);
-      setImportResult(null); // Reset previous result
+      setImportResult(null);
+      setImportError(null);
     }
+  };
+
+  /**
+   * Trial decryption test on a sample item to verify key match.
+   */
+  const verifyBackupEncryption = async (bundle, mekHex) => {
+    if (!bundle || !Array.isArray(bundle.items) || bundle.items.length === 0) {
+      return true;
+    }
+
+    const sampleItem = bundle.items.find(
+      (item) => item.password_encrypted || item.note || item.username
+    );
+
+    if (!sampleItem) return true;
+
+    const ciphertextToTest =
+      sampleItem.password_encrypted || sampleItem.note || sampleItem.username;
+
+    let parsed;
+    try {
+      parsed =
+        typeof ciphertextToTest === "string"
+          ? JSON.parse(ciphertextToTest)
+          : ciphertextToTest;
+    } catch {
+      return true;
+    }
+
+    if (parsed && typeof parsed === "object" && parsed.ciphertext && parsed.iv && parsed.tag) {
+      try {
+        await decryptField(ciphertextToTest, mekHex);
+        return true; // ✅ Decryption test succeeded
+      } catch (err) {
+        console.warn("Pre-import decryption test failed:", err);
+        return false; // ❌ Key mismatch
+      }
+    }
+
+    return true;
   };
 
   const handleImport = async () => {
@@ -126,6 +171,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
 
     setIsImporting(true);
     setImportResult(null);
+    setImportError(null);
     try {
       // Read and validate file client-side before sending
       const text = await importFile.text();
@@ -139,6 +185,18 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
       // Basic validation
       if (bundle.app !== "crypta" || !bundle.zke || !Array.isArray(bundle.items)) {
         throw new Error("Invalid Crypta backup format");
+      }
+
+      // 🔍 Pre-Import Verification Test (Trial Decryption)
+      if (mek) {
+        const isKeyMatching = await verifyBackupEncryption(bundle, mek);
+        if (!isKeyMatching) {
+          const mismatchMsg =
+            "Gagal Mengimpor: Berkas backup ini dienkripsi menggunakan Master Password atau Akun yang berbeda. Anda tidak akan dapat membaca password di dalam berkas ini.";
+          setImportError(mismatchMsg);
+          toast.error(mismatchMsg, { duration: 5000 });
+          return;
+        }
       }
 
       const result = await vaultBackupAPI.importBackup(bundle);
@@ -349,6 +407,20 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
 
                 {activeTab === "import" && (
                   <div className="space-y-6">
+
+                    {importError && (
+                      <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4 rounded-xl flex gap-3 items-start">
+                        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-red-800 dark:text-red-300 text-sm mb-0.5">
+                            Enkripsi Tidak Cocok / Akun Berbeda
+                          </h4>
+                          <p className="text-xs text-red-700 dark:text-red-300/90 leading-relaxed">
+                            {importError}
+                          </p>
+                        </div>
+                      </div>
+                    )}
 
                     {importResult ? (
                       <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
