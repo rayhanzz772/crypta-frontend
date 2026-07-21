@@ -16,6 +16,8 @@ import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { trashAPI } from "../utils/api";
 import { safeDecryptField } from "../utils/crypto";
+import EmptyTrashModal from "../components/EmptyTrashModal";
+import DeleteTrashItemModal from "../components/DeleteTrashItemModal";
 
 const Trash = () => {
   const { mek } = useAuth();
@@ -24,6 +26,9 @@ const Trash = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isActioning, setIsActioning] = useState(null); // id of item being processed
   const [searchQuery, setSearchQuery] = useState("");
+  const [isEmptyModalOpen, setIsEmptyModalOpen] = useState(false);
+  const [isClearingTrash, setIsClearingTrash] = useState(false);
+  const [deletingItem, setDeletingItem] = useState(null);
 
   const isVaultLocked = !mek;
 
@@ -74,15 +79,19 @@ const Trash = () => {
     }
   };
 
-  const handleDeletePermanently = async (id, type) => {
-    if (!window.confirm("Are you sure you want to permanently delete this item? This action CANNOT be undone.")) {
-      return;
-    }
+  const openDeleteModal = (item) => {
+    setDeletingItem(item);
+  };
+
+  const handleConfirmDeletePermanently = async () => {
+    if (!deletingItem) return;
+    const { id, type } = deletingItem;
     setIsActioning(id);
     try {
       await trashAPI.deletePermanently(id, type);
       toast.success("Item permanently deleted");
       setItems((prev) => prev.filter((item) => item.id !== id));
+      setDeletingItem(null);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete item");
     } finally {
@@ -90,20 +99,22 @@ const Trash = () => {
     }
   };
 
-  const handleEmptyTrash = async () => {
+  const handleEmptyTrash = () => {
     if (items.length === 0) return;
-    if (!window.confirm("Are you sure you want to empty the Trash? ALL items will be permanently deleted!")) {
-      return;
-    }
-    setIsLoading(true);
+    setIsEmptyModalOpen(true);
+  };
+
+  const handleConfirmEmptyTrash = async () => {
+    setIsClearingTrash(true);
     try {
       await trashAPI.empty();
       toast.success("Trash emptied successfully");
       setItems([]);
+      setIsEmptyModalOpen(false);
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to empty trash");
     } finally {
-      setIsLoading(false);
+      setIsClearingTrash(false);
     }
   };
 
@@ -278,7 +289,7 @@ const Trash = () => {
                     </button>
 
                     <button
-                      onClick={() => handleDeletePermanently(item.id, item.type)}
+                      onClick={() => openDeleteModal(item)}
                       disabled={isPendingAction || isActioning !== null}
                       className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-xl transition-all"
                     >
@@ -292,6 +303,24 @@ const Trash = () => {
           </AnimatePresence>
         </div>
       )}
+
+      {/* Custom Empty Trash Modal */}
+      <EmptyTrashModal
+        isOpen={isEmptyModalOpen}
+        onClose={() => setIsEmptyModalOpen(false)}
+        onConfirm={handleConfirmEmptyTrash}
+        itemCount={items.length}
+        isClearing={isClearingTrash}
+      />
+
+      {/* Custom Delete Item Permanently Modal */}
+      <DeleteTrashItemModal
+        isOpen={!!deletingItem}
+        onClose={() => setDeletingItem(null)}
+        onConfirm={handleConfirmDeletePermanently}
+        item={deletingItem}
+        isDeleting={isActioning === deletingItem?.id}
+      />
     </div>
   );
 };

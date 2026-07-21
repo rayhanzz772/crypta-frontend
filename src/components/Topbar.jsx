@@ -44,6 +44,9 @@ const Topbar = ({
     if (location.pathname.includes("/files")) {
       return "Search Folder / file...";
     }
+    if (location.pathname.includes("/trash")) {
+      return "Search trash items...";
+    }
     return "Search passwords...";
   };
 

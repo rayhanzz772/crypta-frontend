@@ -11,6 +11,7 @@ import {
   FileText,
   FolderKey,
   FolderLock,
+  Trash2,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useAuth } from "../contexts/AuthContext";
@@ -65,6 +66,7 @@ const Sidebar = ({
     { name: "Secure Files", icon: FolderLock, path: "/app/files" },
     { name: "Secret Manager", icon: FolderKey, path: "/app/secret-manager" },
     { name: "Activity Logs", icon: Activity, path: "/app/logs" },
+    { name: "Trash Bin", icon: Trash2, path: "/app/trash" },
   ];
 
   return (
