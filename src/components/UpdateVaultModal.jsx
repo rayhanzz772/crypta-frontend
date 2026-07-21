@@ -13,7 +13,7 @@ import {
 import toast from "react-hot-toast";
 import { vaultAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
-import { encryptField } from "../utils/crypto";
+import { encryptField, safeDecryptField } from "../utils/crypto";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 
@@ -30,16 +30,41 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (vaultItem) {
-      setFormData({
-        name: vaultItem.name || "",
-        username: vaultItem.username || "",
-        password: "",
-        note: vaultItem.note || "",
-        category_name: vaultItem.category_name || "Work",
-      });
-    }
-  }, [vaultItem]);
+    const decryptData = async () => {
+      if (vaultItem && mek) {
+        try {
+          const decryptedUsername = await safeDecryptField(vaultItem.username, mek);
+          const decryptedNote = await safeDecryptField(vaultItem.note, mek);
+
+          setFormData({
+            name: vaultItem.name || "",
+            username: decryptedUsername || "",
+            password: "",
+            note: decryptedNote || "",
+            category_name: vaultItem.category_name || "Work",
+          });
+        } catch (error) {
+          console.error("Failed to decrypt item details:", error);
+          setFormData({
+            name: vaultItem.name || "",
+            username: vaultItem.username || "",
+            password: "",
+            note: vaultItem.note || "",
+            category_name: vaultItem.category_name || "Work",
+          });
+        }
+      } else if (vaultItem) {
+        setFormData({
+          name: vaultItem.name || "",
+          username: vaultItem.username || "",
+          password: "",
+          note: vaultItem.note || "",
+          category_name: vaultItem.category_name || "Work",
+        });
+      }
+    };
+    decryptData();
+  }, [vaultItem, mek]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
