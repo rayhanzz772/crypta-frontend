@@ -16,12 +16,18 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { vaultAPI } from "../utils/api";
 import { safeDecryptField } from "../utils/crypto";
-import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import {
+  getCategoryIcon,
+  getCategoryGradient,
+  getCategoryColor,
+} from "../utils/categoryIcons";
 import CreateVaultModal from "../components/CreateVaultModal";
 import DecryptModal from "../components/DecryptModal";
 import DeleteVaultModal from "../components/DeleteVaultModal";
@@ -43,6 +49,14 @@ const Passwords = () => {
   const [selectedVault, setSelectedVault] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [viewMode, setViewMode] = useState(() => {
+    return localStorage.getItem("vault_view_mode") || "grid";
+  });
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("vault_view_mode", mode);
+  };
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -350,33 +364,28 @@ const Passwords = () => {
         </div>
 
         {/* Grid Skeleton */}
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white/50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200/50 dark:border-slate-700/50"
+              className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-3.5 sm:p-4 border border-slate-200/60 dark:border-slate-800/60 flex flex-col justify-between"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse" />
-                  <div className="h-5 w-32 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                  <div className="space-y-1">
+                    <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                    <div className="h-3 w-16 bg-slate-100 dark:bg-slate-800/60 rounded animate-pulse" />
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
-                  <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
-                </div>
+                <div className="w-6 h-6 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
               </div>
-              
-              <div className="bg-slate-100 dark:bg-slate-900/50 rounded-lg p-3 mb-3 flex justify-between items-center">
-                <div className="h-4 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-                <div className="w-7 h-7 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-              </div>
-              
-              <div className="h-9 w-full bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse mb-3" />
-              
-              <div className="pt-3 border-t border-slate-200/50 dark:border-slate-700/50 flex justify-between">
-                <div className="h-3 w-20 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
-                <div className="h-3 w-24 bg-slate-200 dark:bg-slate-700 rounded animate-pulse" />
+
+              <div className="bg-slate-100 dark:bg-slate-900/80 rounded-lg h-8 mb-3 animate-pulse" />
+
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex justify-between items-center">
+                <div className="h-3.5 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="h-3.5 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
               </div>
             </div>
           ))}
@@ -393,15 +402,15 @@ const Passwords = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-md"
         >
-          <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
-            <Lock className="w-10 h-10 text-white" />
+          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-500/20">
+            <Lock className="w-8 h-8 text-white" />
           </div>
 
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">
+          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
             No Passwords Yet
           </h2>
 
-          <p className="text-slate-600 dark:text-slate-400 mb-8">
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
             Your vault is empty. Start securing your passwords by adding your
             first entry.
           </p>
@@ -410,21 +419,21 @@ const Passwords = () => {
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
             Add First Password
           </motion.button>
 
           {/* Info Card */}
-          <div className="mt-12 bg-primary-50 dark:bg-primary-900/20 rounded-xl p-4 border border-primary-100 dark:border-primary-800">
+          <div className="mt-8 bg-blue-50/60 dark:bg-blue-950/20 rounded-xl p-3.5 border border-blue-100 dark:border-blue-900/40">
             <div className="flex items-start gap-3 text-left">
-              <Lock className="w-5 h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
+              <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-slate-800 dark:text-white mb-1">
+                <h3 className="text-xs font-semibold text-slate-800 dark:text-white mb-0.5">
                   End-to-End Encrypted
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-[11px] text-slate-600 dark:text-slate-400">
                   All passwords are encrypted with AES-256-GCM using your master
                   password. Only you can decrypt them.
                 </p>
@@ -440,82 +449,123 @@ const Passwords = () => {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-xl font-bold text-slate-800 dark:text-white mb-1 flex items-center gap-3">
+          <h1 className="text-lg font-bold text-slate-800 dark:text-white mb-0.5 flex items-center gap-2">
             {showOnlyFavorites ? "Favorite Passwords" : "All Passwords"}
             {isFiltering && (
-              <span className="inline-flex items-center gap-2 text-sm font-normal text-primary-600 dark:text-primary-400">
-                <Loader2 className="animate-spin h-4 w-4" />
+              <span className="inline-flex items-center gap-1.5 text-xs font-normal text-blue-600 dark:text-blue-400">
+                <Loader2 className="animate-spin h-3.5 w-3.5" />
                 Filtering...
               </span>
             )}
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             {filteredPasswords.length}{" "}
             {filteredPasswords.length === 1 ? "password" : "passwords"}
             {showOnlyFavorites ? " favorite password" : " stored securely"}
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
+          {/* View Mode Switcher */}
+          <div className="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+            <button
+              onClick={() => handleViewModeChange("grid")}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === "grid"
+                ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                }`}
+              title="Grid View"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleViewModeChange("list")}
+              className={`p-1.5 rounded-lg transition-all ${viewMode === "list"
+                ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
+                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                }`}
+              title="Dense List View"
+            >
+              <List className="w-4 h-4" />
+            </button>
+          </div>
+
           {/* Favorites Filter */}
           <button
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-            className={`${baseBtn} font-semibold ${showOnlyFavorites
-                ? "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 border border-yellow-200 dark:border-yellow-800"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+            className={`${baseBtn} text-xs font-medium ${showOnlyFavorites
+              ? "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800/60"
+              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
           >
             <Star
-              className={`w-5 h-5 ${showOnlyFavorites ? "fill-yellow-500 text-yellow-500" : ""
+              className={`w-4 h-4 ${showOnlyFavorites ? "fill-amber-500 text-amber-500" : ""
                 }`}
             />
             <span className="hidden sm:inline">Favorites</span>
           </button>
 
           <motion.button
-            whileHover={{ scale: 1.02 }}
+            whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             onClick={openCreateModal}
-            className={`${baseBtn} bg-gradient-to-r from-blue-600 to-primary-500 text-white font-semibold shadow-md shadow-blue-500/20 hover:shadow-lg hover:shadow-blue-500/40`}
+            className={`${baseBtn} bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium text-xs shadow-md shadow-blue-500/20 hover:shadow-lg`}
           >
-            <Plus className="w-5 h-5" />
+            <Plus className="w-4 h-4" />
             <span className="hidden sm:inline">Add Password</span>
           </motion.button>
         </div>
       </div>
 
-      {/* Password Grid */}
+      {/* Password Items Grid / List */}
       {filteredPasswords.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {filteredPasswords.map((password, index) => (
-            <PasswordCard
-              key={password.id || `password-${index}`}
-              password={password}
-              onCopy={handleCopy}
-              onDecrypt={handleDecrypt}
-              onUpdate={handleUpdateClick}
-              onDelete={handleDeleteClick}
-              onToggleFavorite={handleToggleFavorite}
-              isDeleting={deletingId === password.id}
-            />
-          ))}
-        </div>
+        viewMode === "grid" ? (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {filteredPasswords.map((password, index) => (
+              <PasswordCard
+                key={password.id || `password-${index}`}
+                password={password}
+                onCopy={handleCopy}
+                onDecrypt={handleDecrypt}
+                onUpdate={handleUpdateClick}
+                onDelete={handleDeleteClick}
+                onToggleFavorite={handleToggleFavorite}
+                isDeleting={deletingId === password.id}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl border border-slate-200/80 dark:border-slate-800 overflow-hidden divide-y divide-slate-200/60 dark:divide-slate-800/80 shadow-xs">
+            {filteredPasswords.map((password, index) => (
+              <PasswordListRow
+                key={password.id || `password-${index}`}
+                password={password}
+                onCopy={handleCopy}
+                onDecrypt={handleDecrypt}
+                onUpdate={handleUpdateClick}
+                onDelete={handleDeleteClick}
+                onToggleFavorite={handleToggleFavorite}
+                isDeleting={deletingId === password.id}
+              />
+            ))}
+          </div>
+        )
       ) : (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-center min-h-[400px]"
+          className="flex items-center justify-center min-h-[350px]"
         >
           <div className="text-center">
-            <Star className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4 opacity-50" />
-            <h3 className="text-lg font-semibold text-slate-600 dark:text-slate-400 mb-2">
+            <Star className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3 opacity-60" />
+            <h3 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
               {showOnlyFavorites
                 ? "No Favorite Passwords"
                 : "No Passwords Found"}
             </h3>
-            <p className="text-slate-500 dark:text-slate-500 mb-6">
+            <p className="text-xs text-slate-500 dark:text-slate-500 mb-5">
               {showOnlyFavorites
                 ? "You haven't marked any passwords as favorites yet."
                 : "Try adjusting your search or filters."}
@@ -523,7 +573,7 @@ const Passwords = () => {
             {showOnlyFavorites && (
               <button
                 onClick={() => setShowOnlyFavorites(false)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                className="px-3.5 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-500 transition-colors"
               >
                 View All Passwords
               </button>
@@ -534,32 +584,31 @@ const Passwords = () => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-8 px-4 py-3 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-slate-600 dark:text-slate-400">
-              Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)} to{" "}
-              {Math.min(currentPage * perPage, totalItems)} of {totalItems}{" "}
-              passwords
+        <div className="flex items-center justify-between mt-6 px-4 py-2.5 bg-white dark:bg-slate-850 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs">
+          <div className="flex items-center gap-3">
+            <span className="text-slate-500 dark:text-slate-400">
+              Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)}–
+              {Math.min(currentPage * perPage, totalItems)} of {totalItems}
             </span>
             <select
               value={perPage}
               onChange={(e) => handlePerPageChange(Number(e.target.value))}
-              className="text-sm bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg px-3 py-1 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
             >
-              <option value={6}>6 per page</option>
+              <option value={8}>8 per page</option>
               <option value={12}>12 per page</option>
               <option value={24}>24 per page</option>
               <option value={48}>48 per page</option>
             </select>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-4 h-4" />
             </button>
 
             <div className="flex items-center gap-1">
@@ -579,9 +628,9 @@ const Passwords = () => {
                   <button
                     key={pageNum}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${currentPage === pageNum
-                        ? "bg-blue-500 text-white"
-                        : "text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600"
+                    className={`w-7 h-7 flex items-center justify-center text-xs font-medium rounded-lg transition-colors ${currentPage === pageNum
+                      ? "bg-blue-600 text-white"
+                      : "text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
                       }`}
                   >
                     {pageNum}
@@ -593,7 +642,7 @@ const Passwords = () => {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-2 text-sm font-medium text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -644,15 +693,11 @@ const PasswordCard = ({
   isDeleting,
   onToggleFavorite,
 }) => {
-  const [showPassword, setShowPassword] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
 
-  // Get category icon and gradient for this password
+  // Get category icon for this password
   const CategoryIcon = getCategoryIcon(
-    password.category || password.category_name,
-  );
-  const categoryGradient = getCategoryGradient(
     password.category || password.category_name,
   );
 
@@ -673,34 +718,47 @@ const PasswordCard = ({
     };
   }, [showMenu]);
 
+  const websiteUrl = password.website || password.url;
+  const categoryName = password.category || password.category_name || "Uncategorized";
+  const categoryColor = getCategoryColor(categoryName);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className="glass-panel p-5 group relative"
+      whileHover={{ y: -3 }}
+      transition={{ duration: 0.15, ease: "easeOut" }}
+      className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-md rounded-xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-800 shadow-xs hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all duration-200 flex flex-col justify-between group relative"
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-center gap-3">
-          {/* Icon */}
-          <div
-            className={`w-10 h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-md`}
-          >
+      <div className="flex items-start justify-between gap-3 mb-3.5">
+        <div className="flex items-center gap-3 min-w-0 flex-1">
+          {/* Category Icon */}
+          <div className={`w-10 h-10 ${categoryColor.gradient} flex items-center justify-center shrink-0 rounded-lg shadow-xs`}>
             <CategoryIcon className="w-5 h-5 text-white" />
           </div>
-          <div>
-            <h3 className="font-semibold text-slate-800 dark:text-white">
+          <div className="min-w-0 flex-1">
+            <h3 className="font-semibold text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate leading-snug">
               {password.name || password.title}
             </h3>
+            <p className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate mt-0.5">
+              {websiteUrl ? (
+                <span className="flex items-center gap-1">
+                  <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+                </span>
+              ) : (
+                categoryName
+              )}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1">
+        {/* Favorite & Options */}
+        <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => onToggleFavorite(password.id)}
-            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+            className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-500 transition-colors"
             title={
               password.is_favorite
                 ? "Remove from favorites"
@@ -709,28 +767,29 @@ const PasswordCard = ({
           >
             <Star
               className={`w-4 h-4 ${password.is_favorite
-                  ? "text-yellow-500 fill-yellow-500"
-                  : "text-slate-400 hover:text-yellow-500"
+                ? "text-amber-500 fill-amber-500"
+                : ""
                 }`}
             />
           </button>
+
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
             >
-              <MoreVertical className="w-4 h-4 text-slate-500" />
+              <MoreVertical className="w-4 h-4" />
             </button>
 
             {/* Dropdown Menu */}
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-10">
+              <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20">
                 <button
                   onClick={() => {
                     onUpdate(password);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -740,7 +799,7 @@ const PasswordCard = ({
                     onDelete(password);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
                   disabled={isDeleting}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -752,44 +811,163 @@ const PasswordCard = ({
         </div>
       </div>
 
-      {/* Password Field - Encrypted */}
-      <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-3 mb-3">
-        <div className="flex items-center justify-between">
-          <span className="font-mono text-sm text-slate-700 dark:text-slate-300">
-            ••••••••••••
-          </span>
-          <button
-            onClick={() => onDecrypt(password)}
-            className="p-1.5 rounded hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
-            title="Decrypt password"
-          >
-            <Eye className="w-4 h-4 text-slate-500" />
-          </button>
-        </div>
-      </div>
-
-      {/* Actions */}
-      <div className="flex items-center gap-2">
+      {/* Password Masked Preview Bar */}
+      <div className="bg-slate-50 dark:bg-slate-900/70 border border-slate-200/60 dark:border-slate-800 rounded-lg px-3 py-2 mb-3.5 flex items-center justify-between gap-2">
+        <span className="font-mono text-xs sm:text-sm text-slate-400 dark:text-slate-500 tracking-wider select-none">
+          ••••••••••••
+        </span>
         <button
           onClick={() => onDecrypt(password)}
-          className="flex-1 flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+          className="p-1 rounded-md text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 text-xs font-medium"
+          title="Decrypt and view password"
         >
           <Eye className="w-4 h-4" />
-          View
+          <span>Decrypt</span>
         </button>
       </div>
 
-      {/* Metadata */}
-      <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
-        <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
-          <span>{password.category_name || "Uncategorized"}</span>
-          <span>
-            Updated at{" "}
-            {password.lastUpdated || password.updated_at || "recently"}
-          </span>
-        </div>
+      {/* Footer Meta */}
+      <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+        <span className={`font-medium px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] tracking-wider uppercase ${categoryColor.pill}`}>
+          {categoryName}
+        </span>
+        <button
+          onClick={() => onDecrypt(password)}
+          className="text-blue-600 dark:text-blue-400 font-medium hover:underline text-xs flex items-center gap-1"
+        >
+          View Details →
+        </button>
       </div>
     </motion.div>
+  );
+};
+
+// Dense List Row Component (1Password / Bitwarden Style)
+const PasswordListRow = ({
+  password,
+  onDecrypt,
+  onUpdate,
+  onDelete,
+  isDeleting,
+  onToggleFavorite,
+}) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef(null);
+
+  const CategoryIcon = getCategoryIcon(
+    password.category || password.category_name,
+  );
+  const websiteUrl = password.website || password.url;
+  const categoryName = password.category || password.category_name || "Uncategorized";
+  const categoryColor = getCategoryColor(categoryName);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
+
+  return (
+    <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group select-none">
+      {/* Col 1: Icon & Item Info */}
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className={`w-8 h-8 ${categoryColor.gradient} flex items-center justify-center shrink-0`}>
+          <CategoryIcon className="w-4 h-4 text-white" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-xs sm:text-sm text-slate-800 dark:text-slate-100 truncate leading-tight">
+              {password.name || password.title}
+            </h3>
+            {password.is_favorite && (
+              <Star className="w-3 h-3 text-amber-500 fill-amber-500 shrink-0" />
+            )}
+          </div>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500 font-mono truncate">
+            {websiteUrl ? (
+              <span className="flex items-center gap-1">
+                <Globe className="w-3 h-3 text-slate-400 shrink-0" />
+                {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
+              </span>
+            ) : (
+              categoryName
+            )}
+          </p>
+        </div>
+      </div>
+
+      {/* Col 2: Category Tag (Hidden on mobile) */}
+      <div className="hidden md:block w-32 shrink-0">
+        <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-md ${categoryColor.pill}`}>
+          {categoryName}
+        </span>
+      </div>
+
+      {/* Col 4: Actions */}
+      <div className="flex items-center gap-1 shrink-0">
+        <button
+          onClick={() => onToggleFavorite(password.id)}
+          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-amber-500 transition-colors"
+          title={password.is_favorite ? "Remove favorite" : "Add favorite"}
+        >
+          <Star
+            className={`w-3.5 h-3.5 ${password.is_favorite ? "text-amber-500 fill-amber-500" : ""
+              }`}
+          />
+        </button>
+
+        <button
+          onClick={() => onDecrypt(password)}
+          className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          title="Decrypt / View Details"
+        >
+          <Eye className="w-3.5 h-3.5" />
+        </button>
+
+        <div className="relative" ref={menuRef}>
+          <button
+            onClick={() => setShowMenu(!showMenu)}
+            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+          >
+            <MoreVertical className="w-3.5 h-3.5" />
+          </button>
+
+          {showMenu && (
+            <div className="absolute right-0 top-full mt-1 w-40 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20">
+              <button
+                onClick={() => {
+                  onUpdate(password);
+                  setShowMenu(false);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <Edit className="w-3.5 h-3.5" />
+                Edit
+              </button>
+              <button
+                onClick={() => {
+                  onDelete(password);
+                  setShowMenu(false);
+                }}
+                className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                disabled={isDeleting}
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                {isDeleting ? "Deleting..." : "Delete"}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 
