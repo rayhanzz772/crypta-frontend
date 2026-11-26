@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../utils/api';
+import Modal from '@/components/Modal';
 
 const DeveloperKeys = () => {
   const navigate = useNavigate();
@@ -169,8 +170,15 @@ const DeveloperKeys = () => {
 
         {/* New Key Modal */}
         {showNewKey && newKeyData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl p-6">
+          <Modal
+            isOpen={showNewKey}
+            onClose={() => {
+              setShowNewKey(false);
+              setNewKeyData(null);
+            }}
+            size="xl"
+            srTitle="API Key Generated Successfully!"
+          >
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
                   <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
@@ -221,14 +229,17 @@ const DeveloperKeys = () => {
               >
                 I've Saved My Key
               </button>
-            </div>
-          </div>
+          </Modal>
         )}
 
         {/* Revoke Confirmation Modal */}
         {keyToRevoke && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <Modal
+            isOpen={keyToRevoke}
+            onClose={() => setKeyToRevoke(null)}
+            size="sm"
+            srTitle="Revoke API Key?"
+          >
               <div className="flex items-start gap-3 mb-4">
                 <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
                   <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
@@ -257,8 +268,7 @@ const DeveloperKeys = () => {
                   Revoke Key
                 </button>
               </div>
-            </div>
-          </div>
+          </Modal>
         )}
 
         {/* API Keys List */}

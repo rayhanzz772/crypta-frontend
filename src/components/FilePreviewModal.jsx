@@ -8,8 +8,7 @@ import {
   Minimize2,
   ShieldCheck,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const FilePreviewModal = ({ isOpen, onClose, file, blobUrl, onDownload }) => {
   const [isZoomed, setIsZoomed] = useState(false);
@@ -33,16 +32,14 @@ const FilePreviewModal = ({ isOpen, onClose, file, blobUrl, onDownload }) => {
   const isPdf = file?.mime_type?.startsWith("application/pdf");
 
   return (
-    <Portal>
-      <AnimatePresence>
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-4 bg-slate-900/90 backdrop-blur-md">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-5xl max-h-[95vh] bg-white dark:bg-slate-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-white/10"
-          >
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      srTitle={file?.original_filename || "File Preview"}
+      showCloseButton={false}
+      className="bg-white dark:bg-slate-800 flex flex-col gap-0 p-0 max-h-[95vh] rounded-3xl sm:rounded-3xl border border-white/10 shadow-2xl overflow-hidden"
+    >
             {/* Header */}
             <div className="flex items-center justify-between p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 backdrop-blur-md z-10">
               <div className="flex items-center gap-3 sm:gap-4 overflow-hidden">
@@ -161,10 +158,7 @@ const FilePreviewModal = ({ isOpen, onClose, file, blobUrl, onDownload }) => {
                 session key
               </p>
             </div>
-          </motion.div>
-        </div>
-      </AnimatePresence>
-    </Portal>
+    </Modal>
   );
 };
 

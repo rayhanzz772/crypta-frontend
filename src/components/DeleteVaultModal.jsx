@@ -3,6 +3,7 @@ import { X, AlertTriangle, Trash2, Loader2 } from "lucide-react";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import { useAuth } from "../contexts/AuthContext";
 import { safeDecryptField } from "../utils/crypto";
+import Modal from "./Modal";
 
 const DeleteVaultModal = ({
   isOpen,
@@ -79,8 +80,13 @@ const DeleteVaultModal = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      showCloseButton={false}
+      srTitle="Delete Password"
+    >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between mb-4">
@@ -219,8 +225,7 @@ const DeleteVaultModal = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

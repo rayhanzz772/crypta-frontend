@@ -16,7 +16,7 @@ import {
 import toast from "react-hot-toast";
 import { secretVersionsAPI } from "../utils/api";
 import AddSecretValueModal from "./AddSecretValueModal";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const SecretVersionsModal = ({
   isOpen,
@@ -120,12 +120,14 @@ const SecretVersionsModal = ({
 
   return (
     <>
-      <Portal>
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-          <div
-            className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col"
-            onClick={(e) => e.stopPropagation()}
-          >
+      <Modal
+        isOpen={isOpen}
+        onClose={handleClose}
+        size="sm"
+        srTitle={secret.name}
+        showCloseButton={false}
+        className="bg-white dark:bg-slate-800 flex flex-col gap-0 p-0 max-h-[95vh] rounded-xl sm:rounded-xl border-0 shadow-2xl overflow-hidden"
+      >
             {/* Header */}
             <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3 flex-shrink-0">
               <div className="flex items-center justify-between">
@@ -332,9 +334,7 @@ const SecretVersionsModal = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      </Portal>
+      </Modal>
 
       <AddSecretValueModal
         isOpen={showAddValueModal}

@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
 import { encryptField } from "../utils/crypto";
 import { getCategoryIcon } from "../utils/categoryIcons";
+import Modal from "./Modal";
 
 const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
   const { mek } = useAuth();
@@ -115,8 +116,13 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
   const availableCategories = categories.filter((cat) => cat.id !== "all");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-3xl my-4 sm:my-8">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="2xl"
+      showCloseButton={false}
+      srTitle="Create New Note"
+    >
         {/* Header */}
         <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -328,8 +334,7 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

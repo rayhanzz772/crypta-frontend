@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Copy, Check, AlertTriangle, ShieldCheck } from "lucide-react";
+import Modal from "./Modal";
 
 const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
   const [copied, setCopied] = useState(false);
@@ -13,8 +14,13 @@ const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm sm:p-6">
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden transform transition-all">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      srTitle="Save Your Recovery Key"
+      className="bg-white dark:bg-gray-800 gap-0 p-0 rounded-xl sm:rounded-xl border-0 shadow-xl overflow-hidden"
+    >
         <div className="p-6">
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 mx-auto mb-4">
             <AlertTriangle className="w-6 h-6" />
@@ -66,8 +72,7 @@ const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
             <ShieldCheck className="w-5 h-5" />I have saved my recovery key
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

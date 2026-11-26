@@ -12,6 +12,7 @@ import {
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Modal from "./Modal";
 
 const UnlockVaultModal = ({ isOpen, onClose }) => {
   const { user, unlockVault, logout } = useAuth();
@@ -123,16 +124,15 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-      {/* Backdrop */}
-      <div
-        onClick={handleClose}
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-      />
-
-      {/* Modal */}
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden">
-        {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      srTitle="Unlock Your Vault"
+      showCloseButton={false}
+      className="p-0 overflow-hidden"
+    >
+      {/* Header */}
         <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-4 sm:px-6 py-6 sm:py-8 text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
@@ -277,8 +277,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             </p>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

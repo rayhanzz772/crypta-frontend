@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Mail,
-  MailCheck,
-  Loader2,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowRight, Mail, Loader2, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
-import { authAPI } from "../utils/api";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { authAPI } from "@/utils/api";
 
 const CODE_LENGTH = 6;
 const EMAIL_PATTERN = /\S+@\S+\.\S+/;
@@ -220,152 +218,135 @@ const VerifyEmail = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] px-4 py-6 sm:py-12">
-      <div className="w-full max-w-[520px] rounded-3xl border border-gray-200 bg-white p-6 shadow-xl dark:border-gray-700 dark:bg-gray-900 sm:p-8 md:p-10">
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <Link
-            to="/login"
-            className="inline-flex items-center gap-2 text-xs text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white sm:text-sm"
-          >
-            <svg
-              className="h-4 w-4"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-6 sm:py-12">
+      <Card className="w-full max-w-[520px]">
+        <CardContent className="pt-8 pb-8 px-6 sm:px-8">
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 text-xs text-muted-foreground transition-colors hover:text-foreground sm:text-sm"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 19l-7-7m0 0l7-7m-7 7h18"
-              />
-            </svg>
-            Back to Login
-          </Link>
-        </div>
+              <ArrowLeft className="h-4 w-4" />
+              Back to Login
+            </Link>
+          </div>
 
-        <div className="mb-8 text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white sm:text-3xl">
-            {isVerified ? "Email Confirmed" : "Verify Your Email"}
-          </h1>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 sm:text-base">
-            {isVerified
-              ? "Your email has been verified. Redirecting you to sign in..."
-              : "Enter the 6-digit code from your inbox to activate your account."}
-          </p>
-        </div>
+          <div className="mb-8 text-center">
+            <h1 className="text-2xl font-bold sm:text-3xl">
+              {isVerified ? "Email Confirmed" : "Verify Your Email"}
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+              {isVerified
+                ? "Your email has been verified. Redirecting you to sign in..."
+                : "Enter the 6-digit code from your inbox to activate your account."}
+            </p>
+          </div>
 
-        {!isVerified && (
-          <form onSubmit={handleVerify} className="space-y-5">
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-xs font-medium text-gray-700 dark:text-gray-300 sm:text-sm"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400 sm:h-5 sm:w-5" />
-                <input
-                  id="email"
-                  type="email"
-                  disabled
-                  value={email}
-                  onChange={handleEmailChange}
-                  className={`w-full rounded-xl border bg-white py-3 pl-10 pr-4 text-sm text-gray-900 outline-none transition-all focus:border-transparent focus:ring-2 dark:bg-gray-700 dark:text-white sm:text-base ${
-                    errors.email
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-gray-300 focus:ring-primary-500 dark:border-gray-600"
-                  } disabled:cursor-not-allowed disabled:border-gray-200 disabled:bg-gray-100 disabled:text-gray-500 dark:disabled:border-gray-700 dark:disabled:bg-gray-800 dark:disabled:text-gray-400`}
-                  placeholder="you@example.com"
-                  autoComplete="email"
-                />
-              </div>
-              {errors.email && (
-                <p className="mt-1 text-xs text-red-500 sm:text-sm">{errors.email}</p>
-              )}
-            </div>
-
-            <div>
-              <div className="mb-2 flex items-center justify-between gap-3">
-                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 sm:text-sm">
-                  Verification Code
-                </label>
-                <span className="text-[11px] text-gray-500 dark:text-gray-400 sm:text-xs">
-                  Paste works too
-                </span>
-              </div>
-
-              <div className="grid grid-cols-6 gap-2 sm:gap-3" onPaste={handleCodePaste}>
-                {codeDigits.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(element) => {
-                      inputRefs.current[index] = element;
-                    }}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={CODE_LENGTH}
-                    value={digit}
-                    onChange={(event) => handleDigitChange(index, event)}
-                    onKeyDown={(event) => handleDigitKeyDown(index, event)}
-                    className={`h-12 rounded-xl border bg-white text-center text-lg font-semibold tracking-[0.2em] text-gray-900 outline-none transition-all focus:border-transparent focus:ring-2 dark:bg-gray-700 dark:text-white sm:h-14 sm:text-xl ${
-                      errors.code
-                        ? "border-red-500 focus:ring-red-500"
-                        : "border-gray-300 focus:ring-primary-500 dark:border-gray-600"
-                    }`}
-                    aria-label={`Verification digit ${index + 1}`}
+          {!isVerified && (
+            <form onSubmit={handleVerify} className="space-y-5">
+              <div>
+                <Label htmlFor="email" className="mb-2">
+                  Email Address
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+                  <Input
+                    id="email"
+                    type="email"
+                    disabled
+                    value={email}
+                    onChange={handleEmailChange}
+                    className={`pl-10 h-11 ${errors.email ? "border-destructive focus:ring-destructive" : ""}`}
+                    placeholder="you@example.com"
+                    autoComplete="email"
                   />
-                ))}
+                </div>
+                {errors.email && (
+                  <p className="mt-1 text-xs text-destructive sm:text-sm">
+                    {errors.email}
+                  </p>
+                )}
               </div>
-              {errors.code && (
-                <p className="mt-1 text-xs text-red-500 sm:text-sm">{errors.code}</p>
-              )}
+
+              <div>
+                <div className="mb-2 flex items-center justify-between gap-3">
+                  <Label className="cursor-default">Verification Code</Label>
+                  <span className="text-[11px] text-muted-foreground sm:text-xs">
+                    Paste works too
+                  </span>
+                </div>
+
+                <div
+                  className="grid grid-cols-6 gap-2 sm:gap-3"
+                  onPaste={handleCodePaste}
+                >
+                  {codeDigits.map((digit, index) => (
+                    <Input
+                      key={index}
+                      ref={(element) => {
+                        inputRefs.current[index] = element;
+                      }}
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={CODE_LENGTH}
+                      value={digit}
+                      onChange={(event) => handleDigitChange(index, event)}
+                      onKeyDown={(event) => handleDigitKeyDown(index, event)}
+                      className={`h-12 sm:h-14 rounded-xl text-center text-lg font-semibold tracking-[0.2em] sm:text-xl ${
+                        errors.code
+                          ? "border-destructive focus:ring-destructive"
+                          : ""
+                      }`}
+                      aria-label={`Verification digit ${index + 1}`}
+                    />
+                  ))}
+                </div>
+                {errors.code && (
+                  <p className="mt-1 text-xs text-destructive sm:text-sm">
+                    {errors.code}
+                  </p>
+                )}
+              </div>
+
+              <Button type="submit" disabled={isSubmitting} className="w-full h-11">
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    Verify Email
+                    <ArrowRight />
+                  </>
+                )}
+              </Button>
+            </form>
+          )}
+
+          <Alert className="mt-6">
+            <AlertTitle>Didn't receive the code?</AlertTitle>
+            <AlertDescription>
+              Check your spam folder first, then request a fresh code if needed.
+            </AlertDescription>
+            <div className="mt-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleResend}
+                disabled={isResending || resendCooldown > 0 || isVerified}
+              >
+                <Loader2 className={isResending ? "animate-spin" : ""} />
+                {isResending
+                  ? "Sending..."
+                  : resendCooldown > 0
+                    ? `Resend in ${resendCooldown}s`
+                    : "Resend Code"}
+              </Button>
             </div>
-
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 px-4 py-3 text-sm font-semibold text-white shadow-lg transition-shadow duration-200 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Verifying...
-                </>
-              ) : (
-                <>
-                  Verify Email
-                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" />
-                </>
-              )}
-            </button>
-          </form>
-        )}
-
-        <div className="mt-6 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/70">
-          <p className="text-sm font-medium text-gray-900 dark:text-white">
-            Didn&apos;t receive the code?
-          </p>
-          <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 sm:text-sm">
-            Check your spam folder first, then request a fresh code if needed.
-          </p>
-
-          <button
-            type="button"
-            onClick={handleResend}
-            disabled={isResending || resendCooldown > 0 || isVerified}
-            className="mt-4 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-          >
-            <Loader2 className={`h-4 w-4 ${isResending ? "animate-spin" : ""}`} />
-            {isResending
-              ? "Sending..."
-              : resendCooldown > 0
-                ? `Resend in ${resendCooldown}s`
-                : "Resend Code"}
-          </button>
-        </div>
-      </div>
+          </Alert>
+        </CardContent>
+      </Card>
     </div>
   );
 };

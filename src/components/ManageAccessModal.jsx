@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { iamBindingsAPI, serviceAccountsAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const ManageAccessModal = ({
   isOpen,
@@ -152,9 +152,14 @@ const ManageAccessModal = ({
   if (!isOpen || !secret) return null;
 
   return (
-    <Portal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      srTitle="Manage Access"
+      showCloseButton={false}
+      className="bg-white dark:bg-slate-800 flex flex-col gap-0 p-0 max-h-[95vh] rounded-xl sm:rounded-xl border-0 shadow-2xl overflow-hidden"
+    >
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-3 flex-shrink-0">
             <div className="flex items-center justify-between">
@@ -356,9 +361,7 @@ const ManageAccessModal = ({
               Close
             </button>
           </div>
-        </div>
-      </div>
-    </Portal>
+    </Modal>
   );
 };
 

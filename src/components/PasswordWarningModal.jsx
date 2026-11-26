@@ -1,11 +1,18 @@
 import { ShieldAlert, X } from "lucide-react";
+import Modal from "./Modal";
 
 const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-3 sm:p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-2xl max-w-[calc(100vw-24px)] sm:max-w-md w-full p-4 sm:p-6 relative animate-scale-in max-h-[90vh] overflow-y-auto">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      srTitle="Important Warning!"
+      showCloseButton={false}
+      className="bg-white dark:bg-gray-800 gap-0 p-4 sm:p-6 relative max-h-[90vh] rounded-xl sm:rounded-2xl border-0 shadow-2xl animate-scale-in"
+    >
         {/* Close button */}
         <button
           onClick={onClose}
@@ -95,8 +102,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
             I Understand
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

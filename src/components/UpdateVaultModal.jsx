@@ -16,6 +16,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { encryptField, safeDecryptField } from "../utils/crypto";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import Modal from "./Modal";
 
 const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const { mek } = useAuth();
@@ -187,16 +188,15 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-      />
-
-      {/* Modal */}
-      <div className="relative w-full max-w-md bg-white dark:bg-slate-800 rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col my-4 sm:my-8">
-        {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      srTitle="Update Password"
+      showCloseButton={false}
+      className="p-0 overflow-hidden max-h-[90vh] flex flex-col"
+    >
+      {/* Header */}
         <div
           className={`bg-gradient-to-r ${categoryGradient} px-4 sm:px-6 py-3.5 sm:py-4 flex-shrink-0`}
         >
@@ -376,8 +376,7 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
             Cancel
           </button>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

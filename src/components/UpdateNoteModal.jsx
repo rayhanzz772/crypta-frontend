@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
 import { decryptField, encryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import Modal from "./Modal";
 
 // Utility function to normalize tags (convert string to array)
 const normalizeTags = (tags) => {
@@ -123,9 +124,15 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
   const availableCategories = categories.filter((cat) => cat.id !== "all");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-3xl my-4 sm:my-8">
-        <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      srTitle="Edit Note"
+      showCloseButton={false}
+      className="p-0"
+    >
+      <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
           <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white">
             Edit Note
           </h2>
@@ -276,8 +283,7 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
             </>
           )}
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

@@ -1,10 +1,9 @@
 import { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, UploadCloud, Loader2, FileIcon } from "lucide-react";
 import toast from "react-hot-toast";
 import { filesAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const FileUploadModal = ({ isOpen, onClose, onSuccess, folderId = "" }) => {
   const { mek } = useAuth();
@@ -70,16 +69,14 @@ const FileUploadModal = ({ isOpen, onClose, onSuccess, folderId = "" }) => {
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <AnimatePresence>
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative"
-          >
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      srTitle="Upload File"
+      showCloseButton={false}
+      className="bg-white dark:bg-slate-800 gap-0 p-0 rounded-2xl sm:rounded-2xl border-0 shadow-xl overflow-hidden"
+    >
             {/* Header */}
             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -169,10 +166,7 @@ const FileUploadModal = ({ isOpen, onClose, onSuccess, folderId = "" }) => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </div>
-      </AnimatePresence>
-    </Portal>
+    </Modal>
   );
 };
 

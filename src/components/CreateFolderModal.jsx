@@ -1,9 +1,8 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { X, FolderPlus, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { filesAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
   const [folderName, setFolderName] = useState("");
@@ -33,16 +32,14 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <AnimatePresence>
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden relative"
-          >
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="sm"
+      showCloseButton={false}
+      className="overflow-hidden"
+      srTitle="New Folder"
+    >
             {/* Header */}
             <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -100,10 +97,7 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
                 </button>
               </div>
             </form>
-          </motion.div>
-        </div>
-      </AnimatePresence>
-    </Portal>
+    </Modal>
   );
 };
 

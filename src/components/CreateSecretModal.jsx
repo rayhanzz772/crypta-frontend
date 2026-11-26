@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { secretsAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const CreateSecretModal = ({
   isOpen,
@@ -182,12 +182,14 @@ const CreateSecretModal = ({
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-        <div
-          className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      showCloseButton={false}
+      className="flex flex-col max-h-[95vh] overflow-hidden"
+      srTitle="Create Secret"
+    >
           {/* Header */}
           <div className="bg-gradient-to-r from-amber-500 to-orange-600 px-4 py-3 flex-shrink-0">
             <div className="flex items-center justify-between">
@@ -370,9 +372,7 @@ const CreateSecretModal = ({
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </Portal>
+    </Modal>
   );
 };
 

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { secretVersionsAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const AddSecretValueModal = ({
   isOpen,
@@ -98,9 +98,14 @@ const AddSecretValueModal = ({
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md overflow-hidden">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      showCloseButton={false}
+      className="overflow-hidden"
+      srTitle={hasExistingVersions ? "Add New Version" : "Set Secret Value"}
+    >
           {/* Header */}
           <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-4 py-3">
             <div className="flex items-center justify-between">
@@ -251,9 +256,7 @@ const AddSecretValueModal = ({
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </Portal>
+    </Modal>
   );
 };
 

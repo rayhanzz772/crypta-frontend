@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import { serviceAccountsAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const CreateServiceAccountModal = ({
   isOpen,
@@ -119,9 +119,14 @@ const CreateServiceAccountModal = ({
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleCancel}
+      size="sm"
+      showCloseButton={false}
+      className="flex flex-col max-h-[95vh] overflow-hidden"
+      srTitle={step === "input" ? "Create Service Account" : "Save Private Key"}
+    >
           {/* Header */}
           <div
             className={`px-4 py-3 flex-shrink-0 ${
@@ -342,9 +347,7 @@ const CreateServiceAccountModal = ({
               </div>
             )}
           </div>
-        </div>
-      </div>
-    </Portal>
+    </Modal>
   );
 };
 

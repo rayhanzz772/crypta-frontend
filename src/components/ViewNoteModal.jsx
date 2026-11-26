@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { decryptField, safeDecryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import Modal from "./Modal";
 
 const normalizeTags = (tags) => {
   if (!tags) return [];
@@ -105,9 +106,15 @@ const ViewNoteModal = ({
   const categoryGradient = getCategoryGradient(categoryData?.name);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm overflow-y-auto">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-4xl my-4 sm:my-8">
-        {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      srTitle={note.title}
+      showCloseButton={false}
+      className="p-0"
+    >
+      {/* Header */}
         <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div
@@ -285,8 +292,7 @@ const ViewNoteModal = ({
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

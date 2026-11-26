@@ -28,6 +28,7 @@ import {
   decryptField,
   encryptField,
 } from "../utils/crypto";
+import Modal from "./Modal";
 
 const MIGRATION_STEPS = [
   "Generating new encryption keys",
@@ -242,8 +243,14 @@ const LegacyMigrationModal = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md">
+    <Modal
+      isOpen={isOpen}
+      onClose={() => {}} // migration is uncloseable until completeMigration()
+      showCloseButton={false}
+      size="sm"
+      srTitle="Account Upgrade"
+      className="bg-white dark:bg-slate-800 gap-0 p-0 rounded-2xl sm:rounded-2xl border-0 shadow-2xl"
+    >
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6 rounded-t-2xl">
           <div className="flex items-center gap-3">
@@ -361,8 +368,7 @@ const LegacyMigrationModal = () => {
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

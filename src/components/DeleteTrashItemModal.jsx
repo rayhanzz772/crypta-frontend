@@ -1,5 +1,5 @@
-import { motion, AnimatePresence } from "framer-motion";
 import { X, AlertTriangle, Trash2, Loader2, KeyRound, FileText } from "lucide-react";
+import Modal from "./Modal";
 
 const DeleteTrashItemModal = ({
   isOpen,
@@ -13,24 +13,14 @@ const DeleteTrashItemModal = ({
   const isPassword = item.type === "password";
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={isDeleting ? null : onClose}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm"
-        />
-
-        {/* Modal Window */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 15 }}
-          className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden border border-slate-200/60 dark:border-slate-800 flex flex-col z-10"
-        >
+    <Modal
+      isOpen={isOpen}
+      onClose={() => !isDeleting && onClose()}
+      size="sm"
+      showCloseButton={false}
+      className="rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-800 flex flex-col"
+      srTitle="Delete Permanently"
+    >
           {/* Top Danger Accent Bar */}
           <div className="h-2 bg-gradient-to-r from-red-500 via-rose-500 to-red-600" />
 
@@ -118,9 +108,7 @@ const DeleteTrashItemModal = ({
               )}
             </button>
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+    </Modal>
   );
 };
 

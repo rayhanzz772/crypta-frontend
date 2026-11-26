@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { X, FolderKey, AlertCircle, Loader2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { projectsAPI } from "../utils/api";
-import Portal from "./Portal";
+import Modal from "./Modal";
 
 const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -118,12 +118,14 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <Portal>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-md">
-        <div
-          className="bg-white dark:bg-slate-800 rounded-xl shadow-2xl w-full max-w-md max-h-[95vh] overflow-hidden flex flex-col"
-          onClick={(e) => e.stopPropagation()}
-        >
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      showCloseButton={false}
+      className="flex flex-col max-h-[95vh] overflow-hidden"
+      srTitle="Create Project"
+    >
           {/* Header */}
           <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-4 py-3 flex-shrink-0">
             <div className="flex items-center justify-between">
@@ -257,9 +259,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
               </button>
             </div>
           </form>
-        </div>
-      </div>
-    </Portal>
+    </Modal>
   );
 };
 

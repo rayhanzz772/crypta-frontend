@@ -3,6 +3,7 @@ import { X, Trash2, AlertTriangle, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
+import Modal from "./Modal";
 
 const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
   const { mek } = useAuth();
@@ -38,8 +39,12 @@ const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
   if (!isOpen || !note) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-md">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      srTitle="Delete Note?"
+    >
         <div className="p-4 sm:p-6">
           <div className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-red-100 dark:bg-red-900/30 rounded-full mx-auto mb-3 sm:mb-4">
             <Trash2 className="w-7 h-7 sm:w-8 sm:h-8 text-red-600 dark:text-red-400" />
@@ -111,8 +116,7 @@ const DeleteNoteModal = ({ isOpen, onClose, note, onSuccess }) => {
             </button>
           </div>
         </div>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

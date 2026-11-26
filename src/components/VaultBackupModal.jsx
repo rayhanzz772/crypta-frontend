@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   X,
   HardDriveDownload,
@@ -20,6 +20,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { vaultBackupAPI } from "../utils/api";
 import { decryptField } from "../utils/crypto";
 import Pagination from "./Pagination";
+import Modal from "./Modal";
 
 const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
   const { mek } = useAuth();
@@ -218,25 +219,15 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
   const isVaultLocked = !mek;
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-        {/* Backdrop */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={onClose}
-          className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
-        />
-
-        {/* Modal */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
-        >
-          {/* Header */}
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      size="2xl"
+      srTitle="Vault Backup & Restore"
+      showCloseButton={false}
+      className="p-0 overflow-hidden flex flex-col max-h-[90vh]"
+    >
+      {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
@@ -616,9 +607,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
               </>
             )}
           </div>
-        </motion.div>
-      </div>
-    </AnimatePresence>
+    </Modal>
   );
 };
 
