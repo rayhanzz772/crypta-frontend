@@ -7,7 +7,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["Inter Variable", "Inter", "system-ui", "sans-serif"],
+        sans: ["Geist Variable", "Geist", "system-ui", "sans-serif"],
         mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
       },
       colors: {
@@ -43,20 +43,20 @@ export default {
         },
         success: "hsl(var(--success))",
         warning: "hsl(var(--warning))",
-        // Single accent ramp: blue-violet. Replaces the old blue/orange/purple mix.
+        // Single accent ramp: blue (original Crypta accent).
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          50: "#f3f0fe",
-          100: "#e6e0fd",
-          200: "#cbbffd",
-          300: "#ab97fb",
-          400: "#8f74f7",
-          500: "#7c5cf0",
-          600: "#6a45dd",
-          700: "#5734b8",
-          800: "#452a92",
-          900: "#2f1d63",
+          50: "#eff6ff",
+          100: "#dbeafe",
+          200: "#bfdbfe",
+          300: "#93c5fd",
+          400: "#60a5fa",
+          500: "#3b82f6",
+          600: "#2563eb",
+          700: "#1d4ed8",
+          800: "#1e40af",
+          900: "#1e3a8a",
         },
       },
       borderRadius: {

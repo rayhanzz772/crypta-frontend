@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 225 25% 12%;
 
-    --primary: 263 70% 52%;
+    --primary: 217 91% 60%;
     --primary-foreground: 0 0% 100%;
 
     --secondary: 224 25% 96%;
@@ -25,8 +25,8 @@
     --muted: 224 25% 96%;
     --muted-foreground: 224 12% 46%;
 
-    --accent: 263 60% 96%;
-    --accent-foreground: 263 60% 32%;
+    --accent: 214 95% 93%;
+    --accent-foreground: 224 71% 29%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
@@ -36,7 +36,7 @@
 
     --border: 224 20% 89%;
     --input: 224 20% 89%;
-    --ring: 263 70% 52%;
+    --ring: 217 91% 60%;
   }
 
   .dark {
@@ -49,8 +49,8 @@
     --popover: 224 24% 10%;
     --popover-foreground: 220 25% 96%;
 
-    --primary: 263 74% 64%;
-    --primary-foreground: 226 40% 8%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 223 18% 15%;
     --secondary-foreground: 220 20% 92%;
@@ -58,8 +58,8 @@
     --muted: 223 18% 14%;
     --muted-foreground: 222 12% 62%;
 
-    --accent: 263 40% 20%;
-    --accent-foreground: 263 60% 90%;
+    --accent: 222 47% 15%;
+    --accent-foreground: 213 94% 91%;
 
     --destructive: 0 68% 55%;
     --destructive-foreground: 0 0% 100%;
@@ -69,7 +69,7 @@
 
     --border: 223 16% 18%;
     --input: 223 16% 20%;
-    --ring: 263 74% 64%;
+    --ring: 212 100% 67%;
   }
 
   * {
@@ -78,7 +78,7 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: "Inter Variable", "Inter", system-ui, sans-serif;
+    font-family: "Geist Variable", "Geist", system-ui, sans-serif;
     font-feature-settings: "cv11", "ss01";
   }
 }
@@ -90,7 +90,7 @@
   }
 
   .animated-text {
-    background: linear-gradient(270deg, hsl(var(--primary)), hsl(263 84% 76%), hsl(var(--primary)));
+    background: linear-gradient(270deg, hsl(var(--primary)), hsl(212 100% 76%), hsl(var(--primary)));
     background-size: 200% 200%;
     -webkit-background-clip: text;
     background-clip: text;
