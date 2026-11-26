@@ -210,38 +210,38 @@ const FolderDetail = () => {
           <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
             <Lock className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">
+          <h2 className="text-2xl font-bold text-foreground mb-3">
             Folder Access Locked
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Access to this folder is protected. Please unlock your vault with
             your master password to view its contents.
           </p>
 
           <button
             onClick={() => navigate("/app/files")}
-            className="mb-8 flex items-center justify-center gap-2 mx-auto text-sm font-medium text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 transition-colors"
+            className="mb-8 flex items-center justify-center gap-2 mx-auto text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Storage
           </button>
 
-          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl mb-6">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
+          <div className="p-4 bg-warning/10 border border-warning/25 rounded-xl mb-6">
+            <p className="text-sm text-warning">
               💡 Tip: Click the "Unlock Vault" button in the sidebar to enter
               your master password.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl">
-            <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-              <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <div className="flex items-center gap-3 p-4 bg-card border border-border rounded-xl">
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+              <Shield className="w-5 h-5 text-primary" />
             </div>
             <div className="text-left">
-              <p className="text-sm font-semibold text-slate-800 dark:text-white">
+              <p className="text-sm font-semibold text-foreground">
                 Folder is Encrypted
               </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-muted-foreground">
                 AES-256-GCM protection active
               </p>
             </div>
@@ -255,8 +255,8 @@ const FolderDetail = () => {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-600 dark:text-slate-400">
+          <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+          <p className="text-muted-foreground">
             Decrypting files..
           </p>
         </div>
@@ -267,11 +267,11 @@ const FolderDetail = () => {
   return (
     <div className="space-y-6">
       {/* Navigation / Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-4">
           <button
             onClick={() => navigate("/app/files")}
-            className="p-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-600 dark:text-slate-300"
+            className="p-2 bg-muted hover:bg-slate-200 dark:bg-card dark:hover:bg-slate-700 rounded-xl transition-colors text-slate-600 dark:text-foreground"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -282,11 +282,11 @@ const FolderDetail = () => {
                 alt="Folder"
                 className="w-6 h-6 object-contain"
               />
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+              <h1 className="text-xl font-bold text-foreground">
                 {folder?.name}
               </h1>
             </div>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {files.length} items
             </p>
           </div>
@@ -296,7 +296,7 @@ const FolderDetail = () => {
           <button
             onClick={handleDownloadFolder}
             disabled={downloading === folderId}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-all shadow-sm text-sm font-medium disabled:opacity-50"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-card text-foreground border border-border hover:bg-muted rounded-xl transition-all shadow-sm text-sm font-medium disabled:opacity-50"
           >
             {downloading === folderId ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -308,7 +308,7 @@ const FolderDetail = () => {
 
           <button
             onClick={() => setIsUploadModalOpen(true)}
-            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold shadow-lg hover:shadow-xl rounded-xl transition-all text-sm"
+            className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary-600 text-white font-semibold shadow-lg hover:shadow-xl rounded-xl transition-all text-sm"
           >
             <UploadCloud className="w-4 h-4" />
             Upload Here
@@ -319,30 +319,30 @@ const FolderDetail = () => {
       {/* Files Section */}
       <div>
         {files.length === 0 ? (
-          <div className="text-center py-16 bg-white dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-700 rounded-2xl">
-            <div className="w-16 h-16 mx-auto mb-4 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center rounded-full">
-              <UploadCloud className="w-8 h-8 text-slate-400" />
+          <div className="text-center py-16 bg-card border border-dashed border-border rounded-2xl">
+            <div className="w-16 h-16 mx-auto mb-4 bg-muted/50 dark:bg-background/50 flex items-center justify-center rounded-full">
+              <UploadCloud className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h3 className="text-slate-700 dark:text-slate-300 font-medium text-lg">
+            <h3 className="text-foreground font-medium text-lg">
               Folder is empty
             </h3>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+            <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
               Securely upload files into this folder. They will be encrypted
               before storage.
             </p>
             <button
               onClick={() => setIsUploadModalOpen(true)}
-              className="mt-6 px-6 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl text-sm font-medium transition-colors"
+              className="mt-6 px-6 py-2 bg-muted hover:bg-muted dark:hover:bg-slate-600 text-foreground rounded-xl text-sm font-medium transition-colors"
             >
               Upload First File
             </button>
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden shadow-sm">
+          <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 text-xs uppercase tracking-wider">
+                  <tr className="bg-muted/50 dark:bg-background/50 text-muted-foreground text-xs uppercase tracking-wider">
                     <th className="px-6 py-4 font-semibold">Name</th>
                     <th className="px-6 py-4 font-semibold">Size</th>
                     <th className="px-6 py-4 font-semibold">Type</th>
@@ -360,30 +360,30 @@ const FolderDetail = () => {
                     .map((file) => (
                       <tr
                         key={file.id}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors group cursor-default"
+                        className="hover:bg-muted/50 transition-colors group cursor-default"
                       >
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 text-blue-600 dark:text-blue-500 flex items-center justify-center group-hover:scale-105 transition-transform">
+                            <div className="w-10 h-10 rounded-xl bg-muted dark:bg-background text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
                               <FileIcon className="w-5 h-5" />
                             </div>
                             <div>
-                              <span className="text-sm font-medium text-slate-800 dark:text-slate-200 block truncate max-w-[200px] sm:max-w-xs">
+                              <span className="text-sm font-medium text-foreground block truncate max-w-[200px] sm:max-w-xs">
                                 {file.original_filename}
                               </span>
-                              <span className="text-xs text-slate-400 hidden sm:block">
+                              <span className="text-xs text-muted-foreground hidden sm:block">
                                 Encrypted ({file.encryption})
                               </span>
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400">
+                        <td className="px-6 py-4 text-sm text-muted-foreground">
                           {formatFileSize(file.original_size)}
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 truncate max-w-[120px]">
+                        <td className="px-6 py-4 text-sm text-muted-foreground truncate max-w-[120px]">
                           {file.mime_type}
                         </td>
-                        <td className="px-6 py-4 text-sm text-slate-500 dark:text-slate-400 text-right">
+                        <td className="px-6 py-4 text-sm text-muted-foreground text-right">
                           {new Date(file.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-6 py-4 text-right">
@@ -396,7 +396,7 @@ const FolderDetail = () => {
                                   loadingPreview === file.id ||
                                   downloading === file.id
                                 }
-                                className="p-2 text-slate-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
+                                className="p-2 text-muted-foreground hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 rounded-lg transition-colors"
                                 title="Preview"
                               >
                                 {loadingPreview === file.id ? (
@@ -409,7 +409,7 @@ const FolderDetail = () => {
                             <button
                               onClick={() => handleDownloadFile(file)}
                               disabled={downloading === file.id}
-                              className="p-2 text-slate-400 hover:text-blue-500 hover:bg-slate-100 dark:hover:bg-slate-700/50 rounded-lg transition-colors"
+                              className="p-2 text-muted-foreground hover:text-primary hover:bg-muted/50 rounded-lg transition-colors"
                             >
                               {downloading === file.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -420,7 +420,7 @@ const FolderDetail = () => {
                             <button
                               onClick={() => handleDeleteFile(file)}
                               disabled={deleting === file.id}
-                              className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                              className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                             >
                               {deleting === file.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />

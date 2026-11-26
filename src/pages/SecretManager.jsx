@@ -333,13 +333,13 @@ const SecretManager = () => {
           </div>
 
           <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">
               Secret Manager Locked
             </h2>
-            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 mb-2">
+            <p className="text-base sm:text-lg text-muted-foreground mb-2">
               Your projects and secrets are protected
             </p>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-500">
+            <p className="text-xs sm:text-sm text-muted-foreground">
               Unlock your vault with your master password to access your
               encrypted secrets
             </p>
@@ -347,57 +347,57 @@ const SecretManager = () => {
 
           {/* Info Cards */}
           <div className="space-y-3 mb-6 sm:mb-8">
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
+            <div className="bg-card border-2 border-border rounded-xl p-3 sm:p-4 flex items-start gap-3">
               <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
                 <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1">
                   End-to-End Encrypted
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   All secrets are encrypted with AES-256 encryption
                 </p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
-              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
-                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400" />
+            <div className="bg-card border-2 border-border rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-success/10 rounded-lg flex items-center justify-center">
+                <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-success" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1">
                   Zero-Knowledge Security
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Your secrets are never stored in plain text
                 </p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
-              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-amber-100 dark:bg-amber-900/30 rounded-lg flex items-center justify-center">
-                <Key className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600 dark:text-amber-400" />
+            <div className="bg-card border-2 border-border rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-warning/10 rounded-lg flex items-center justify-center">
+                <Key className="w-4 h-4 sm:w-5 sm:h-5 text-warning" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1">
                   Version Control
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Track and rollback secret versions with full history
                 </p>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 sm:p-4 flex items-start gap-3">
-              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
-                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" />
+            <div className="bg-card border-2 border-border rounded-xl p-3 sm:p-4 flex items-start gap-3">
+              <div className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               </div>
               <div>
-                <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-white mb-1">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground mb-1">
                   Service Account Access
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   Grant programmatic access with IAM permissions
                 </p>
               </div>
@@ -405,7 +405,7 @@ const SecretManager = () => {
           </div>
 
           {/* Security Note */}
-          <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border-2 border-primary-200 dark:border-primary-800 rounded-xl p-3 sm:p-4">
+          <div className="bg-gradient-to-br from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border-2 border-primary/20 rounded-xl p-3 sm:p-4">
             <div className="flex items-start gap-3">
               <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
               <div>
@@ -439,17 +439,17 @@ const SecretManager = () => {
                 setSecretsPage(1);
                 setServiceAccountsPage(1);
               }}
-              className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+              className="p-2 rounded-lg bg-muted hover:bg-muted transition-colors"
             >
-              <ArrowLeft className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ArrowLeft className="w-5 h-5 text-muted-foreground" />
             </button>
           )}
           <div>
-            <h1 className="text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-3">
-              <FolderKey className="w-6 h-6 text-slate-600 dark:text-slate-400" />
+            <h1 className="text-2xl font-bold text-foreground flex items-center gap-3">
+              <FolderKey className="w-6 h-6 text-muted-foreground" />
               {selectedProject ? selectedProject.name : "Secret Manager"}
             </h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               {selectedProject
                 ? `Manage secrets for ${selectedProject.slug}`
                 : "Manage your projects and secrets"}
@@ -469,7 +469,7 @@ const SecretManager = () => {
               setShowCreateProjectModal(true);
             }
           }}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-blue-500 to-blue-600 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-br from-primary to-primary-600 hover:bg-primary/90 text-white font-semibold rounded-xl transition-all"
         >
           <Plus className="w-5 h-5" />
           {selectedProject
@@ -487,21 +487,21 @@ const SecretManager = () => {
           {isLoadingProjects ? (
             <div className="flex items-center justify-center min-h-[60vh]">
               <div className="text-center">
-                <Loader2 className="w-12 h-12 text-primary-500 animate-spin mx-auto mb-4" />
-                <p className="text-slate-600 dark:text-slate-400">
+                <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-4" />
+                <p className="text-muted-foreground">
                   Loading secret managers..
                 </p>
               </div>
             </div>
           ) : filteredProjects.length === 0 ? (
             <div className="text-center py-20">
-              <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FolderOpen className="w-10 h-10 text-slate-400" />
+              <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <FolderOpen className="w-10 h-10 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 {searchQuery ? "No projects found" : "No projects yet"}
               </h3>
-              <p className="text-slate-500 dark:text-slate-400 mb-6">
+              <p className="text-muted-foreground mb-6">
                 {searchQuery
                   ? "Try a different search term"
                   : "Create your first project to start managing secrets"}
@@ -521,7 +521,7 @@ const SecretManager = () => {
               {filteredProjects.map((project) => (
                 <div
                   key={project.id}
-                  className="group bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-700 transition-all cursor-pointer"
+                  className="group bg-card border border-border rounded-2xl p-5 hover:shadow-lg hover:border-primary-300 dark:hover:border-primary-700 transition-all cursor-pointer"
                   onClick={() => {
                     setSelectedProject(project);
                     // Reset pagination when selecting a project
@@ -530,7 +530,7 @@ const SecretManager = () => {
                   }}
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center">
                       <FolderKey className="w-6 h-6 text-white" />
                     </div>
                     <div className="relative">
@@ -539,23 +539,23 @@ const SecretManager = () => {
                           e.stopPropagation();
                           handleDeleteProject(project.id);
                         }}
-                        className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+                        className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors opacity-0 group-hover:opacity-100"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
 
-                  <h3 className="font-semibold text-slate-800 dark:text-white mb-1 truncate">
+                  <h3 className="font-semibold text-foreground mb-1 truncate">
                     {project.name}
                   </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-1">
-                    <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded text-xs">
+                  <p className="text-sm text-muted-foreground mb-3 flex items-center gap-1">
+                    <code className="px-1.5 py-0.5 bg-muted rounded text-xs">
                       {project.slug}
                     </code>
                   </p>
 
-                  <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-700">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground pt-3 border-t border-border">
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
                       {formatDate(project.createdAt)}
@@ -585,7 +585,7 @@ const SecretManager = () => {
         // Project View with Tabs
         <div>
           {/* Tabs */}
-          <div className="flex gap-2 mb-6 border-b border-slate-200 dark:border-slate-700">
+          <div className="flex gap-2 mb-6 border-b border-border">
             <button
               onClick={() => {
                 setActiveTab("secrets");
@@ -593,8 +593,8 @@ const SecretManager = () => {
               }}
               className={`px-4 py-3 font-semibold transition-all border-b-2 flex items-center gap-2 ${
                 activeTab === "secrets"
-                  ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  ? "border-primary text-primary-600 dark:text-primary-400"
+                  : "border-transparent text-muted-foreground hover:text-slate-700 dark:hover:text-foreground"
               }`}
             >
               <Key className="w-4 h-4" />
@@ -607,8 +607,8 @@ const SecretManager = () => {
               }}
               className={`px-4 py-3 font-semibold transition-all border-b-2 flex items-center gap-2 ${
                 activeTab === "service-accounts"
-                  ? "border-primary-500 text-primary-600 dark:text-primary-400"
-                  : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+                  ? "border-primary text-primary-600 dark:text-primary-400"
+                  : "border-transparent text-muted-foreground hover:text-slate-700 dark:hover:text-foreground"
               }`}
             >
               <Bot className="w-4 h-4" />
@@ -622,17 +622,17 @@ const SecretManager = () => {
             <div>
               {isLoadingSecrets ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
                 </div>
               ) : filteredSecrets.length === 0 ? (
                 <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Key className="w-10 h-10 text-slate-400" />
+                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Key className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {searchQuery ? "No secrets found" : "No secrets yet"}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     {searchQuery
                       ? "Try a different search term"
                       : "Create your first secret to store sensitive data"}
@@ -646,7 +646,7 @@ const SecretManager = () => {
                           toast.error("Please select a project first");
                         }
                       }}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-all"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl transition-all"
                     >
                       <Plus className="w-5 h-5" />
                       Add Secret
@@ -654,24 +654,24 @@ const SecretManager = () => {
                   )}
                 </div>
               ) : (
-                <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl overflow-hidden">
+                <div className="bg-card border border-border rounded-2xl overflow-hidden">
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="bg-slate-50 dark:bg-slate-900/50 border-b border-slate-200 dark:border-slate-700">
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                        <tr className="bg-muted/50 dark:bg-background/50 border-b border-border">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             Secret Name
                           </th>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden sm:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden sm:table-cell">
                             Labels
                           </th>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
                             Status
                           </th>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden md:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">
                             Created
                           </th>
-                          <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <th className="text-right px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             Actions
                           </th>
                         </tr>
@@ -681,7 +681,7 @@ const SecretManager = () => {
                           <tr
                             key={secret.id}
                             onClick={() => handleSecretClick(secret)}
-                            className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors cursor-pointer"
+                            className="hover:bg-muted/50 transition-colors cursor-pointer"
                           >
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
@@ -689,7 +689,7 @@ const SecretManager = () => {
                                   <Key className="w-5 h-5 text-white" />
                                 </div>
                                 <div>
-                                  <p className="font-semibold text-slate-800 dark:text-white">
+                                  <p className="font-semibold text-foreground">
                                     {secret.name}
                                   </p>
                                   <button
@@ -697,7 +697,7 @@ const SecretManager = () => {
                                       e.stopPropagation();
                                       copyToClipboard(secret.name);
                                     }}
-                                    className="text-xs text-slate-500 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 flex items-center gap-1"
+                                    className="text-xs text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 flex items-center gap-1"
                                   >
                                     <Copy className="w-3 h-3" />
                                     Copy name
@@ -714,14 +714,14 @@ const SecretManager = () => {
                                     .map(([key, value]) => (
                                       <span
                                         key={key}
-                                        className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-md text-xs"
+                                        className="inline-flex items-center gap-1 px-2 py-1 bg-muted text-slate-600 dark:text-foreground rounded-md text-xs"
                                       >
                                         <Tag className="w-3 h-3" />
                                         {key}: {value}
                                       </span>
                                     ))
                                 ) : (
-                                  <span className="text-slate-400 text-sm">
+                                  <span className="text-muted-foreground text-sm">
                                     No labels
                                   </span>
                                 )}
@@ -729,19 +729,19 @@ const SecretManager = () => {
                             </td>
                             <td className="px-6 py-4 hidden lg:table-cell">
                               {secret.status === "active" ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-success/10 text-success rounded-full text-xs font-medium">
                                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                                   Active
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-medium">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium">
                                   <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
                                   Disabled
                                 </span>
                               )}
                             </td>
                             <td className="px-6 py-4 hidden md:table-cell">
-                              <span className="text-sm text-slate-600 dark:text-slate-400">
+                              <span className="text-sm text-muted-foreground">
                                 {formatDate(secret.created_at)}
                               </span>
                             </td>
@@ -752,7 +752,7 @@ const SecretManager = () => {
                                     e.stopPropagation();
                                     handleManageAccess(secret);
                                   }}
-                                  className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 text-slate-400 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                                  className="p-2 rounded-lg hover:bg-purple-100 dark:hover:bg-purple-900/30 text-muted-foreground hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                                   title="Manage access"
                                 >
                                   <Shield className="w-4 h-4" />
@@ -762,7 +762,7 @@ const SecretManager = () => {
                                     e.stopPropagation();
                                     handleDeleteSecret(secret.id);
                                   }}
-                                  className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors"
                                   title="Delete secret"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -795,19 +795,19 @@ const SecretManager = () => {
             <div>
               {isLoadingServiceAccounts ? (
                 <div className="flex items-center justify-center py-20">
-                  <Loader2 className="w-8 h-8 text-primary-500 animate-spin" />
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
                 </div>
               ) : filteredServiceAccounts.length === 0 ? (
                 <div className="text-center py-20">
-                  <div className="w-20 h-20 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Bot className="w-10 h-10 text-slate-400" />
+                  <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Bot className="w-10 h-10 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
                     {searchQuery
                       ? "No service accounts found"
                       : "No service accounts yet"}
                   </h3>
-                  <p className="text-slate-500 dark:text-slate-400 mb-6">
+                  <p className="text-muted-foreground mb-6">
                     {searchQuery
                       ? "Try a different search term"
                       : "Create a service account to enable machine-to-machine access"}
@@ -815,7 +815,7 @@ const SecretManager = () => {
                   {!searchQuery && (
                     <button
                       onClick={() => setShowCreateServiceAccountModal(true)}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl transition-all"
+                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary to-primary-600 text-white font-semibold rounded-xl transition-all"
                     >
                       <Plus className="w-5 h-5" />
                       Create Service Account
@@ -825,43 +825,43 @@ const SecretManager = () => {
               ) : (
                 <div>
                   {/* Service Accounts Table */}
-                  <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <div className="bg-card rounded-xl shadow-sm border border-border overflow-hidden">
                     {/* Mobile Card View */}
                     <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-700">
                       {filteredServiceAccounts.map((sa) => (
                         <div
                           key={sa.id}
-                          className="p-4 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                          className="p-4 hover:bg-muted/50 transition-colors"
                         >
                           <div className="flex items-start justify-between gap-3 mb-3">
                             <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-slate-800 dark:text-white mb-1 truncate">
+                              <p className="font-semibold text-foreground mb-1 truncate">
                                 {sa.name}
                               </p>
-                              <code className="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-2 py-1 rounded font-mono break-all">
+                              <code className="text-xs bg-muted text-slate-600 dark:text-foreground px-2 py-1 rounded font-mono break-all">
                                 {sa.client_id}
                               </code>
                             </div>
                             {sa.status === "active" ? (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium flex-shrink-0">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-success/10 text-success rounded-full text-xs font-medium flex-shrink-0">
                                 <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                                 Active
                               </span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-medium flex-shrink-0">
+                              <span className="inline-flex items-center gap-1 px-2 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium flex-shrink-0">
                                 <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
                                 Disabled
                               </span>
                             )}
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                            <span className="text-xs text-muted-foreground">
                               {formatDate(sa.created_at)}
                             </span>
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => copyToClipboard(sa.client_id)}
-                                className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-muted-foreground hover:text-primary transition-colors"
                                 title="Copy client ID"
                               >
                                 <Copy className="w-4 h-4" />
@@ -870,7 +870,7 @@ const SecretManager = () => {
                                 onClick={() =>
                                   handleDeleteServiceAccount(sa.id)
                                 }
-                                className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors"
                                 title="Delete service account"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -883,18 +883,18 @@ const SecretManager = () => {
 
                     {/* Desktop Table View */}
                     <table className="w-full hidden sm:table">
-                      <thead className="bg-slate-50 dark:bg-slate-900/50">
+                      <thead className="bg-muted/50 dark:bg-background/50">
                         <tr>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             Client ID
                           </th>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden lg:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden lg:table-cell">
                             Status
                           </th>
-                          <th className="text-left px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider hidden md:table-cell">
+                          <th className="text-left px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider hidden md:table-cell">
                             Created
                           </th>
-                          <th className="text-right px-6 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                          <th className="text-right px-6 py-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                             Actions
                           </th>
                         </tr>
@@ -903,28 +903,28 @@ const SecretManager = () => {
                         {filteredServiceAccounts.map((sa) => (
                           <tr
                             key={sa.id}
-                            className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                            className="hover:bg-muted/50 transition-colors"
                           >
                             <td className="px-6 py-4">
-                              <code className="px-2 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded font-mono text-xs">
+                              <code className="px-2 py-1 bg-muted text-slate-600 dark:text-foreground rounded font-mono text-xs">
                                 {sa.client_id}
                               </code>
                             </td>
                             <td className="px-6 py-4 hidden lg:table-cell">
                               {sa.status === "active" ? (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-success/10 text-success rounded-full text-xs font-medium">
                                   <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
                                   Active
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-400 rounded-full text-xs font-medium">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-muted text-muted-foreground rounded-full text-xs font-medium">
                                   <div className="w-1.5 h-1.5 bg-slate-400 rounded-full"></div>
                                   Disabled
                                 </span>
                               )}
                             </td>
                             <td className="px-6 py-4 hidden md:table-cell">
-                              <span className="text-sm text-slate-600 dark:text-slate-400">
+                              <span className="text-sm text-muted-foreground">
                                 {formatDate(sa.created_at)}
                               </span>
                             </td>
@@ -932,7 +932,7 @@ const SecretManager = () => {
                               <div className="flex items-center justify-end gap-2">
                                 <button
                                   onClick={() => copyToClipboard(sa.client_id)}
-                                  className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                                  className="p-2 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 text-muted-foreground hover:text-primary transition-colors"
                                   title="Copy client ID"
                                 >
                                   <Copy className="w-4 h-4" />
@@ -941,7 +941,7 @@ const SecretManager = () => {
                                   onClick={() =>
                                     handleDeleteServiceAccount(sa.id)
                                   }
-                                  className="p-2 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                                  className="p-2 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors"
                                   title="Delete service account"
                                 >
                                   <Trash2 className="w-4 h-4" />

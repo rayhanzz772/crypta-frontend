@@ -46,30 +46,30 @@ const ApiDocumentation = () => {
         title="Copy code"
       >
         {copiedCode === id ? (
-          <Check className="w-4 h-4 text-green-400" />
+          <Check className="w-4 h-4 text-success" />
         ) : (
-          <Copy className="w-4 h-4 text-slate-300" />
+          <Copy className="w-4 h-4 text-foreground" />
         )}
       </button>
-      <pre className="bg-slate-900 text-slate-100 rounded-xl p-4 overflow-x-auto text-sm">
+      <pre className="bg-muted text-foreground rounded-xl p-4 overflow-x-auto text-sm">
         <code className={`language-${language}`}>{code}</code>
       </pre>
     </div>
   );
 
   const EndpointSection = ({ method, path, description, children }) => (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-6 mb-4">
+    <div className="border border-border rounded-xl p-6 mb-4">
       <div className="flex items-start gap-3 mb-4">
-        <span className={`px-3 py-1 rounded-lg font-semibold text-sm ${method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
-            method === 'POST' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+        <span className={`px-3 py-1 rounded-lg font-semibold text-sm ${method === 'GET' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-primary' :
+            method === 'POST' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-success' :
               method === 'PUT' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                'bg-destructive/10 text-destructive'
           }`}>
           {method}
         </span>
         <div className="flex-1">
-          <code className="text-lg font-mono text-slate-800 dark:text-white">{path}</code>
-          <p className="text-slate-600 dark:text-slate-400 mt-1">{description}</p>
+          <code className="text-lg font-mono text-foreground">{path}</code>
+          <p className="text-muted-foreground mt-1">{description}</p>
         </div>
       </div>
       {children}
@@ -83,83 +83,83 @@ const ApiDocumentation = () => {
         <div className="mb-8">
           <button
             onClick={() => navigate('/app/developer')}
-            className="flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-primary-600 dark:hover:text-primary-400 mb-4 transition-colors"
+            className="flex items-center gap-2 text-muted-foreground hover:text-primary-600 dark:hover:text-primary-400 mb-4 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Developer Keys
           </button>
 
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
               <Book className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
+              <h1 className="text-3xl font-bold text-foreground">
                 API Documentation
               </h1>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-muted-foreground">
                 Complete guide to Secret Manager API
               </p>
             </div>
           </div>
 
           {/* Quick Start */}
-          <div className="bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-6">
-            <h2 className="text-lg font-semibold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
+          <div className="bg-gradient-to-r from-primary-50 to-purple-50 dark:from-primary-900/20 dark:to-purple-900/20 border border-primary/20 rounded-xl p-6">
+            <h2 className="text-lg font-semibold text-foreground mb-3 flex items-center gap-2">
               <Key className="w-5 h-5" />
               Quick Start
             </h2>
-            <p className="text-slate-700 dark:text-slate-300 mb-4">
+            <p className="text-foreground mb-4">
               All API requests require authentication using your API key in the Authorization header:
             </p>
             <CodeBlock
               id="auth-header"
               code={`Authorization: Bearer YOUR_API_KEY`}
             />
-            <p className="text-sm text-slate-600 dark:text-slate-400 mt-3">
-              Base URL: <code className="px-2 py-1 bg-white dark:bg-slate-800 rounded">https://your-domain.com/public-api</code>
+            <p className="text-sm text-muted-foreground mt-3">
+              Base URL: <code className="px-2 py-1 bg-card rounded">https://your-domain.com/public-api</code>
             </p>
           </div>
         </div>
 
         {/* Passwords Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 mb-6">
+        <div className="bg-card rounded-2xl shadow-xl border border-border mb-6">
           <button
             onClick={() => toggleSection('passwords')}
-            className="w-full p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors rounded-t-2xl"
+            className="w-full p-6 flex items-center justify-between hover:bg-muted/50 transition-colors rounded-t-2xl"
           >
             <div className="flex items-center gap-3">
-              <Lock className="w-6 h-6 text-primary-500" />
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">Passwords</h2>
+              <Lock className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">Passwords</h2>
             </div>
             {expandedSections.passwords ? (
-              <ChevronDown className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
 
           {expandedSections.passwords && (
-            <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
+            <div className="p-6 pt-0 border-t border-border">
               <EndpointSection
                 method="GET"
                 path="/public-api/vault"
                 description="Get all passwords in your vault"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Query Parameters</h4>
-                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 space-y-2">
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                  <h4 className="font-semibold text-foreground mb-2">Query Parameters</h4>
+                  <div className="bg-muted/50 dark:bg-background rounded-lg p-4 space-y-2">
+                    <p className="text-sm text-foreground">
                       <code className="font-mono">category_id</code> (optional) - Filter by category ID
                     </p>
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                    <p className="text-sm text-foreground">
                       <code className="font-mono">search</code> (optional) - Search by name or username
                     </p>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="get-passwords-response"
                     language="json"
@@ -188,7 +188,7 @@ const ApiDocumentation = () => {
                 description="Create a new password entry"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="create-password-request"
                     language="json"
@@ -203,7 +203,7 @@ const ApiDocumentation = () => {
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="create-password-response"
                     language="json"
@@ -226,7 +226,7 @@ const ApiDocumentation = () => {
                 description="Update an existing password"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="update-password-request"
                     language="json"
@@ -248,7 +248,7 @@ const ApiDocumentation = () => {
                 description="Delete a password entry"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="delete-password-response"
                     language="json"
@@ -266,7 +266,7 @@ const ApiDocumentation = () => {
                 description="Decrypt a password"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="decrypt-password-request"
                     language="json"
@@ -277,7 +277,7 @@ const ApiDocumentation = () => {
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="decrypt-password-response"
                     language="json"
@@ -295,43 +295,43 @@ const ApiDocumentation = () => {
         </div>
 
         {/* Notes Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 mb-6">
+        <div className="bg-card rounded-2xl shadow-xl border border-border mb-6">
           <button
             onClick={() => toggleSection('notes')}
-            className="w-full p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors rounded-t-2xl"
+            className="w-full p-6 flex items-center justify-between hover:bg-muted/50 transition-colors rounded-t-2xl"
           >
             <div className="flex items-center gap-3">
-              <FileText className="w-6 h-6 text-primary-500" />
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">Secret Notes</h2>
+              <FileText className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">Secret Notes</h2>
             </div>
             {expandedSections.notes ? (
-              <ChevronDown className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
 
           {expandedSections.notes && (
-            <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
+            <div className="p-6 pt-0 border-t border-border">
               <EndpointSection
                 method="GET"
                 path="/public-api/notes"
                 description="Get all secret notes"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Query Parameters</h4>
-                  <div className="bg-slate-50 dark:bg-slate-900 rounded-lg p-4 space-y-2">
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                  <h4 className="font-semibold text-foreground mb-2">Query Parameters</h4>
+                  <div className="bg-muted/50 dark:bg-background rounded-lg p-4 space-y-2">
+                    <p className="text-sm text-foreground">
                       <code className="font-mono">category_id</code> (optional) - Filter by category ID
                     </p>
-                    <p className="text-sm text-slate-700 dark:text-slate-300">
+                    <p className="text-sm text-foreground">
                       <code className="font-mono">search</code> (optional) - Search by title
                     </p>
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="get-notes-response"
                     language="json"
@@ -361,7 +361,7 @@ const ApiDocumentation = () => {
                 description="Create a new secret note"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="create-note-request"
                     language="json"
@@ -383,7 +383,7 @@ const ApiDocumentation = () => {
                 description="Get a specific note"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="get-note-response"
                     language="json"
@@ -408,7 +408,7 @@ const ApiDocumentation = () => {
                 description="Update a secret note"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="update-note-request"
                     language="json"
@@ -428,7 +428,7 @@ const ApiDocumentation = () => {
                 description="Delete a secret note"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="delete-note-response"
                     language="json"
@@ -446,7 +446,7 @@ const ApiDocumentation = () => {
                 description="Decrypt a note"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Request Body</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Request Body</h4>
                   <CodeBlock
                     id="decrypt-note-request"
                     language="json"
@@ -457,7 +457,7 @@ const ApiDocumentation = () => {
                 </div>
 
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="decrypt-note-response"
                     language="json"
@@ -475,31 +475,31 @@ const ApiDocumentation = () => {
         </div>
 
         {/* Categories Section */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 mb-6">
+        <div className="bg-card rounded-2xl shadow-xl border border-border mb-6">
           <button
             onClick={() => toggleSection('categories')}
-            className="w-full p-6 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors rounded-t-2xl"
+            className="w-full p-6 flex items-center justify-between hover:bg-muted/50 transition-colors rounded-t-2xl"
           >
             <div className="flex items-center gap-3">
-              <Code className="w-6 h-6 text-primary-500" />
-              <h2 className="text-xl font-bold text-slate-800 dark:text-white">Categories</h2>
+              <Code className="w-6 h-6 text-primary" />
+              <h2 className="text-xl font-bold text-foreground">Categories</h2>
             </div>
             {expandedSections.categories ? (
-              <ChevronDown className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronDown className="w-5 h-5 text-muted-foreground" />
             ) : (
-              <ChevronRight className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
             )}
           </button>
 
           {expandedSections.categories && (
-            <div className="p-6 pt-0 border-t border-slate-200 dark:border-slate-700">
+            <div className="p-6 pt-0 border-t border-border">
               <EndpointSection
                 method="GET"
                 path="/public-api/categories"
                 description="Get all available categories"
               >
                 <div className="mb-4">
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-2">Response</h4>
+                  <h4 className="font-semibold text-foreground mb-2">Response</h4>
                   <CodeBlock
                     id="get-categories-response"
                     language="json"
@@ -528,15 +528,15 @@ const ApiDocumentation = () => {
         </div>
 
         {/* Error Responses */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6 mb-6">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Error Responses</h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-4">
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-6 mb-6">
+          <h2 className="text-xl font-bold text-foreground mb-4">Error Responses</h2>
+          <p className="text-muted-foreground mb-4">
             All endpoints may return the following error responses:
           </p>
 
           <div className="space-y-4">
             <div>
-              <h4 className="font-semibold text-slate-800 dark:text-white mb-2">401 Unauthorized</h4>
+              <h4 className="font-semibold text-foreground mb-2">401 Unauthorized</h4>
               <CodeBlock
                 id="error-401"
                 language="json"
@@ -548,7 +548,7 @@ const ApiDocumentation = () => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-800 dark:text-white mb-2">404 Not Found</h4>
+              <h4 className="font-semibold text-foreground mb-2">404 Not Found</h4>
               <CodeBlock
                 id="error-404"
                 language="json"
@@ -560,7 +560,7 @@ const ApiDocumentation = () => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-800 dark:text-white mb-2">429 Too Many Requests</h4>
+              <h4 className="font-semibold text-foreground mb-2">429 Too Many Requests</h4>
               <CodeBlock
                 id="error-429"
                 language="json"
@@ -572,7 +572,7 @@ const ApiDocumentation = () => {
             </div>
 
             <div>
-              <h4 className="font-semibold text-slate-800 dark:text-white mb-2">500 Internal Server Error</h4>
+              <h4 className="font-semibold text-foreground mb-2">500 Internal Server Error</h4>
               <CodeBlock
                 id="error-500"
                 language="json"
@@ -586,11 +586,11 @@ const ApiDocumentation = () => {
         </div>
 
         {/* Code Examples */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 p-6">
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-4">Code Examples</h2>
+        <div className="bg-card rounded-2xl shadow-xl border border-border p-6">
+          <h2 className="text-xl font-bold text-foreground mb-4">Code Examples</h2>
 
           <div className="mb-6">
-            <h3 className="font-semibold text-slate-800 dark:text-white mb-3">JavaScript / Node.js</h3>
+            <h3 className="font-semibold text-foreground mb-3">JavaScript / Node.js</h3>
             <CodeBlock
               id="example-js"
               language="javascript"
@@ -637,7 +637,7 @@ getPasswords();`}
           </div>
 
           <div className="mb-6">
-            <h3 className="font-semibold text-slate-800 dark:text-white mb-3">Python</h3>
+            <h3 className="font-semibold text-foreground mb-3">Python</h3>
             <CodeBlock
               id="example-python"
               language="python"
@@ -681,7 +681,7 @@ get_passwords()`}
           </div>
 
           <div>
-            <h3 className="font-semibold text-slate-800 dark:text-white mb-3">cURL</h3>
+            <h3 className="font-semibold text-foreground mb-3">cURL</h3>
             <CodeBlock
               id="example-curl"
               language="bash"
@@ -709,7 +709,7 @@ curl -X DELETE "https://your-domain.com/public-api/vault/abc123" \\
         </div>
 
         {/* Footer */}
-        <div className="mt-8 text-center text-slate-600 dark:text-slate-400">
+        <div className="mt-8 text-center text-muted-foreground">
           <p className="mb-2">Need help? Have questions?</p>
           <p className="text-sm">Contact support or check our community forum</p>
         </div>

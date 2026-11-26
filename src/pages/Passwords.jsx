@@ -329,15 +329,15 @@ const Passwords = () => {
           <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl">
             <Lock className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-800 dark:text-white mb-3">
+          <h2 className="text-2xl font-bold text-foreground mb-3">
             Vault is Locked
           </h2>
-          <p className="text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-muted-foreground mb-6">
             Your vault is currently locked. Please unlock it with your master
             password to access your encrypted passwords.
           </p>
-          <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-            <p className="text-sm text-amber-800 dark:text-amber-200">
+          <div className="p-4 bg-warning/10 border border-warning/25 rounded-xl">
+            <p className="text-sm text-warning">
               Tip: Click the "Unlock Vault" button in the sidebar to enter your
               master password.
             </p>
@@ -354,11 +354,11 @@ const Passwords = () => {
         {/* Header Skeleton */}
         <div className="flex items-center justify-between mb-6">
           <div className="space-y-2">
-            <div className="h-6 w-48 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
-            <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 rounded-lg animate-pulse" />
+            <div className="h-6 w-48 bg-muted rounded-lg animate-pulse" />
+            <div className="h-4 w-32 bg-muted rounded-lg animate-pulse" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="h-11 w-28 bg-slate-200 dark:bg-slate-700 rounded-xl animate-pulse hidden sm:block" />
+            <div className="h-11 w-28 bg-muted rounded-xl animate-pulse hidden sm:block" />
             <div className="h-11 w-40 bg-blue-200 dark:bg-blue-900/50 rounded-xl animate-pulse" />
           </div>
         </div>
@@ -368,24 +368,24 @@ const Passwords = () => {
           {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
             <div
               key={i}
-              className="bg-white/50 dark:bg-slate-900/50 rounded-xl p-3.5 sm:p-4 border border-slate-200/60 dark:border-slate-800/60 flex flex-col justify-between"
+              className="bg-white/50 dark:bg-background/50 rounded-xl p-3.5 sm:p-4 border border-border flex flex-col justify-between"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-slate-200 dark:bg-slate-800 rounded-lg animate-pulse" />
+                  <div className="w-8 h-8 bg-slate-200 dark:bg-card rounded-lg animate-pulse" />
                   <div className="space-y-1">
-                    <div className="h-4 w-28 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                    <div className="h-3 w-16 bg-slate-100 dark:bg-slate-800/60 rounded animate-pulse" />
+                    <div className="h-4 w-28 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                    <div className="h-3 w-16 bg-muted/60 rounded animate-pulse" />
                   </div>
                 </div>
-                <div className="w-6 h-6 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="w-6 h-6 bg-slate-200 dark:bg-card rounded animate-pulse" />
               </div>
 
-              <div className="bg-slate-100 dark:bg-slate-900/80 rounded-lg h-8 mb-3 animate-pulse" />
+              <div className="bg-muted dark:bg-background/80 rounded-lg h-8 mb-3 animate-pulse" />
 
               <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex justify-between items-center">
-                <div className="h-3.5 w-16 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                <div className="h-3.5 w-20 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
+                <div className="h-3.5 w-16 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                <div className="h-3.5 w-20 bg-slate-200 dark:bg-card rounded animate-pulse" />
               </div>
             </div>
           ))}
@@ -406,11 +406,11 @@ const Passwords = () => {
             <Lock className="w-8 h-8 text-white" />
           </div>
 
-          <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+          <h2 className="text-xl font-bold text-foreground mb-2">
             No Passwords Yet
           </h2>
 
-          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6">
+          <p className="text-sm text-muted-foreground mb-6">
             Your vault is empty. Start securing your passwords by adding your
             first entry.
           </p>
@@ -426,14 +426,14 @@ const Passwords = () => {
           </motion.button>
 
           {/* Info Card */}
-          <div className="mt-8 bg-blue-50/60 dark:bg-blue-950/20 rounded-xl p-3.5 border border-blue-100 dark:border-blue-900/40">
+          <div className="mt-8 bg-blue-50/60 dark:bg-blue-950/20 rounded-xl p-3.5 border border-primary/20/40">
             <div className="flex items-start gap-3 text-left">
-              <Lock className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <Lock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-xs font-semibold text-slate-800 dark:text-white mb-0.5">
+                <h3 className="text-xs font-semibold text-foreground mb-0.5">
                   End-to-End Encrypted
                 </h3>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                <p className="text-[11px] text-muted-foreground">
                   All passwords are encrypted with AES-256-GCM using your master
                   password. Only you can decrypt them.
                 </p>
@@ -451,16 +451,16 @@ const Passwords = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h1 className="text-lg font-bold text-slate-800 dark:text-white mb-0.5 flex items-center gap-2">
+          <h1 className="text-lg font-bold text-foreground mb-0.5 flex items-center gap-2">
             {showOnlyFavorites ? "Favorite Passwords" : "All Passwords"}
             {isFiltering && (
-              <span className="inline-flex items-center gap-1.5 text-xs font-normal text-blue-600 dark:text-blue-400">
+              <span className="inline-flex items-center gap-1.5 text-xs font-normal text-primary">
                 <Loader2 className="animate-spin h-3.5 w-3.5" />
                 Filtering...
               </span>
             )}
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-muted-foreground">
             {filteredPasswords.length}{" "}
             {filteredPasswords.length === 1 ? "password" : "passwords"}
             {showOnlyFavorites ? " favorite password" : " stored securely"}
@@ -469,12 +469,12 @@ const Passwords = () => {
 
         <div className="flex items-center gap-2.5">
           {/* View Mode Switcher */}
-          <div className="flex items-center p-0.5 bg-slate-100 dark:bg-slate-800/80 rounded-xl border border-slate-200/60 dark:border-slate-700/60">
+          <div className="flex items-center p-0.5 bg-muted/80 rounded-xl border border-slate-200/60 dark:border-border/60">
             <button
               onClick={() => handleViewModeChange("grid")}
               className={`p-1.5 rounded-lg transition-all ${viewMode === "grid"
-                ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                ? "bg-white dark:bg-slate-700 text-primary shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
               title="Grid View"
             >
@@ -483,8 +483,8 @@ const Passwords = () => {
             <button
               onClick={() => handleViewModeChange("list")}
               className={`p-1.5 rounded-lg transition-all ${viewMode === "list"
-                ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-xs font-semibold"
-                : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                ? "bg-white dark:bg-slate-700 text-primary shadow-xs font-semibold"
+                : "text-muted-foreground hover:text-foreground"
                 }`}
               title="Dense List View"
             >
@@ -496,12 +496,12 @@ const Passwords = () => {
           <button
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
             className={`${baseBtn} text-xs font-medium ${showOnlyFavorites
-              ? "bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-300/60 dark:border-amber-800/60"
-              : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
+              ? "bg-amber-100 dark:bg-amber-950/40 text-warning border border-amber-300/60 dark:border-amber-800/60"
+              : "bg-muted text-slate-600 dark:text-foreground hover:bg-muted"
               }`}
           >
             <Star
-              className={`w-4 h-4 ${showOnlyFavorites ? "fill-amber-500 text-amber-500" : ""
+              className={`w-4 h-4 ${showOnlyFavorites ? "fill-amber-500 text-warning" : ""
                 }`}
             />
             <span className="hidden sm:inline">Favorites</span>
@@ -537,7 +537,7 @@ const Passwords = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white dark:bg-slate-800/80 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-slate-700/60 overflow-hidden divide-y divide-slate-200/60 dark:divide-slate-700/50 shadow-xs dark:shadow-md dark:shadow-slate-950/40">
+          <div className="bg-card/80 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-border/60 overflow-hidden divide-y divide-slate-200/60 dark:divide-slate-700/50 shadow-xs dark:shadow-md dark:shadow-slate-950/40">
             {filteredPasswords.map((password, index) => (
               <PasswordListRow
                 key={password.id || `password-${index}`}
@@ -559,13 +559,13 @@ const Passwords = () => {
           className="flex items-center justify-center min-h-[350px]"
         >
           <div className="text-center">
-            <Star className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-3 opacity-60" />
-            <h3 className="text-base font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <Star className="w-12 h-12 text-foreground dark:text-slate-700 mx-auto mb-3 opacity-60" />
+            <h3 className="text-base font-semibold text-foreground mb-1">
               {showOnlyFavorites
                 ? "No Favorite Passwords"
                 : "No Passwords Found"}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-500 mb-5">
+            <p className="text-xs text-muted-foreground mb-5">
               {showOnlyFavorites
                 ? "You haven't marked any passwords as favorites yet."
                 : "Try adjusting your search or filters."}
@@ -586,14 +586,14 @@ const Passwords = () => {
       {totalPages > 1 && (
         <div className="flex items-center justify-between mt-6 px-4 py-2.5 bg-white dark:bg-slate-850 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs">
           <div className="flex items-center gap-3">
-            <span className="text-slate-500 dark:text-slate-400">
+            <span className="text-muted-foreground">
               Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)}–
               {Math.min(currentPage * perPage, totalItems)} of {totalItems}
             </span>
             <select
               value={perPage}
               onChange={(e) => handlePerPageChange(Number(e.target.value))}
-              className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1 focus:ring-2 focus:ring-blue-500 outline-none"
+              className="text-xs bg-muted/50 border border-border rounded-lg px-2.5 py-1 focus:ring-2 focus:ring-ring outline-none"
             >
               <option value={8}>8 per page</option>
               <option value={12}>12 per page</option>
@@ -606,7 +606,7 @@ const Passwords = () => {
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-1.5 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 text-muted-foreground bg-card border border-border rounded-lg hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -630,7 +630,7 @@ const Passwords = () => {
                     onClick={() => handlePageChange(pageNum)}
                     className={`w-7 h-7 flex items-center justify-center text-xs font-medium rounded-lg transition-colors ${currentPage === pageNum
                       ? "bg-blue-600 text-white"
-                      : "text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700"
+                      : "text-muted-foreground bg-card border border-border hover:bg-muted"
                       }`}
                   >
                     {pageNum}
@@ -642,7 +642,7 @@ const Passwords = () => {
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="p-1.5 text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 text-muted-foreground bg-card border border-border rounded-lg hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -728,7 +728,7 @@ const PasswordCard = ({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
-      className="bg-white dark:bg-slate-800/80 hover:dark:bg-slate-800/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-slate-700/60 shadow-xs hover:shadow-lg dark:shadow-md dark:shadow-slate-950/40 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 flex flex-col justify-between group relative"
+      className="bg-card/80 hover:dark:bg-card/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-border/60 shadow-xs hover:shadow-lg dark:shadow-md dark:shadow-slate-950/40 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 flex flex-col justify-between group relative"
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3 mb-3.5">
@@ -738,13 +738,13 @@ const PasswordCard = ({
             <CategoryIcon className="w-5 h-5 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate leading-snug">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground truncate leading-snug">
               {password.name || password.title}
             </h3>
-            <p className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate mt-0.5">
+            <p className="text-xs text-muted-foreground dark:text-muted-foreground font-mono truncate mt-0.5">
               {websiteUrl ? (
                 <span className="flex items-center gap-1">
-                  <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                  <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                   {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                 </span>
               ) : (
@@ -758,7 +758,7 @@ const PasswordCard = ({
         <div className="flex items-center gap-1 shrink-0">
           <button
             onClick={() => onToggleFavorite(password.id)}
-            className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-500 transition-colors"
+            className="p-1.5 sm:p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-warning transition-colors"
             title={
               password.is_favorite
                 ? "Remove from favorites"
@@ -767,7 +767,7 @@ const PasswordCard = ({
           >
             <Star
               className={`w-4 h-4 ${password.is_favorite
-                ? "text-amber-500 fill-amber-500"
+                ? "text-warning fill-amber-500"
                 : ""
                 }`}
             />
@@ -776,20 +776,20 @@ const PasswordCard = ({
           <div className="relative" ref={menuRef}>
             <button
               onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
             >
               <MoreVertical className="w-4 h-4" />
             </button>
 
             {/* Dropdown Menu */}
             {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20">
+              <div className="absolute right-0 top-full mt-1 w-44 bg-card rounded-xl shadow-lg border border-border py-1 z-20">
                 <button
                   onClick={() => {
                     onUpdate(password);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
                 >
                   <Edit className="w-4 h-4" />
                   Edit
@@ -799,7 +799,7 @@ const PasswordCard = ({
                     onDelete(password);
                     setShowMenu(false);
                   }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
                   disabled={isDeleting}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -812,13 +812,13 @@ const PasswordCard = ({
       </div>
 
       {/* Password Masked Preview Bar */}
-      <div className="bg-slate-50/80 dark:bg-slate-950/70 border border-slate-200/60 dark:border-slate-700/60 rounded-xl px-3 py-2 mb-3.5 flex items-center justify-between gap-2">
-        <span className="font-mono text-xs sm:text-sm text-slate-400 dark:text-slate-500 tracking-wider select-none">
+      <div className="bg-muted/50/80 dark:bg-slate-950/70 border border-slate-200/60 dark:border-border/60 rounded-xl px-3 py-2 mb-3.5 flex items-center justify-between gap-2">
+        <span className="font-mono text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground tracking-wider select-none">
           ••••••••••••
         </span>
         <button
           onClick={() => onDecrypt(password)}
-          className="p-1 rounded-md text-slate-500 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-200/60 dark:hover:bg-slate-800 transition-colors flex items-center gap-1.5 text-xs font-medium"
+          className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-slate-200/60 dark:hover:bg-card transition-colors flex items-center gap-1.5 text-xs font-medium"
           title="Decrypt and view password"
         >
           <Eye className="w-4 h-4" />
@@ -827,13 +827,13 @@ const PasswordCard = ({
       </div>
 
       {/* Footer Meta */}
-      <div className="pt-2.5 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-xs text-slate-400 dark:text-slate-500">
+      <div className="pt-2.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground">
         <span className={`font-medium px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] tracking-wider uppercase ${categoryColor.pill}`}>
           {categoryName}
         </span>
         <button
           onClick={() => onDecrypt(password)}
-          className="text-blue-600 dark:text-blue-400 font-medium hover:underline text-xs flex items-center gap-1"
+          className="text-primary font-medium hover:underline text-xs flex items-center gap-1"
         >
           View Details →
         </button>
@@ -876,7 +876,7 @@ const PasswordListRow = ({
   }, [showMenu]);
 
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-3.5 sm:py-4 hover:bg-slate-50/80 dark:hover:bg-slate-700/40 transition-colors group select-none">
+    <div className="flex items-center justify-between gap-4 px-5 py-3.5 sm:py-4 hover:bg-muted/50/80 dark:hover:bg-slate-700/40 transition-colors group select-none">
       {/* Col 1: Icon & Item Info */}
       <div className="flex items-center gap-3.5 min-w-0 flex-1">
         <div className={`w-10 h-10 ${categoryColor.gradient} flex items-center justify-center shrink-0 rounded-xl shadow-xs`}>
@@ -884,17 +884,17 @@ const PasswordListRow = ({
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm sm:text-base text-slate-800 dark:text-slate-100 truncate leading-snug">
+            <h3 className="font-semibold text-sm sm:text-base text-foreground truncate leading-snug">
               {password.name || password.title}
             </h3>
             {password.is_favorite && (
-              <Star className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />
+              <Star className="w-4 h-4 text-warning fill-amber-500 shrink-0" />
             )}
           </div>
-          <p className="text-xs text-slate-400 dark:text-slate-500 font-mono truncate mt-0.5">
+          <p className="text-xs text-muted-foreground dark:text-muted-foreground font-mono truncate mt-0.5">
             {websiteUrl ? (
               <span className="flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
               </span>
             ) : (
@@ -915,18 +915,18 @@ const PasswordListRow = ({
       <div className="flex items-center gap-1 shrink-0">
         <button
           onClick={() => onToggleFavorite(password.id)}
-          className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-amber-500 transition-colors"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-warning transition-colors"
           title={password.is_favorite ? "Remove favorite" : "Add favorite"}
         >
           <Star
-            className={`w-4 h-4 ${password.is_favorite ? "text-amber-500 fill-amber-500" : ""
+            className={`w-4 h-4 ${password.is_favorite ? "text-warning fill-amber-500" : ""
               }`}
           />
         </button>
 
         <button
           onClick={() => onDecrypt(password)}
-          className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors"
           title="Decrypt / View Details"
         >
           <Eye className="w-4 h-4" />
@@ -935,19 +935,19 @@ const PasswordListRow = ({
         <div className="relative" ref={menuRef}>
           <button
             onClick={() => setShowMenu(!showMenu)}
-            className="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
           >
             <MoreVertical className="w-4 h-4" />
           </button>
 
           {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-44 bg-white dark:bg-slate-800 rounded-xl shadow-lg border border-slate-200 dark:border-slate-700 py-1 z-20">
+            <div className="absolute right-0 top-full mt-1 w-44 bg-card rounded-xl shadow-lg border border-border py-1 z-20">
               <button
                 onClick={() => {
                   onUpdate(password);
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
               >
                 <Edit className="w-4 h-4" />
                 Edit
@@ -957,7 +957,7 @@ const PasswordListRow = ({
                   onDelete(password);
                   setShowMenu(false);
                 }}
-                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-colors"
+                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
                 disabled={isDeleting}
               >
                 <Trash2 className="w-4 h-4" />

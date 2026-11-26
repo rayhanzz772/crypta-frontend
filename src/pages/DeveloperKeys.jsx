@@ -113,33 +113,33 @@ const DeveloperKeys = () => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center shadow-lg">
               <Code className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
+              <h1 className="text-3xl font-bold text-foreground">
                 Developer API Keys
               </h1>
-              <p className="text-slate-600 dark:text-slate-400">
+              <p className="text-muted-foreground">
                 Manage your API keys for programmatic access
               </p>
             </div>
           </div>
 
           {/* Info Banner */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start gap-3">
-            <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+          <div className="bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex items-start gap-3">
+            <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
             <div className="flex-1">
               <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-1">
                 Keep your API keys secure
               </h3>
-              <p className="text-sm text-blue-700 dark:text-blue-400">
+              <p className="text-sm text-blue-700 dark:text-primary">
                 API keys provide full access to your account. Never share them or commit them to public repositories.
               </p>
             </div>
             <button
               onClick={() => navigate('/app/api-docs')}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1"
+              className="text-sm text-primary hover:underline flex items-center gap-1"
             >
               API Docs
               <ExternalLink className="w-3 h-3" />
@@ -152,7 +152,7 @@ const DeveloperKeys = () => {
           <button
             onClick={generateApiKey}
             disabled={isGenerating}
-            className="px-6 py-3 bg-gradient-to-r from-primary-500 to-purple-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-6 py-3 bg-gradient-to-r from-primary to-primary-600 text-white rounded-xl font-semibold shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isGenerating ? (
               <>
@@ -180,30 +180,30 @@ const DeveloperKeys = () => {
             srTitle="API Key Generated Successfully!"
           >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div className="w-10 h-10 bg-success/10 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-success" />
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-1">
+                  <h2 className="text-xl font-bold text-foreground mb-1">
                     API Key Generated Successfully!
                   </h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     Save this key securely - it won't be shown again
                   </p>
                 </div>
               </div>
 
-              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 mb-4">
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+              <div className="bg-muted/50 dark:bg-background rounded-xl p-4 mb-4">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Your API Key
                 </label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 px-4 py-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm font-mono text-slate-800 dark:text-white break-all">
+                  <code className="flex-1 px-4 py-3 bg-card border border-border rounded-lg text-sm font-mono text-foreground break-all">
                     {newKeyData.key}
                   </code>
                   <button
                     onClick={() => copyToClipboard(newKeyData.key)}
-                    className="p-3 bg-primary-500 text-white rounded-lg hover:bg-primary-600 transition-colors"
+                    className="p-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
                     title="Copy to clipboard"
                   >
                     <Copy className="w-5 h-5" />
@@ -225,7 +225,7 @@ const DeveloperKeys = () => {
                   setShowNewKey(false);
                   setNewKeyData(null);
                 }}
-                className="w-full px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                className="w-full px-4 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
               >
                 I've Saved My Key
               </button>
@@ -241,14 +241,14 @@ const DeveloperKeys = () => {
             srTitle="Revoke API Key?"
           >
               <div className="flex items-start gap-3 mb-4">
-                <div className="w-10 h-10 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center">
-                  <AlertTriangle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                <div className="w-10 h-10 bg-destructive/10 rounded-xl flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-destructive" />
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-1">
+                  <h2 className="text-xl font-bold text-foreground mb-1">
                     Revoke API Key?
                   </h2>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                  <p className="text-sm text-muted-foreground">
                     This action cannot be undone. Applications using this key will immediately lose access.
                   </p>
                 </div>
@@ -257,13 +257,13 @@ const DeveloperKeys = () => {
               <div className="flex gap-3">
                 <button
                   onClick={() => setKeyToRevoke(null)}
-                  className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                  className="flex-1 px-4 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => revokeApiKey(keyToRevoke)}
-                  className="flex-1 px-4 py-3 bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-colors"
+                  className="flex-1 px-4 py-3 bg-destructive text-white rounded-xl font-semibold hover:bg-destructive/90 transition-colors"
                 >
                   Revoke Key
                 </button>
@@ -272,9 +272,9 @@ const DeveloperKeys = () => {
         )}
 
         {/* API Keys List */}
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700">
-          <div className="border-b border-slate-200 dark:border-slate-700 p-6">
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
+        <div className="bg-card rounded-2xl shadow-xl border border-border">
+          <div className="border-b border-border p-6">
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
               <Key className="w-5 h-5" />
               Active API Keys
             </h2>
@@ -282,24 +282,24 @@ const DeveloperKeys = () => {
 
           {isLoading ? (
             <div className="p-12 flex flex-col items-center justify-center">
-              <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
-              <p className="text-slate-600 dark:text-slate-400">Loading API keys...</p>
+              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+              <p className="text-muted-foreground">Loading API keys...</p>
             </div>
           ) : apiKeys.length === 0 ? (
             <div className="p-12 flex flex-col items-center justify-center">
-              <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-2xl flex items-center justify-center mb-4">
-                <Key className="w-8 h-8 text-slate-400" />
+              <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-4">
+                <Key className="w-8 h-8 text-muted-foreground" />
               </div>
-              <h3 className="text-lg font-semibold text-slate-800 dark:text-white mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
                 No API Keys Yet
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-center max-w-md mb-6">
+              <p className="text-muted-foreground text-center max-w-md mb-6">
                 Generate your first API key to start using the API programmatically
               </p>
               <button
                 onClick={generateApiKey}
                 disabled={isGenerating}
-                className="px-6 py-3 bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-colors flex items-center gap-2"
+                className="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-colors flex items-center gap-2"
               >
                 <Plus className="w-5 h-5" />
                 Generate API Key
@@ -310,22 +310,22 @@ const DeveloperKeys = () => {
               {apiKeys.map((key) => (
                 <div
                   key={key.id}
-                  className="p-6 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors"
+                  className="p-6 hover:bg-muted/50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       {/* Key Display */}
                       <div className="mb-3">
-                        <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                        <label className="block text-xs font-medium text-muted-foreground mb-1">
                           API Key
                         </label>
                         <div className="flex items-center gap-2">
-                          <code className="flex-1 px-3 py-2 bg-slate-100 dark:bg-slate-900 rounded-lg text-sm font-mono text-slate-800 dark:text-white">
+                          <code className="flex-1 px-3 py-2 bg-muted dark:bg-background rounded-lg text-sm font-mono text-foreground">
                             {visibleKeys[key.id] ? key.key : maskApiKey(key.key)}
                           </code>
                           <button
                             onClick={() => toggleKeyVisibility(key.id)}
-                            className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:bg-slate-200 dark:hover:bg-card rounded-lg transition-colors"
                             title={visibleKeys[key.id] ? 'Hide key' : 'Show key'}
                           >
                             {visibleKeys[key.id] ? (
@@ -336,7 +336,7 @@ const DeveloperKeys = () => {
                           </button>
                           <button
                             onClick={() => copyToClipboard(key.key)}
-                            className="p-2 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg transition-colors"
+                            className="p-2 text-muted-foreground hover:bg-slate-200 dark:hover:bg-card rounded-lg transition-colors"
                             title="Copy to clipboard"
                           >
                             <Copy className="w-4 h-4" />
@@ -345,7 +345,7 @@ const DeveloperKeys = () => {
                       </div>
 
                       {/* Metadata */}
-                      <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <Calendar className="w-4 h-4" />
                           <span>Created: {formatDate(key.created_at)}</span>
@@ -362,7 +362,7 @@ const DeveloperKeys = () => {
                     {/* Actions */}
                     <button
                       onClick={() => setKeyToRevoke(key.id)}
-                      className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 text-destructive hover:bg-destructive/10 dark:hover:bg-red-900/20 rounded-lg transition-colors"
                       title="Revoke key"
                     >
                       <Trash2 className="w-5 h-5" />
