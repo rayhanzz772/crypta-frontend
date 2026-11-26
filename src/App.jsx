@@ -5,6 +5,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
@@ -27,7 +28,8 @@ function App() {
   return (
     <Router>
       <AuthProvider>
-        <div className="min-h-screen">
+        <TooltipProvider>
+          <div className="min-h-screen bg-background">
           {/* Toast Notifications */}
           <Toaster
             position="top-right"
@@ -94,6 +96,7 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </div>
+        </TooltipProvider>
       </AuthProvider>
     </Router>
   );
