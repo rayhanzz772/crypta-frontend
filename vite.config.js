@@ -1,9 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
+import { fileURLToPath, URL } from "node:url";
 
 // https://vite.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
+    },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -13,8 +19,8 @@ export default defineConfig({
         name: "Crypta - Secure Password Manager",
         short_name: "Crypta",
         description: "Open-source password manager with military-grade Argon2id encryption. Securely store passwords and encrypted notes.",
-        theme_color: "#3b82f6",
-        background_color: "#ffffff",
+        theme_color: "#0b0d14",
+        background_color: "#0b0d14",
         display: "standalone",
         start_url: "/",
         orientation: "portrait-primary",

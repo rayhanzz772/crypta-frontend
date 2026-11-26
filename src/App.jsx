@@ -34,21 +34,24 @@ function App() {
             toastOptions={{
               duration: 1500,
               style: {
-                background: "var(--toast-bg)",
-                color: "var(--toast-color)",
-                borderRadius: "12px",
-                padding: "16px",
+                background: "hsl(var(--popover))",
+                color: "hsl(var(--popover-foreground))",
+                border: "1px solid hsl(var(--border))",
+                borderRadius: "var(--radius)",
+                padding: "14px 16px",
+                boxShadow: "0 8px 24px -12px rgb(0 0 0 / 0.35)",
+                fontSize: "14px",
               },
               success: {
                 iconTheme: {
-                  primary: "#10b981",
-                  secondary: "#fff",
+                  primary: "hsl(var(--success))",
+                  secondary: "hsl(var(--popover))",
                 },
               },
               error: {
                 iconTheme: {
-                  primary: "#ef4444",
-                  secondary: "#fff",
+                  primary: "hsl(var(--destructive))",
+                  secondary: "hsl(var(--popover))",
                 },
               },
             }}

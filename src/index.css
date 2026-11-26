@@ -2,49 +2,108 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'Helvetica Neue Medium';
-  src: url('./assets/fonts/HelveticaNeueMedium.otf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 @layer base {
+  /* Light theme. Dark is the product's default look (see .dark below). */
   :root {
-    --toast-bg: #ffffff;
-    --toast-color: #1f2937;
+    --radius: 0.75rem;
+
+    --background: 0 0% 100%;
+    --foreground: 225 25% 12%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 225 25% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 225 25% 12%;
+
+    --primary: 263 70% 52%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 224 25% 96%;
+    --secondary-foreground: 225 25% 18%;
+
+    --muted: 224 25% 96%;
+    --muted-foreground: 224 12% 46%;
+
+    --accent: 263 60% 96%;
+    --accent-foreground: 263 60% 32%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 62% 38%;
+    --warning: 32 90% 44%;
+
+    --border: 224 20% 89%;
+    --input: 224 20% 89%;
+    --ring: 263 70% 52%;
   }
 
   .dark {
-    --toast-bg: #1f2937;
-    --toast-color: #f3f4f6;
+    --background: 225 28% 6%;
+    --foreground: 220 25% 96%;
+
+    --card: 224 24% 9%;
+    --card-foreground: 220 25% 96%;
+
+    --popover: 224 24% 10%;
+    --popover-foreground: 220 25% 96%;
+
+    --primary: 263 74% 64%;
+    --primary-foreground: 226 40% 8%;
+
+    --secondary: 223 18% 15%;
+    --secondary-foreground: 220 20% 92%;
+
+    --muted: 223 18% 14%;
+    --muted-foreground: 222 12% 62%;
+
+    --accent: 263 40% 20%;
+    --accent-foreground: 263 60% 90%;
+
+    --destructive: 0 68% 55%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 152 55% 48%;
+    --warning: 38 92% 55%;
+
+    --border: 223 16% 18%;
+    --input: 223 16% 20%;
+    --ring: 263 74% 64%;
+  }
+
+  * {
+    @apply border-border;
   }
 
   body {
-    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300;
-    font-family: 'Helvetica Neue Medium', sans-serif;
+    @apply bg-background text-foreground antialiased;
+    font-family: "Inter Variable", "Inter", system-ui, sans-serif;
+    font-feature-settings: "cv11", "ss01";
   }
 }
 
 @layer utilities {
+  /* Single accent treatment. Replaces the old orange + rainbow gradients. */
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-br from-orange-500 to-orange-600;
+    @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-600 dark:from-primary dark:to-primary-300;
   }
 
   .animated-text {
-    background: linear-gradient(270deg, #ff00ff, #00ffff, #ffff00, #ff00ff);
-    background-size: 600% 600%;
+    background: linear-gradient(270deg, hsl(var(--primary)), hsl(263 84% 76%), hsl(var(--primary)));
+    background-size: 200% 200%;
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
-    animation: gradientShift 3s ease infinite;
+    animation: gradientShift 6s ease infinite;
+  }
+
+  .glass-panel {
+    @apply bg-card/80 dark:bg-card/80 backdrop-blur-md border border-border shadow-elev rounded-2xl;
   }
 
   .glass-effect {
-    @apply bg-white/40 dark:bg-slate-900/40 backdrop-blur-xl border border-white/40 dark:border-slate-700/50 shadow-sm hover:shadow-md transition-all duration-300;
-  }
-  
-  .glass-panel {
-    @apply bg-white/70 dark:bg-slate-800/70 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 shadow-lg rounded-2xl;
+    @apply bg-background/60 backdrop-blur-xl border border-border shadow-sm hover:shadow-md transition-all duration-300;
   }
 
   /* Custom Scrollbar Styles */
@@ -58,21 +117,21 @@
   }
 
   .scrollbar-thumb-slate-300::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
+    background-color: hsl(var(--border));
     border-radius: 3px;
   }
 
   .scrollbar-thumb-slate-300::-webkit-scrollbar-thumb:hover {
-    background-color: #94a3b8;
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 
   .dark .scrollbar-thumb-slate-600::-webkit-scrollbar-thumb {
-    background-color: #475569;
+    background-color: hsl(var(--border));
     border-radius: 3px;
   }
 
   .dark .scrollbar-thumb-slate-600::-webkit-scrollbar-thumb:hover {
-    background-color: #64748b;
+    background-color: hsl(var(--muted-foreground) / 0.5);
   }
 
   /* Firefox */
@@ -81,11 +140,11 @@
   }
 
   .scrollbar-thumb-slate-300 {
-    scrollbar-color: #cbd5e1 transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
 
   .dark .scrollbar-thumb-slate-600 {
-    scrollbar-color: #475569 transparent;
+    scrollbar-color: hsl(var(--border)) transparent;
   }
 }
 

@@ -7,8 +7,9 @@ export const ThemeProvider = ({ children }) => {
     // Check localStorage first, then system preference
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) return savedTheme;
-    
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+    // Dark-first product: no saved choice means dark, regardless of OS preference.
+    return 'dark';
   });
 
   useEffect(() => {
