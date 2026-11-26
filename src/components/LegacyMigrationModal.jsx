@@ -249,7 +249,7 @@ const LegacyMigrationModal = () => {
       showCloseButton={false}
       size="sm"
       srTitle="Account Upgrade"
-      className="bg-white dark:bg-slate-800 gap-0 p-0 rounded-2xl sm:rounded-2xl border-0 shadow-2xl"
+      className="bg-card gap-0 p-0 rounded-2xl sm:rounded-2xl border-0 shadow-2xl"
     >
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-500 to-blue-700 p-6 rounded-t-2xl">
@@ -269,13 +269,13 @@ const LegacyMigrationModal = () => {
         <div className="p-6">
           {error ? (
             <div className="space-y-4">
-              <div className="flex items-start gap-3 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-red-200 dark:border-red-800 rounded-xl">
+                <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                 <div>
                   <h4 className="font-semibold text-red-800 dark:text-red-300 mb-1">
                     Migration Failed
                   </h4>
-                  <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+                  <p className="text-sm text-destructive dark:text-destructive">{error}</p>
                 </div>
               </div>
               <button
@@ -287,16 +287,16 @@ const LegacyMigrationModal = () => {
             </div>
           ) : migrationDone && recoveryKey ? (
             <div className="space-y-5">
-              <div className="flex items-center gap-3 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
-                <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0" />
+              <div className="flex items-center gap-3 p-4 bg-success/10 border border-success/25 rounded-xl">
+                <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
                 <p className="text-sm text-green-800 dark:text-green-300 font-medium">
                   Migration successful! Your account is now fully end-to-end encrypted.
                 </p>
               </div>
 
-              <div className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+              <div className="p-4 bg-warning/10 border border-warning/25 rounded-xl">
                 <div className="flex items-center gap-2 mb-3">
-                  <Key className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                  <Key className="w-4 h-4 text-warning" />
                   <h4 className="font-semibold text-amber-800 dark:text-amber-300 text-sm">
                     Save Your Recovery Key
                   </h4>
@@ -306,7 +306,7 @@ const LegacyMigrationModal = () => {
                   if you forget your master password. Store it somewhere safe.
                   It will not be shown again.
                 </p>
-                <div className="bg-white dark:bg-slate-900 rounded-lg p-3 font-mono text-xs text-slate-800 dark:text-slate-200 break-all border border-amber-200 dark:border-amber-800 mb-3 select-all">
+                <div className="bg-card rounded-lg p-3 font-mono text-xs text-foreground break-all border border-warning/25 mb-3 select-all">
                   {recoveryKey}
                 </div>
                 <button
@@ -331,7 +331,7 @@ const LegacyMigrationModal = () => {
             </div>
           ) : (
             <div className="space-y-4">
-              <p className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-sm text-muted-foreground">
                 Your account is being upgraded to our new end-to-end encryption
                 model. This will only happen once. Please don't close this tab.
               </p>
@@ -341,19 +341,19 @@ const LegacyMigrationModal = () => {
                 {MIGRATION_STEPS.map((label, index) => (
                   <div key={index} className="flex items-center gap-3">
                     {index < step ? (
-                      <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
                     ) : index === step ? (
-                      <Loader2 className="w-5 h-5 text-blue-500 animate-spin flex-shrink-0" />
+                      <Loader2 className="w-5 h-5 text-primary animate-spin flex-shrink-0" />
                     ) : (
                       <div className="w-5 h-5 rounded-full border-2 border-slate-200 dark:border-slate-600 flex-shrink-0" />
                     )}
                     <span
                       className={`text-sm ${
                         index < step
-                          ? "text-green-600 dark:text-green-400 font-medium"
+                          ? "text-success font-medium"
                           : index === step
-                            ? "text-blue-600 dark:text-blue-400 font-semibold"
-                            : "text-slate-500 dark:text-slate-400"
+                            ? "text-primary font-semibold"
+                            : "text-muted-foreground"
                       }`}
                     >
                       {label}
@@ -362,7 +362,7 @@ const LegacyMigrationModal = () => {
                 ))}
               </div>
 
-              <p className="text-xs text-slate-500 dark:text-slate-400 text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 This may take a moment depending on how many items you have.
               </p>
             </div>

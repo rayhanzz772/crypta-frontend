@@ -115,7 +115,7 @@ const ViewNoteModal = ({
       className="p-0"
     >
       {/* Header */}
-        <div className="border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between">
+        <div className="border-b border-border p-4 sm:p-6 flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <div
               className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
@@ -127,19 +127,19 @@ const ViewNoteModal = ({
               )}
             </div>
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-slate-800 dark:text-white truncate max-w-[200px] sm:max-w-none">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground truncate max-w-[200px] sm:max-w-none">
                 {note.title}
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {decryptedContent ? "Note Decrypted" : "Decrypt Note"}
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0"
+            className="p-2 hover:bg-muted rounded-lg transition-colors flex-shrink-0"
           >
-            <X className="w-5 h-5 text-slate-500" />
+            <X className="w-5 h-5 text-muted-foreground" />
           </button>
         </div>
 
@@ -150,8 +150,8 @@ const ViewNoteModal = ({
             {/* Tags */}
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   Tags
                 </span>
               </div>
@@ -169,7 +169,7 @@ const ViewNoteModal = ({
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+                  <p className="text-xs sm:text-sm text-muted-foreground">
                     No tags
                   </p>
                 );
@@ -179,12 +179,12 @@ const ViewNoteModal = ({
             {/* Category */}
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   Category
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-white">
+              <p className="text-xs sm:text-sm font-medium text-foreground">
                 {categoryData?.name || "Uncategorized"}
               </p>
             </div>
@@ -192,12 +192,12 @@ const ViewNoteModal = ({
             {/* Last Updated */}
             <div>
               <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   Last Updated
                 </span>
               </div>
-              <p className="text-xs sm:text-sm font-medium text-slate-800 dark:text-white">
+              <p className="text-xs sm:text-sm font-medium text-foreground">
                 {formatDate(note.updated_at || note.created_at)}
               </p>
             </div>
@@ -207,15 +207,15 @@ const ViewNoteModal = ({
           <div>
             <div className="flex items-center justify-between mb-2 sm:mb-3">
               <div className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600 dark:text-slate-400" />
-                <span className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
+                <span className="text-xs sm:text-sm font-medium text-foreground">
                   Content
                 </span>
               </div>
               {decryptedContent && (
                 <button
                   onClick={handleCopy}
-                  className="px-2 sm:px-3 py-1 sm:py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-all flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
+                  className="px-2 sm:px-3 py-1 sm:py-1.5 bg-muted text-foreground rounded-lg hover:bg-muted transition-all flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
                 >
                   <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Copy
@@ -223,12 +223,12 @@ const ViewNoteModal = ({
               )}
             </div>
 
-            <div className="min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 bg-slate-50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 rounded-xl">
+            <div className="min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 bg-muted/50 dark:bg-background border-2 border-border rounded-xl">
               {isDecrypting ? (
                 <div className="flex items-center justify-center py-8 sm:py-12">
                   <div className="text-center">
-                    <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary-500 animate-spin mx-auto mb-3 sm:mb-4" />
-                    <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400">
+                    <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-spin mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm sm:text-base text-muted-foreground">
                       Decrypting note...
                     </p>
                   </div>
@@ -236,8 +236,8 @@ const ViewNoteModal = ({
               ) : decryptError ? (
                 <div className="flex items-center justify-center py-8 sm:py-12">
                   <div className="text-center max-w-md px-4">
-                    <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-red-500 mx-auto mb-3 sm:mb-4" />
-                    <p className="text-sm sm:text-base text-red-600 dark:text-red-400 mb-3 sm:mb-4">
+                    <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-3 sm:mb-4" />
+                    <p className="text-sm sm:text-base text-destructive mb-3 sm:mb-4">
                       {decryptError}
                     </p>
                     <button
@@ -249,12 +249,12 @@ const ViewNoteModal = ({
                   </div>
                 </div>
               ) : decryptedContent ? (
-                <pre className="whitespace-pre-wrap break-words text-slate-800 dark:text-white font-mono text-xs sm:text-sm">
+                <pre className="whitespace-pre-wrap break-words text-foreground font-mono text-xs sm:text-sm">
                   {decryptedContent}
                 </pre>
               ) : (
                 <div className="flex items-center justify-center py-8 sm:py-12">
-                  <p className="text-sm sm:text-base text-slate-500 dark:text-slate-400">
+                  <p className="text-sm sm:text-base text-muted-foreground">
                     The content was encrypted
                   </p>
                 </div>
@@ -266,7 +266,7 @@ const ViewNoteModal = ({
           <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
             <button
               onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all order-3 sm:order-1"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all order-3 sm:order-1"
             >
               Close
             </button>
@@ -275,7 +275,7 @@ const ViewNoteModal = ({
                 onClose();
                 onEdit(note);
               }}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-primary-500 text-white rounded-xl font-semibold hover:bg-primary-600 transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
               Edit Note
@@ -285,7 +285,7 @@ const ViewNoteModal = ({
                 onClose();
                 onDelete(note);
               }}
-              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-red-500 text-white rounded-xl font-semibold hover:bg-red-600 transition-all flex items-center justify-center gap-2 order-2 sm:order-3"
+              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-destructive text-white rounded-xl font-semibold hover:bg-destructive/90 transition-all flex items-center justify-center gap-2 order-2 sm:order-3"
             >
               <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
               Delete

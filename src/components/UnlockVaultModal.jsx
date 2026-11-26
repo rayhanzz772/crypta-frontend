@@ -133,7 +133,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
       className="p-0 overflow-hidden"
     >
       {/* Header */}
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 px-4 sm:px-6 py-6 sm:py-8 text-center">
+        <div className="bg-gradient-to-br from-primary to-primary-600 px-4 sm:px-6 py-6 sm:py-8 text-center">
           <div className="flex justify-center mb-3 sm:mb-4">
             <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
               <Lock className="w-7 h-7 sm:w-8 sm:h-8 text-white" />
@@ -161,7 +161,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
           className="p-4 sm:p-6 space-y-4 sm:space-y-6"
         >
           {/* Security Notice */}
-          <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl">
+          <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary/20 rounded-xl">
             <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
             <div className="text-xs sm:text-sm text-primary-800 dark:text-primary-200">
               <p className="font-semibold mb-1">Secure Verification</p>
@@ -174,23 +174,23 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
 
           {/* Master Password Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Master Password <span className="text-red-500">*</span>
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              Master Password <span className="text-destructive">*</span>
             </label>
             <div className="relative">
               <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
+                <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
               </div>
               <input
                 type={showPassword ? "text" : "password"}
                 value={masterPassword}
                 onChange={handlePasswordChange}
                 placeholder="Enter your master password"
-                className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-50 dark:bg-slate-900 border-2 ${
+                className={`w-full pl-9 sm:pl-10 pr-10 sm:pr-12 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 ${
                   error
-                    ? "border-red-500 focus:ring-red-500 focus:border-red-500"
-                    : "border-slate-200 dark:border-slate-700 focus:ring-primary-500 focus:border-primary-500"
-                } rounded-xl focus:ring-2 transition-all text-slate-800 dark:text-white placeholder:text-slate-400 outline-none`}
+                    ? "border-destructive focus:ring-destructive focus:border-destructive"
+                    : "border-border focus:ring-ring focus:border-primary"
+                } rounded-xl focus:ring-2 transition-all text-foreground placeholder:text-muted-foreground outline-none`}
                 autoFocus
                 autoComplete="current-password"
                 disabled={isLoading}
@@ -199,21 +199,21 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
+                className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors disabled:opacity-50"
                 disabled={isLoading}
                 tabIndex={-1}
               >
                 {showPassword ? (
-                  <EyeOff className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 dark:text-slate-400" />
+                  <EyeOff className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 ) : (
-                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 dark:text-slate-400" />
+                  <Eye className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
                 )}
               </button>
             </div>
 
             {/* Error Message */}
             {error && (
-              <div className="mt-2 flex items-start gap-2 text-xs sm:text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-2.5 sm:p-3">
+              <div className="mt-2 flex items-start gap-2 text-xs sm:text-sm text-destructive bg-destructive/10 border border-red-200 dark:border-red-800 rounded-lg p-2.5 sm:p-3">
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
                 <span>{error}</span>
               </div>
@@ -223,7 +223,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             {!error &&
               masterPassword.length > 0 &&
               masterPassword.length < 8 && (
-                <div className="mt-2 flex items-start gap-2 text-xs sm:text-sm text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-2.5 sm:p-3">
+                <div className="mt-2 flex items-start gap-2 text-xs sm:text-sm text-warning bg-warning/10 border border-warning/25 rounded-lg p-2.5 sm:p-3">
                   <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0 mt-0.5" />
                   <span>Password must be at least 8 characters</span>
                 </div>
@@ -235,7 +235,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
             <button
               type="button"
               onClick={handleClose}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed order-2 sm:order-1"
               disabled={isLoading}
             >
               Cancel
@@ -245,7 +245,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
               disabled={
                 isLoading || !masterPassword.trim() || masterPassword.length < 8
               }
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1 sm:order-2"
+              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1 sm:order-2"
             >
               {isLoading ? (
                 <>
@@ -262,14 +262,14 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
           </div>
 
           {/* Help Text */}
-          <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
-            <p className="text-xs text-center text-slate-500 dark:text-slate-400">
+          <div className="pt-2 border-t border-border">
+            <p className="text-xs text-center text-muted-foreground">
               Forgot your master password? re-login to{" "}
               <button
                 type="button"
                 onClick={handleLogout}
                 disabled={isLoading}
-                className="text-blue-500 hover:underline disabled:opacity-50"
+                className="text-primary hover:underline disabled:opacity-50"
               >
                 try
               </button>{" "}

@@ -138,14 +138,14 @@ const AddSecretValueModal = ({
           <form onSubmit={handleSubmit} className="p-4 space-y-4">
             {/* Warning for existing versions */}
             {hasExistingVersions && (
-              <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+              <div className="bg-warning/10 border border-warning/25 rounded-lg p-3">
                 <div className="flex gap-2.5">
-                  <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-4 h-4 text-warning flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="font-semibold text-amber-900 dark:text-amber-100 text-xs">
+                    <p className="font-semibold text-warning text-xs">
                       New Version Warning
                     </p>
-                    <p className="text-xs text-amber-800 dark:text-amber-200 mt-1 leading-relaxed">
+                    <p className="text-xs text-warning mt-1 leading-relaxed">
                       This will create a new version and disable all previous
                       versions. The new version will become the active secret
                       value.
@@ -157,18 +157,18 @@ const AddSecretValueModal = ({
 
             {/* Secret Value Input */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
                 Secret Value
               </label>
               <div className="relative">
-                <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <Key className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <input
                   ref={inputRef}
                   type={showValue ? "text" : "password"}
                   value={secretValue}
                   onChange={(e) => setSecretValue(e.target.value)}
                   placeholder="Enter your secret value..."
-                  className="w-full pl-9 pr-11 py-2.5 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all outline-none"
+                  className="w-full pl-9 pr-11 py-2.5 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-card text-foreground focus:border-success focus:ring-2 focus:ring-green-500/20 transition-all outline-none"
                   disabled={isSubmitting}
                   autoComplete="off"
                   data-1p-ignore
@@ -177,7 +177,7 @@ const AddSecretValueModal = ({
                 <button
                   type="button"
                   onClick={() => setShowValue(!showValue)}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-muted-foreground hover:text-slate-600 dark:hover:text-foreground transition-colors"
                 >
                   {showValue ? (
                     <EyeOff className="w-4 h-4" />
@@ -186,21 +186,21 @@ const AddSecretValueModal = ({
                   )}
                 </button>
               </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              <p className="text-xs text-muted-foreground mt-1">
                 Your secret value will be encrypted and stored securely
               </p>
             </div>
 
             {/* Confirmation checkbox for existing versions */}
             {hasExistingVersions && (
-              <label className="flex items-start gap-2.5 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+              <label className="flex items-start gap-2.5 p-2.5 bg-muted/50 dark:bg-background rounded-lg cursor-pointer hover:bg-muted transition-colors">
                 <input
                   type="checkbox"
                   checked={confirmed}
                   onChange={(e) => setConfirmed(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-300 text-green-500 focus:ring-green-500 mt-0.5 flex-shrink-0"
+                  className="w-4 h-4 rounded border-slate-300 text-success focus:ring-green-500 mt-0.5 flex-shrink-0"
                 />
-                <span className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                <span className="text-xs text-muted-foreground leading-relaxed">
                   I understand this will create a new version and disable all
                   previous versions
                 </span>
@@ -209,15 +209,15 @@ const AddSecretValueModal = ({
 
             {/* Security Features */}
             <div className="grid grid-cols-2 gap-2">
-              <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                <ShieldCheck className="w-4 h-4 text-green-500 flex-shrink-0" />
-                <span className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 p-2.5 bg-muted/50 dark:bg-background rounded-lg">
+                <ShieldCheck className="w-4 h-4 text-success flex-shrink-0" />
+                <span className="text-xs text-muted-foreground">
                   AES-256 Encrypted
                 </span>
               </div>
-              <div className="flex items-center gap-2 p-2.5 bg-slate-50 dark:bg-slate-900 rounded-lg">
-                <History className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                <span className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="flex items-center gap-2 p-2.5 bg-muted/50 dark:bg-background rounded-lg">
+                <History className="w-4 h-4 text-primary flex-shrink-0" />
+                <span className="text-xs text-muted-foreground">
                   Version History
                 </span>
               </div>
@@ -229,7 +229,7 @@ const AddSecretValueModal = ({
                 type="button"
                 onClick={handleClose}
                 disabled={isSubmitting}
-                className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
               >
                 Cancel
               </button>

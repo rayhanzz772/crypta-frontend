@@ -228,23 +228,23 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
       className="p-0 overflow-hidden flex flex-col max-h-[90vh]"
     >
       {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
+          <div className="flex items-center justify-between p-6 border-b border-border bg-muted/50/50 dark:bg-card/50">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
                 <HardDriveDownload className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   Vault Backup & Restore
                 </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground">
                   Export or import your encrypted zero-knowledge vault
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              className="p-2 text-muted-foreground hover:text-slate-600 dark:hover:text-foreground rounded-xl hover:bg-muted transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
@@ -252,7 +252,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
 
           {/* Tabs — hidden when vault is locked */}
           {!isVaultLocked && (
-            <div className="flex border-b border-slate-200 dark:border-slate-800 px-6 pt-4 gap-6 bg-slate-50/50 dark:bg-slate-800/50">
+            <div className="flex border-b border-border px-6 pt-4 gap-6 bg-muted/50/50 dark:bg-card/50">
               {[
                 { id: "export", label: "Export Vault", icon: HardDriveDownload },
                 { id: "import", label: "Import Backup", icon: HardDriveUpload },
@@ -266,7 +266,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                     onClick={() => setActiveTab(tab.id)}
                     className={`flex items-center gap-2 pb-3 px-1 border-b-2 transition-all ${isActive
                       ? "border-indigo-500 text-indigo-600 dark:text-indigo-400 font-semibold"
-                      : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                      : "border-transparent text-muted-foreground hover:text-slate-700 dark:hover:text-foreground"
                       }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -285,7 +285,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="flex flex-col items-center justify-center py-10 px-4 text-center relative overflow-hidden rounded-2xl border border-slate-150/40 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-900/20 backdrop-blur-sm min-h-[350px]"
+                className="flex flex-col items-center justify-center py-10 px-4 text-center relative overflow-hidden rounded-2xl border border-slate-150/40 dark:border-slate-800 bg-muted/50/20 dark:bg-background backdrop-blur-sm min-h-[350px]"
               >
                 {/* Background glow elements */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-indigo-500/10 dark:bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
@@ -323,10 +323,10 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                   </span>
                 </motion.div>
 
-                <h3 className="relative z-10 text-2xl font-bold text-slate-800 dark:text-white mb-2 tracking-tight">
+                <h3 className="relative z-10 text-2xl font-bold text-foreground mb-2 tracking-tight">
                   Security Lock Active
                 </h3>
-                <p className="relative z-10 text-sm text-slate-500 dark:text-slate-400 max-w-sm mb-8 leading-relaxed">
+                <p className="relative z-10 text-sm text-muted-foreground max-w-sm mb-8 leading-relaxed">
                   Your password vault is currently encrypted in memory. Please unlock your vault using your master password to export, import, or view backup logs.
                 </p>
 
@@ -359,7 +359,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                     </div>
 
                     <div className="space-y-4">
-                      <label className="flex items-center gap-3 cursor-pointer p-4 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                      <label className="flex items-center gap-3 cursor-pointer p-4 border border-border rounded-xl hover:bg-muted/50 dark:hover:bg-card/50 transition-colors">
                         <input
                           type="checkbox"
                           checked={includeNotes}
@@ -367,8 +367,8 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                           className="w-5 h-5 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
                         />
                         <div>
-                          <div className="font-medium text-slate-800 dark:text-white">Include Secret Notes</div>
-                          <div className="text-sm text-slate-500">Export your encrypted notes alongside passwords</div>
+                          <div className="font-medium text-foreground">Include Secret Notes</div>
+                          <div className="text-sm text-muted-foreground">Export your encrypted notes alongside passwords</div>
                         </div>
                       </label>
                     </div>
@@ -391,7 +391,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                           </>
                         )}
                       </button>
-                      <p className="text-xs text-slate-500 mt-4">Rate limit: 5 exports per hour</p>
+                      <p className="text-xs text-muted-foreground mt-4">Rate limit: 5 exports per hour</p>
                     </div>
                   </div>
                 )}
@@ -400,13 +400,13 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                   <div className="space-y-6">
 
                     {importError && (
-                      <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4 rounded-xl flex gap-3 items-start">
-                        <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                      <div className="bg-destructive/10 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 p-4 rounded-xl flex gap-3 items-start">
+                        <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
                         <div>
                           <h4 className="font-bold text-red-800 dark:text-red-300 text-sm mb-0.5">
                             Enkripsi Tidak Cocok / Akun Berbeda
                           </h4>
-                          <p className="text-xs text-red-700 dark:text-red-300/90 leading-relaxed">
+                          <p className="text-xs text-destructive/90 leading-relaxed">
                             {importError}
                           </p>
                         </div>
@@ -414,29 +414,29 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                     )}
 
                     {importResult ? (
-                      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-6">
+                      <div className="bg-success/10 border border-success/25 rounded-xl p-6">
                         <div className="flex items-center gap-3 mb-4">
-                          <CheckCircle2 className="w-8 h-8 text-green-500" />
-                          <h3 className="text-lg font-bold text-green-800 dark:text-green-400">Import Successful</h3>
+                          <CheckCircle2 className="w-8 h-8 text-success" />
+                          <h3 className="text-lg font-bold text-green-800 dark:text-success">Import Successful</h3>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
-                            <div className="text-sm text-slate-500 mb-1">New Items Added</div>
-                            <div className="text-2xl font-bold text-slate-800 dark:text-white">
+                          <div className="bg-card p-4 rounded-lg shadow-sm border border-border">
+                            <div className="text-sm text-muted-foreground mb-1">New Items Added</div>
+                            <div className="text-2xl font-bold text-foreground">
                               {importResult.total_imported}
                             </div>
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="text-xs text-muted-foreground mt-1">
                               ({importResult.imported_passwords} passwords, {importResult.imported_notes} notes)
                             </div>
                           </div>
 
-                          <div className="bg-white dark:bg-slate-800 p-4 rounded-lg shadow-sm border border-slate-100 dark:border-slate-700">
-                            <div className="text-sm text-slate-500 mb-1">Duplicates Skipped</div>
-                            <div className="text-2xl font-bold text-slate-800 dark:text-white">
+                          <div className="bg-card p-4 rounded-lg shadow-sm border border-border">
+                            <div className="text-sm text-muted-foreground mb-1">Duplicates Skipped</div>
+                            <div className="text-2xl font-bold text-foreground">
                               {importResult.skipped_passwords + importResult.skipped_notes}
                             </div>
-                            <div className="text-xs text-slate-400 mt-1">
+                            <div className="text-xs text-muted-foreground mt-1">
                               Already exist in vault
                             </div>
                           </div>
@@ -451,8 +451,8 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                       </div>
                     ) : (
                       <>
-                        <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-xl border border-amber-100 dark:border-amber-800/50 flex gap-4">
-                          <Info className="w-6 h-6 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+                        <div className="bg-warning/10 p-4 rounded-xl border border-amber-100 dark:border-amber-800/50 flex gap-4">
+                          <Info className="w-6 h-6 text-warning flex-shrink-0" />
                           <div>
                             <h3 className="font-semibold text-amber-900 dark:text-amber-300 mb-1">Safe Import</h3>
                             <p className="text-sm text-amber-700 dark:text-amber-400/80">
@@ -466,7 +466,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                           className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors
                         ${importFile
                               ? 'border-indigo-500 bg-indigo-50/50 dark:bg-indigo-900/10'
-                              : 'border-slate-300 dark:border-slate-700 hover:border-indigo-400 dark:hover:border-indigo-600 hover:bg-slate-50 dark:hover:bg-slate-800'
+                              : 'border-border hover:border-indigo-400 dark:hover:border-indigo-600 hover:bg-muted/50 dark:hover:bg-card'
                             }`}
                         >
                           <input
@@ -480,24 +480,24 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                           {importFile ? (
                             <div className="flex flex-col items-center">
                               <FileJson className="w-12 h-12 text-indigo-500 mb-3" />
-                              <div className="font-semibold text-slate-800 dark:text-white">{importFile.name}</div>
-                              <div className="text-sm text-slate-500 mt-1">
+                              <div className="font-semibold text-foreground">{importFile.name}</div>
+                              <div className="text-sm text-muted-foreground mt-1">
                                 {(importFile.size / 1024).toFixed(2)} KB
                               </div>
                               <button
                                 onClick={(e) => { e.stopPropagation(); setImportFile(null); }}
-                                className="mt-4 text-sm text-red-500 hover:text-red-600"
+                                className="mt-4 text-sm text-destructive hover:text-destructive"
                               >
                                 Remove file
                               </button>
                             </div>
                           ) : (
                             <div className="flex flex-col items-center">
-                              <UploadCloud className="w-12 h-12 text-slate-400 mb-3" />
-                              <div className="font-medium text-slate-700 dark:text-slate-300 mb-1">
+                              <UploadCloud className="w-12 h-12 text-muted-foreground mb-3" />
+                              <div className="font-medium text-foreground mb-1">
                                 Click or drag file to upload
                               </div>
-                              <div className="text-sm text-slate-500">
+                              <div className="text-sm text-muted-foreground">
                                 Select a Crypta JSON backup file
                               </div>
                             </div>
@@ -536,15 +536,15 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                       </div>
                     ) : history.length === 0 ? (
                       <div className="flex-1 flex flex-col items-center justify-center text-center">
-                        <History className="w-12 h-12 text-slate-300 dark:text-slate-600 mb-4" />
-                        <h3 className="text-lg font-medium text-slate-800 dark:text-white mb-2">No Backup History</h3>
-                        <p className="text-slate-500 dark:text-slate-400">You haven't exported or imported any backups yet.</p>
+                        <History className="w-12 h-12 text-foreground dark:text-muted-foreground mb-4" />
+                        <h3 className="text-lg font-medium text-foreground mb-2">No Backup History</h3>
+                        <p className="text-muted-foreground">You haven't exported or imported any backups yet.</p>
                       </div>
                     ) : (
                       <div className="flex-1 flex flex-col">
-                        <div className="flex-1 overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-700">
+                        <div className="flex-1 overflow-x-auto rounded-xl border border-border">
                           <table className="w-full text-left text-sm whitespace-nowrap">
-                            <thead className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400">
+                            <thead className="bg-muted/50/50 border-b border-border text-muted-foreground">
                               <tr>
                                 <th className="px-6 py-4 font-medium">Type</th>
                                 <th className="px-6 py-4 font-medium">Status</th>
@@ -555,7 +555,7 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                             </thead>
                             <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
                               {history.map((log) => (
-                                <tr key={log.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                <tr key={log.id} className="hover:bg-muted/50 dark:hover:bg-card/50 transition-colors">
                                   <td className="px-6 py-4">
                                     {log.backup_type === "manual_export" ? (
                                       <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300">
@@ -570,19 +570,19 @@ const VaultBackupModal = ({ isOpen, onClose, onUnlock }) => {
                                     )}
                                   </td>
                                   <td className="px-6 py-4">
-                                    <span className={`inline-flex items-center gap-1 text-xs font-medium ${log.status === 'completed' ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'
+                                    <span className={`inline-flex items-center gap-1 text-xs font-medium ${log.status === 'completed' ? 'text-success' : 'text-warning'
                                       }`}>
                                       {log.status === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5" /> : <AlertCircle className="w-3.5 h-3.5" />}
                                       {log.status}
                                     </span>
                                   </td>
-                                  <td className="px-6 py-4 font-medium text-slate-700 dark:text-slate-300">
+                                  <td className="px-6 py-4 font-medium text-foreground">
                                     {log.item_count}
                                   </td>
-                                  <td className="px-6 py-4 text-slate-500 dark:text-slate-400">
+                                  <td className="px-6 py-4 text-muted-foreground">
                                     {new Date(log.created_at).toLocaleString()}
                                   </td>
-                                  <td className="px-6 py-4 font-mono text-xs text-slate-400 dark:text-slate-500 hidden sm:table-cell">
+                                  <td className="px-6 py-4 font-mono text-xs text-muted-foreground dark:text-muted-foreground hidden sm:table-cell">
                                     {log.checksum ? `${log.checksum.substring(0, 8)}...` : '-'}
                                   </td>
                                 </tr>

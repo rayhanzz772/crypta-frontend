@@ -11,31 +11,31 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
       size="sm"
       srTitle="Important Warning!"
       showCloseButton={false}
-      className="bg-white dark:bg-gray-800 gap-0 p-4 sm:p-6 relative max-h-[90vh] rounded-xl sm:rounded-2xl border-0 shadow-2xl animate-scale-in"
+      className="bg-white dark:bg-card gap-0 p-4 sm:p-6 relative max-h-[90vh] rounded-xl sm:rounded-2xl border-0 shadow-2xl animate-scale-in"
     >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          className="absolute top-3 right-3 sm:top-4 sm:right-4 text-muted-foreground hover:text-gray-600 dark:hover:text-foreground transition-colors"
         >
           <X className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
 
         {/* Icon */}
         <div className="flex justify-center mb-3 sm:mb-4">
-          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-            <ShieldAlert className="w-6 h-6 sm:w-8 sm:h-8 text-red-600 dark:text-red-400" />
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-destructive/10 rounded-full flex items-center justify-center">
+            <ShieldAlert className="w-6 h-6 sm:w-8 sm:h-8 text-destructive" />
           </div>
         </div>
 
         {/* Title */}
-        <h2 className="text-xl sm:text-2xl font-bold text-center text-gray-900 dark:text-white mb-3 sm:mb-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-center text-foreground mb-3 sm:mb-4">
           Important Warning!
         </h2>
 
         {/* Content */}
-        <div className="space-y-3 sm:space-y-4 text-gray-700 dark:text-gray-300">
-          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
+        <div className="space-y-3 sm:space-y-4 text-foreground">
+          <div className="bg-destructive/10 border border-red-200 dark:border-red-800 rounded-lg p-3 sm:p-4">
             <div className="flex gap-2 sm:gap-3">
               <div>
                 <p className="font-semibold text-red-900 dark:text-red-200 mb-1.5 sm:mb-2 text-sm sm:text-base">
@@ -51,7 +51,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
           </div>
 
           <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm">
-            <p className="font-medium text-gray-900 dark:text-white">
+            <p className="font-medium text-foreground">
               Please ensure you:
             </p>
             <ul className="space-y-1.5 sm:space-y-2 ml-2 sm:ml-4">
@@ -91,13 +91,13 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
         <div className="mt-4 sm:mt-6 flex flex-col-reverse sm:flex-row gap-2 sm:gap-3">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg sm:rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all font-medium text-sm sm:text-base"
+            className="flex-1 px-4 py-2.5 sm:py-3 border border-input text-foreground rounded-lg sm:rounded-xl hover:bg-muted/50 dark:hover:bg-gray-700 transition-all font-medium text-sm sm:text-base"
           >
             Go Back
           </button>
           <button
             onClick={onConfirm}
-            className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg sm:rounded-xl transition-all font-medium text-sm sm:text-base"
+            className="flex-1 px-4 py-2.5 sm:py-3 bg-gradient-to-br from-primary to-primary-600 hover:from-blue-600 hover:to-blue-700 text-white rounded-lg sm:rounded-xl transition-all font-medium text-sm sm:text-base"
           >
             I Understand
           </button>

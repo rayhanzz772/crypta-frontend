@@ -22,6 +22,7 @@ import {
 } from "../utils/passwordGenerator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import { checkPasswordPwned, formatBreachCount } from "../utils/pwnedCheck";
+import Modal from "./Modal";
 
 // Debounce utility function
 function debounce(func, wait) {
@@ -277,10 +278,16 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto my-4 sm:my-8">
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="lg"
+      showCloseButton={false}
+      srTitle="Add New Password"
+      className="p-0 overflow-hidden max-h-[90vh] flex flex-col"
+    >
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 p-4 sm:p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card border-b border-border p-4 sm:p-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <div
               className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center flex-shrink-0`}
@@ -288,31 +295,31 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div className="flex-1 min-w-0">
-              <h2 className="text-base sm:text-xl font-bold text-slate-800 dark:text-white truncate">
+              <h2 className="text-base sm:text-xl font-bold text-foreground truncate">
                 Add New Password
               </h2>
-              <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 truncate">
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">
                 Securely store your credentials
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors flex-shrink-0 ml-2"
+            className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors flex-shrink-0 ml-2"
           >
-            <X className="w-4 h-4 sm:w-5 sm:h-5 text-slate-500" />
+            <X className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
           </button>
         </div>
 
         {/* Breach Warning */}
         {breachWarning && (
-          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 sm:p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-2 sm:gap-3">
-            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+          <div className="mx-4 sm:mx-6 mt-3 sm:mt-4 p-3 sm:p-4 bg-destructive/10 border border-destructive/25 rounded-xl flex items-start gap-2 sm:gap-3">
+            <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-destructive flex-shrink-0 mt-0.5" />
             <div className="flex-1">
-              <h4 className="font-semibold text-sm sm:text-base text-red-800 dark:text-red-300 mb-0.5 sm:mb-1">
+              <h4 className="font-semibold text-sm sm:text-base text-destructive mb-0.5 sm:mb-1">
                 ⚠️ Security Warning
               </h4>
-              <p className="text-xs sm:text-sm text-red-700 dark:text-red-400">
+              <p className="text-xs sm:text-sm text-destructive">
                 {breachWarning}
               </p>
             </div>
@@ -325,8 +332,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
         >
           {/* Name Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Name <span className="text-red-500">*</span>
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              Name <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -336,12 +343,12 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               placeholder="e.g., Gmail Account"
               className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.name
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
-              } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-input focus:ring-ring"
+              } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
             />
             {errors.name && (
-              <p className="mt-1 text-xs sm:text-sm text-red-500">
+              <p className="mt-1 text-xs sm:text-sm text-destructive">
                 {errors.name}
               </p>
             )}
@@ -349,8 +356,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Username Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Username / Email <span className="text-red-500">*</span>
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              Username / Email <span className="text-destructive">*</span>
             </label>
             <input
               type="text"
@@ -360,12 +367,12 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               placeholder="you@example.com"
               className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.username
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
-              } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-input focus:ring-ring"
+              } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
             />
             {errors.username && (
-              <p className="mt-1 text-xs sm:text-sm text-red-500">
+              <p className="mt-1 text-xs sm:text-sm text-destructive">
                 {errors.username}
               </p>
             )}
@@ -374,8 +381,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
           {/* Password Field with Generator */}
           <div>
             <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
-                Password <span className="text-red-500">*</span>
+              <label className="block text-xs sm:text-sm font-medium text-foreground">
+                Password <span className="text-destructive">*</span>
               </label>
               <button
                 type="button"
@@ -395,34 +402,34 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                 placeholder="Enter a strong password"
                 className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border ${
                   errors.password
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
-                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none font-mono`}
+                    ? "border-destructive focus:ring-destructive"
+                    : "border-input focus:ring-ring"
+                } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none font-mono`}
               />
               <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors"
                 >
                   {showPassword ? (
-                    <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                    <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                   ) : (
-                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                   )}
                 </button>
                 <button
                   type="button"
                   onClick={handleCopyPassword}
-                  className="p-1.5 sm:p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
+                  className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors"
                 >
-                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-500" />
+                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
                 </button>
               </div>
             </div>
 
             {errors.password && (
-              <p className="mt-1 text-xs sm:text-sm text-red-500">
+              <p className="mt-1 text-xs sm:text-sm text-destructive">
                 {errors.password}
               </p>
             )}
@@ -431,33 +438,33 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             {formData.password && (
               <div className="mt-2">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-slate-600 dark:text-slate-400">
+                  <span className="text-xs text-muted-foreground">
                     Strength:
                   </span>
                   <span
                     className={`text-xs font-semibold ${
                       passwordStrength.color === "red"
-                        ? "text-red-600"
+                        ? "text-destructive"
                         : passwordStrength.color === "orange"
                           ? "text-orange-600"
                           : passwordStrength.color === "yellow"
                             ? "text-yellow-600"
-                            : "text-green-600"
+                            : "text-success"
                     }`}
                   >
                     {passwordStrength.label}
                   </span>
                 </div>
-                <div className="w-full h-1.5 sm:h-2 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 sm:h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className={`h-full transition-all duration-300 ${
                       passwordStrength.color === "red"
-                        ? "bg-red-500"
+                        ? "bg-destructive"
                         : passwordStrength.color === "orange"
                           ? "bg-orange-500"
                           : passwordStrength.color === "yellow"
                             ? "bg-yellow-500"
-                            : "bg-green-500"
+                            : "bg-success"
                     }`}
                     style={{ width: `${(passwordStrength.score / 4) * 100}%` }}
                   />
@@ -467,8 +474,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Breach Check Notification */}
             {isCheckingBreach && formData.password && (
-              <div className="mt-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500 animate-spin" />
+              <div className="mt-2 flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm text-muted-foreground">
+                <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-spin" />
                 <span>Checking password breach database...</span>
               </div>
             )}
@@ -478,11 +485,11 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                 className={`mt-2 p-2.5 sm:p-3 rounded-lg flex items-start gap-2 sm:gap-3 ${
                   breachInfo.isPwned
                     ? breachInfo.severity === "critical"
-                      ? "bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+                      ? "bg-destructive/10 border border-destructive/25"
                       : breachInfo.severity === "high"
                         ? "bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800"
                         : "bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800"
-                    : "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                    : "bg-success/10 border border-success/25"
                 }`}
               >
                 {breachInfo.isPwned ? (
@@ -490,7 +497,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                     <AlertCircle
                       className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 mt-0.5 ${
                         breachInfo.severity === "critical"
-                          ? "text-red-600 dark:text-red-400"
+                          ? "text-destructive"
                           : breachInfo.severity === "high"
                             ? "text-orange-600 dark:text-orange-400"
                             : "text-yellow-600 dark:text-yellow-400"
@@ -500,7 +507,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       <p
                         className={`text-xs sm:text-sm font-semibold ${
                           breachInfo.severity === "critical"
-                            ? "text-red-800 dark:text-red-300"
+                            ? "text-destructive"
                             : breachInfo.severity === "high"
                               ? "text-orange-800 dark:text-orange-300"
                               : "text-yellow-800 dark:text-yellow-300"
@@ -511,7 +518,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                       <p
                         className={`text-xs mt-1 ${
                           breachInfo.severity === "critical"
-                            ? "text-red-700 dark:text-red-400"
+                            ? "text-destructive/80"
                             : breachInfo.severity === "high"
                               ? "text-orange-700 dark:text-orange-400"
                               : "text-yellow-700 dark:text-yellow-400"
@@ -527,12 +534,12 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   </>
                 ) : (
                   <>
-                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                    <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-success flex-shrink-0 mt-0.5" />
                     <div className="flex-1">
-                      <p className="text-xs sm:text-sm font-semibold text-green-800 dark:text-green-300">
+                      <p className="text-xs sm:text-sm font-semibold text-success">
                         ✓ Password is Secure
                       </p>
-                      <p className="text-xs text-green-700 dark:text-green-400 mt-1">
+                      <p className="text-xs text-success mt-1">
                         This password hasn't been found in any known data
                         breaches.
                       </p>
@@ -544,12 +551,12 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Password Generator */}
             {showGenerator && (
-              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700">
+              <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-muted/50 dark:bg-background rounded-xl border border-border">
                 <div className="space-y-2.5 sm:space-y-3">
                   {/* Length Slider */}
                   <div>
                     <div className="flex items-center justify-between mb-2">
-                      <label className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300">
+                      <label className="text-xs sm:text-sm font-medium text-foreground">
                         Length
                       </label>
                       <span className="text-xs sm:text-sm font-semibold text-primary-600 dark:text-primary-400">
@@ -592,9 +599,9 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                               [option.key]: e.target.checked,
                             }))
                           }
-                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary-600 focus:ring-primary-500"
+                          className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-slate-300 text-primary-600 focus:ring-ring"
                         />
-                        <span className="text-xs sm:text-sm text-slate-700 dark:text-slate-300">
+                        <span className="text-xs sm:text-sm text-foreground">
                           {option.label}
                         </span>
                       </label>
@@ -605,7 +612,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                   <button
                     type="button"
                     onClick={handleGeneratePassword}
-                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base bg-primary hover:bg-primary/90 text-white rounded-lg font-medium transition-colors"
                   >
                     <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     Generate Password
@@ -617,8 +624,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Category <span className="text-red-500">*</span>
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              Category <span className="text-destructive">*</span>
             </label>
             <select
               name="category_id"
@@ -626,9 +633,9 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               onChange={handleChange}
               className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
                 errors.category_id
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-slate-300 dark:border-slate-600 focus:ring-primary-500"
-              } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                  ? "border-destructive focus:ring-destructive"
+                  : "border-input focus:ring-ring"
+              } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
             >
               <option value="">Select a category</option>
               {categories.map((cat) => (
@@ -638,7 +645,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               ))}
             </select>
             {errors.category_id && (
-              <p className="mt-1 text-xs sm:text-sm text-red-500">
+              <p className="mt-1 text-xs sm:text-sm text-destructive">
                 {errors.category_id}
               </p>
             )}
@@ -646,8 +653,8 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Note Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-              Note <span className="text-slate-400">(Optional)</span>
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+              Note <span className="text-muted-foreground">(Optional)</span>
             </label>
             <textarea
               name="note"
@@ -655,7 +662,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               onChange={handleChange}
               placeholder="Add any additional notes..."
               rows={3}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-input bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent transition-all outline-none resize-none"
             />
           </div>
 
@@ -664,7 +671,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2"
+              className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2"
             >
               {isLoading ? (
                 <>
@@ -681,14 +688,13 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
             <button
               type="button"
               onClick={handleClose}
-              className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+              className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
             >
               Cancel
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   );
 };
 

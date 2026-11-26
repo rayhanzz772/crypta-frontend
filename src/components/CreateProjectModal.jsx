@@ -127,7 +127,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
       srTitle="Create Project"
     >
           {/* Header */}
-          <div className="bg-gradient-to-r from-primary-500 to-purple-600 px-4 py-3 flex-shrink-0">
+          <div className="bg-gradient-to-r from-primary to-primary-600 px-4 py-3 flex-shrink-0">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
@@ -157,8 +157,8 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
           >
             {/* Project Name */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Project Name <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                Project Name <span className="text-destructive">*</span>
               </label>
               <input
                 type="text"
@@ -169,14 +169,14 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
                 placeholder="My Application"
                 className={`w-full px-3 py-2 text-sm rounded-lg border-2 ${
                   errors.name
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-slate-200 dark:border-slate-700 focus:ring-primary-500"
-                } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                    ? "border-destructive focus:ring-destructive"
+                    : "border-border focus:ring-ring"
+                } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
                 disabled={isSubmitting}
                 maxLength={100}
               />
               {errors.name && (
-                <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" />
                   {errors.name}
                 </p>
@@ -185,8 +185,8 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
 
             {/* Project Slug */}
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
-                Project Slug <span className="text-red-500">*</span>
+              <label className="block text-xs font-semibold text-foreground mb-1.5">
+                Project Slug <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <input
@@ -196,23 +196,23 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
                   placeholder="my-application"
                   className={`w-full px-3 py-2 text-sm rounded-lg border-2 ${
                     errors.slug
-                      ? "border-red-500 focus:ring-red-500"
+                      ? "border-destructive focus:ring-destructive"
                       : formData.slug && validateSlug(formData.slug)
-                      ? "border-green-500 focus:ring-green-500"
-                      : "border-slate-200 dark:border-slate-700 focus:ring-primary-500"
-                  } bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-2 focus:border-transparent transition-all outline-none`}
+                      ? "border-success focus:ring-green-500"
+                      : "border-border focus:ring-ring"
+                  } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
                   disabled={isSubmitting}
                   maxLength={50}
                 />
                 {formData.slug && validateSlug(formData.slug) && (
-                  <Check className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />
+                  <Check className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-success" />
                 )}
               </div>
-              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-1 text-xs text-muted-foreground">
                 URL-safe (lowercase, alphanumeric, hyphens)
               </p>
               {errors.slug && (
-                <p className="mt-1 text-xs text-red-500 flex items-center gap-1">
+                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" />
                   {errors.slug}
                 </p>
@@ -220,9 +220,9 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
 
             {/* Info Box */}
-            <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg p-3">
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                <strong className="text-slate-800 dark:text-slate-200">
+            <div className="bg-muted/50 dark:bg-background border border-border rounded-lg p-3">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                <strong className="text-foreground">
                   Note:
                 </strong>{" "}
                 Projects are containers for secrets. Add secrets and manage
@@ -236,7 +236,7 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
                 type="button"
                 onClick={handleClose}
                 disabled={isSubmitting}
-                className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
+                className="flex-1 px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
               >
                 Cancel
               </button>

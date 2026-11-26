@@ -168,9 +168,9 @@ const CreateServiceAccountModal = ({
             {step === "input" ? (
               // Step 1: Input service account name
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+                <div className="bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
                   <div className="flex gap-3">
-                    <Shield className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                    <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-semibold text-blue-900 dark:text-blue-100 text-sm">
                         What is a Service Account?
@@ -186,7 +186,7 @@ const CreateServiceAccountModal = ({
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                  <label className="block text-sm font-semibold text-foreground mb-2">
                     Service Account Name
                   </label>
                   <div className="relative">
@@ -195,14 +195,14 @@ const CreateServiceAccountModal = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="e.g., backend-app, api-service"
-                      className="w-full px-3 text-sm py-2 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                      className="w-full px-3 text-sm py-2 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-card text-foreground focus:border-primary focus:ring-2 focus:ring-ring/20 transition-all"
                       disabled={isSubmitting}
                       autoFocus
                     />
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-2">
+                  <p className="text-xs text-muted-foreground mt-2">
                     The client ID will be generated as:{" "}
-                    <code className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-700 rounded">
+                    <code className="px-1.5 py-0.5 bg-muted rounded">
                       {name || "name"}@{projectName}.crypta
                     </code>
                   </p>
@@ -213,7 +213,7 @@ const CreateServiceAccountModal = ({
                     type="button"
                     onClick={handleCancel}
                     disabled={isSubmitting}
-                    className="flex-1 px-4 py-3 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
+                    className="flex-1 px-4 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -240,20 +240,20 @@ const CreateServiceAccountModal = ({
               // Step 2: Show private key (one-time)
               <div className="space-y-4">
                 {/* Service Account Info */}
-                <div className="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-3 space-y-2">
+                <div className="bg-muted/50 dark:bg-background border border-border rounded-xl p-3 space-y-2">
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <p className="text-xs text-muted-foreground mb-1">
                       Service Account Name
                     </p>
-                    <p className="font-semibold text-slate-800 dark:text-white">
+                    <p className="font-semibold text-foreground">
                       {serviceAccount?.name}
                     </p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-1">
+                    <p className="text-xs text-muted-foreground mb-1">
                       Client ID
                     </p>
-                    <code className="text-sm font-mono text-slate-800 dark:text-white bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                    <code className="text-sm font-mono text-foreground bg-muted px-2 py-1 rounded">
                       {serviceAccount?.client_id}
                     </code>
                   </div>
@@ -262,13 +262,13 @@ const CreateServiceAccountModal = ({
                 {/* Private Key Display */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                    <label className="text-sm font-semibold text-foreground">
                       Private Key (RSA)
                     </label>
                     <div className="flex gap-2">
                       <button
                         onClick={handleCopyKey}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-sm font-medium"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground rounded-lg hover:bg-muted transition-colors text-sm font-medium"
                       >
                         <Copy className="w-4 h-4" />
                         Copy
@@ -297,8 +297,8 @@ const CreateServiceAccountModal = ({
                   )}
 
                   <div className="relative">
-                    <Code className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
-                    <pre className="w-full pl-10 pr-4 py-3 bg-slate-900 dark:bg-black text-green-400 font-mono text-xs rounded-xl overflow-auto border-2 border-slate-700 max-h-48">
+                    <Code className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                    <pre className="w-full pl-10 pr-4 py-3 bg-muted dark:bg-black text-success font-mono text-xs rounded-xl overflow-auto border-2 border-border max-h-48">
                       {serviceAccount?.private_key ||
                         "Private key not available"}
                     </pre>
@@ -306,18 +306,18 @@ const CreateServiceAccountModal = ({
                 </div>
 
                 {/* Confirmation Checkbox */}
-                <label className="flex items-start gap-2.5 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl cursor-pointer">
+                <label className="flex items-start gap-2.5 p-3 bg-warning/10 border border-warning/25 rounded-xl cursor-pointer">
                   <input
                     type="checkbox"
                     checked={confirmed}
                     onChange={(e) => setConfirmed(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-amber-500 focus:ring-amber-500 mt-0.5"
+                    className="w-4 h-4 rounded border-slate-300 text-warning focus:ring-amber-500 mt-0.5"
                   />
                   <div className="flex-1">
-                    <p className="font-semibold text-amber-900 dark:text-amber-100 text-xs">
+                    <p className="font-semibold text-warning text-xs">
                       I confirm that I have saved the private key
                     </p>
-                    <p className="text-xs text-amber-800 dark:text-amber-200 mt-0.5">
+                    <p className="text-xs text-warning mt-0.5">
                       I understand this key will not be shown again and cannot
                       be recovered if lost
                     </p>

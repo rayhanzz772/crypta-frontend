@@ -26,4 +26,12 @@ export default defineConfig([
       "no-unused-vars": "off",
     },
   },
+  {
+    // Vendored shadcn primitives (cva variants) and context modules export
+    // non-components alongside components; fast-refresh rule not applicable.
+    files: ["src/components/ui/**", "src/contexts/**"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
 ]);

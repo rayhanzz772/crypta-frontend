@@ -41,18 +41,18 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
       srTitle="New Folder"
     >
             {/* Header */}
-            <div className="px-6 py-4 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
+            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/40 flex items-center justify-center">
-                  <FolderPlus className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                  <FolderPlus className="w-5 h-5 text-primary" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                <h2 className="text-xl font-bold text-foreground">
                   New Folder
                 </h2>
               </div>
               <button
                 onClick={onClose}
-                className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                className="p-2 text-muted-foreground hover:text-slate-600 dark:hover:text-foreground rounded-lg hover:bg-muted transition-colors"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -60,7 +60,7 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
 
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block text-sm font-medium text-foreground mb-2">
                   Folder Name
                 </label>
                 <input
@@ -68,7 +68,7 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
                   value={folderName}
                   onChange={(e) => setFolderName(e.target.value)}
                   placeholder="e.g. Work Documents"
-                  className="w-full px-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:text-white"
+                  className="w-full px-4 py-2.5 bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all dark:text-foreground"
                   autoFocus
                 />
               </div>
@@ -77,7 +77,7 @@ const CreateFolderModal = ({ isOpen, onClose, onSuccess }) => {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-xl transition-colors"
                 >
                   Cancel
                 </button>

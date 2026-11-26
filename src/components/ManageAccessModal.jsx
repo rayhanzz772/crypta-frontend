@@ -158,7 +158,7 @@ const ManageAccessModal = ({
       size="sm"
       srTitle="Manage Access"
       showCloseButton={false}
-      className="bg-white dark:bg-slate-800 flex flex-col gap-0 p-0 max-h-[95vh] rounded-xl sm:rounded-xl border-0 shadow-2xl overflow-hidden"
+      className="bg-card flex flex-col gap-0 p-0 max-h-[95vh] rounded-xl sm:rounded-xl border-0 shadow-2xl overflow-hidden"
     >
           {/* Header */}
           <div className="bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-3 flex-shrink-0">
@@ -188,9 +188,9 @@ const ManageAccessModal = ({
           {/* Content */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
             {/* Info Banner */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <div className="bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
               <div className="flex gap-2.5">
-                <AlertCircle className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-blue-900 dark:text-blue-100 text-xs">
                     IAM Access Control
@@ -208,7 +208,7 @@ const ManageAccessModal = ({
               <button
                 onClick={() => setShowAddForm(true)}
                 disabled={availableServiceAccounts.length === 0}
-                className="w-full px-3 py-2.5 text-sm border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-lg text-slate-600 dark:text-slate-400 hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full px-3 py-2.5 text-sm border-2 border-dashed border-input rounded-lg text-muted-foreground hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="w-4 h-4" />
                 {availableServiceAccounts.length === 0
@@ -221,7 +221,7 @@ const ManageAccessModal = ({
                 className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 space-y-3"
               >
                 <div>
-                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">
+                  <label className="block text-xs font-semibold text-foreground mb-1.5">
                     Select Service Account
                   </label>
                   <select
@@ -229,7 +229,7 @@ const ManageAccessModal = ({
                     onChange={(e) =>
                       setSelectedServiceAccountId(e.target.value)
                     }
-                    className="w-full px-3 py-2 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900 text-slate-800 dark:text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
+                    className="w-full px-3 py-2 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-card text-foreground focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
                     disabled={isGranting}
                   >
                     <option value="">-- Choose a service account --</option>
@@ -241,8 +241,8 @@ const ManageAccessModal = ({
                   </select>
                 </div>
 
-                <div className="bg-slate-100 dark:bg-slate-800 rounded-lg p-2.5">
-                  <p className="text-xs text-slate-600 dark:text-slate-400">
+                <div className="bg-muted rounded-lg p-2.5">
+                  <p className="text-xs text-muted-foreground">
                     <strong>Role:</strong> secret.accessor (read-only)
                   </p>
                 </div>
@@ -255,7 +255,7 @@ const ManageAccessModal = ({
                       setSelectedServiceAccountId("");
                     }}
                     disabled={isGranting}
-                    className="flex-1 px-3 py-2 text-sm bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-all disabled:opacity-50"
+                    className="flex-1 px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
                   >
                     Cancel
                   </button>
@@ -283,26 +283,26 @@ const ManageAccessModal = ({
             {/* Bindings List */}
             <div>
               <div className="flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-                <h3 className="font-semibold text-slate-800 dark:text-white text-sm">
+                <Users className="w-4 h-4 text-muted-foreground" />
+                <h3 className="font-semibold text-foreground text-sm">
                   Service Accounts with Access ({bindings.length})
                 </h3>
               </div>
 
               {isLoadingBindings ? (
                 <div className="flex flex-col items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 text-primary-500 animate-spin mb-4" />
-                  <p className="text-sm text-slate-500">Loading access data...</p>
+                  <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+                  <p className="text-sm text-muted-foreground">Loading access data...</p>
                 </div>
               ) : bindings.length === 0 ? (
-                <div className="text-center py-10 bg-slate-50 dark:bg-slate-900 rounded-lg border-2 border-dashed border-slate-200 dark:border-slate-700">
-                  <div className="w-14 h-14 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Lock className="w-7 h-7 text-slate-400" />
+                <div className="text-center py-10 bg-muted/50 dark:bg-background rounded-lg border-2 border-dashed border-border">
+                  <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Lock className="w-7 h-7 text-muted-foreground" />
                   </div>
-                  <h4 className="font-semibold text-slate-800 dark:text-white mb-1.5 text-sm">
+                  <h4 className="font-semibold text-foreground mb-1.5 text-sm">
                     No Access Granted
                   </h4>
-                  <p className="text-slate-500 dark:text-slate-400 text-xs">
+                  <p className="text-muted-foreground text-xs">
                     Grant access to service accounts to allow them to read this
                     secret
                   </p>
@@ -312,21 +312,21 @@ const ManageAccessModal = ({
                   {bindings.map((binding) => (
                     <div
                       key={binding.id}
-                      className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all"
+                      className="flex items-center justify-between p-3 bg-muted/50 dark:bg-background border border-border rounded-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all"
                     >
                       <div className="flex items-center gap-2.5">
                         <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
                           <Bot className="w-4 h-4 text-white" />
                         </div>
                         <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-slate-800 dark:text-white text-sm truncate">
+                          <p className="font-semibold text-foreground text-sm truncate">
                             {getServiceAccountName(binding.subject_id)}
                           </p>
                           <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                             <span className="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-xs font-medium">
                               {binding.role}
                             </span>
-                            <span className="text-xs text-slate-500 dark:text-slate-400">
+                            <span className="text-xs text-muted-foreground">
                               {formatDate(binding.createdAt)}
                             </span>
                           </div>
@@ -336,7 +336,7 @@ const ManageAccessModal = ({
                       <button
                         onClick={() => handleRevokeAccess(binding.id)}
                         disabled={revoking === binding.id}
-                        className="p-1.5 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 text-slate-400 hover:text-red-600 dark:hover:text-red-400 transition-colors disabled:opacity-50 flex-shrink-0 ml-2"
+                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors disabled:opacity-50 flex-shrink-0 ml-2"
                         title="Revoke access"
                       >
                         {revoking === binding.id ? (
@@ -353,10 +353,10 @@ const ManageAccessModal = ({
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-3 border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex-shrink-0">
+          <div className="px-4 py-3 border-t border-border bg-muted/50 dark:bg-background flex-shrink-0">
             <button
               onClick={onClose}
-              className="w-full px-3 py-2 text-sm bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
+              className="w-full px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
             >
               Close
             </button>

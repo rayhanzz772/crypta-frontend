@@ -82,19 +82,19 @@ const Pagination = ({ metadata, currentPage, onPageChange }) => {
   const endItem = Math.min(currentPage * per_page, total_row);
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
+    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 bg-card border-t border-border">
       {/* Showing info */}
-      <div className="text-sm text-slate-600 dark:text-slate-400">
+      <div className="text-sm text-muted-foreground">
         Showing{" "}
-        <span className="font-semibold text-slate-800 dark:text-white">
+        <span className="font-semibold text-foreground">
           {startItem}
         </span>{" "}
         to{" "}
-        <span className="font-semibold text-slate-800 dark:text-white">
+        <span className="font-semibold text-foreground">
           {endItem}
         </span>{" "}
         of{" "}
-        <span className="font-semibold text-slate-800 dark:text-white">
+        <span className="font-semibold text-foreground">
           {total_row}
         </span>{" "}
         results
@@ -108,8 +108,8 @@ const Pagination = ({ metadata, currentPage, onPageChange }) => {
           disabled={currentPage === 1}
           className={`p-2 rounded-lg border transition-all ${
             currentPage === 1
-              ? "border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600 cursor-not-allowed"
-              : "border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+              ? "border-border text-muted-foreground dark:text-muted-foreground cursor-not-allowed"
+              : "border-input text-muted-foreground hover:bg-muted hover:border-slate-400 dark:hover:border-slate-500"
           }`}
           title="Previous page"
         >
@@ -123,7 +123,7 @@ const Pagination = ({ metadata, currentPage, onPageChange }) => {
               return (
                 <span
                   key={`ellipsis-${index}`}
-                  className="px-3 py-2 text-slate-600 dark:text-slate-400"
+                  className="px-3 py-2 text-muted-foreground"
                 >
                   ...
                 </span>
@@ -136,8 +136,8 @@ const Pagination = ({ metadata, currentPage, onPageChange }) => {
                 onClick={() => handlePageClick(page)}
                 className={`min-w-[40px] px-3 py-2 rounded-lg border transition-all font-medium ${
                   currentPage === page
-                    ? "bg-primary-500 border-primary-500 text-white shadow-sm"
-                    : "border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+                    ? "bg-primary border-primary text-white shadow-sm"
+                    : "border-input text-muted-foreground hover:bg-muted hover:border-slate-400 dark:hover:border-slate-500"
                 }`}
               >
                 {page}
@@ -152,8 +152,8 @@ const Pagination = ({ metadata, currentPage, onPageChange }) => {
           disabled={currentPage === total_page}
           className={`p-2 rounded-lg border transition-all ${
             currentPage === total_page
-              ? "border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-600 cursor-not-allowed"
-              : "border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 hover:border-slate-400 dark:hover:border-slate-500"
+              ? "border-border text-muted-foreground dark:text-muted-foreground cursor-not-allowed"
+              : "border-input text-muted-foreground hover:bg-muted hover:border-slate-400 dark:hover:border-slate-500"
           }`}
           title="Next page"
         >
