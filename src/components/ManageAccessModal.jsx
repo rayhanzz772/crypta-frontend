@@ -14,6 +14,15 @@ import {
 import toast from "react-hot-toast";
 import { iamBindingsAPI, serviceAccountsAPI } from "../utils/api";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ManageAccessModal = ({
   isOpen,
@@ -158,209 +167,221 @@ const ManageAccessModal = ({
       size="sm"
       srTitle="Manage Access"
       showCloseButton={false}
-      className="bg-card flex flex-col gap-0 p-0 max-h-[95vh] rounded-xl sm:rounded-xl border-0 shadow-2xl overflow-hidden"
+      className="p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
     >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-3 flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-bold text-white">
-                    Manage Access
-                  </h2>
-                  <p className="text-white/80 text-xs truncate max-w-[200px] sm:max-w-none">
-                    {secret.name} • {projectName}
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </button>
-            </div>
+      {/* Header */}
+      <div className="shrink-0 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+            <Shield className="w-5 h-5 text-primary" />
           </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Manage Access
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              {secret.name} • {projectName}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
 
-          {/* Content */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {/* Info Banner */}
-            <div className="bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-              <div className="flex gap-2.5">
-                <AlertCircle className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-blue-900 dark:text-blue-100 text-xs">
-                    IAM Access Control
-                  </p>
-                  <p className="text-xs text-blue-800 dark:text-blue-200 mt-0.5 leading-relaxed">
-                    Grant service accounts read access to this secret. Service
-                    accounts must have explicit permissions to access secrets.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Grant Access Button/Form */}
-            {!showAddForm ? (
-              <button
-                onClick={() => setShowAddForm(true)}
-                disabled={availableServiceAccounts.length === 0}
-                className="w-full px-3 py-2.5 text-sm border-2 border-dashed border-input rounded-lg text-muted-foreground hover:border-purple-500 hover:text-purple-600 dark:hover:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Plus className="w-4 h-4" />
-                {availableServiceAccounts.length === 0
-                  ? "No Service Accounts Available"
-                  : "Grant Access to Service Account"}
-              </button>
-            ) : (
-              <form
-                onSubmit={handleGrantAccess}
-                className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 space-y-3"
-              >
-                <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1.5">
-                    Select Service Account
-                  </label>
-                  <select
-                    value={selectedServiceAccountId}
-                    onChange={(e) =>
-                      setSelectedServiceAccountId(e.target.value)
-                    }
-                    className="w-full px-3 py-2 text-sm border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-card text-foreground focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none"
-                    disabled={isGranting}
-                  >
-                    <option value="">-- Choose a service account --</option>
-                    {availableServiceAccounts.map((sa) => (
-                      <option key={sa.id} value={sa.id}>
-                        {sa.name} ({sa.client_id})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="bg-muted rounded-lg p-2.5">
-                  <p className="text-xs text-muted-foreground">
-                    <strong>Role:</strong> secret.accessor (read-only)
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowAddForm(false);
-                      setSelectedServiceAccountId("");
-                    }}
-                    disabled={isGranting}
-                    className="flex-1 px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isGranting || !selectedServiceAccountId}
-                    className="flex-1 px-3 py-2 text-sm bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-lg font-semibold hover:from-purple-600 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
-                  >
-                    {isGranting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Granting...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle className="w-4 h-4" />
-                        Grant Access
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
-            )}
-
-            {/* Bindings List */}
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        {/* Info Banner */}
+        <div className="bg-primary/10 border border-primary/25 rounded-lg p-3">
+          <div className="flex gap-2.5">
+            <AlertCircle className="w-4 h-4 text-primary shrink-0 mt-0.5" />
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <Users className="w-4 h-4 text-muted-foreground" />
-                <h3 className="font-semibold text-foreground text-sm">
-                  Service Accounts with Access ({bindings.length})
-                </h3>
-              </div>
-
-              {isLoadingBindings ? (
-                <div className="flex flex-col items-center justify-center py-12">
-                  <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
-                  <p className="text-sm text-muted-foreground">Loading access data...</p>
-                </div>
-              ) : bindings.length === 0 ? (
-                <div className="text-center py-10 bg-muted/50 dark:bg-background rounded-lg border-2 border-dashed border-border">
-                  <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Lock className="w-7 h-7 text-muted-foreground" />
-                  </div>
-                  <h4 className="font-semibold text-foreground mb-1.5 text-sm">
-                    No Access Granted
-                  </h4>
-                  <p className="text-muted-foreground text-xs">
-                    Grant access to service accounts to allow them to read this
-                    secret
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {bindings.map((binding) => (
-                    <div
-                      key={binding.id}
-                      className="flex items-center justify-between p-3 bg-muted/50 dark:bg-background border border-border rounded-lg hover:border-purple-300 dark:hover:border-purple-700 transition-all"
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <Bot className="w-4 h-4 text-white" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-foreground text-sm truncate">
-                            {getServiceAccountName(binding.subject_id)}
-                          </p>
-                          <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                            <span className="px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 rounded-full text-xs font-medium">
-                              {binding.role}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {formatDate(binding.createdAt)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <button
-                        onClick={() => handleRevokeAccess(binding.id)}
-                        disabled={revoking === binding.id}
-                        className="p-1.5 rounded-lg hover:bg-destructive/10 text-muted-foreground hover:text-destructive dark:hover:text-destructive transition-colors disabled:opacity-50 flex-shrink-0 ml-2"
-                        title="Revoke access"
-                      >
-                        {revoking === binding.id ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <p className="font-semibold text-primary text-xs mb-0.5">
+                IAM Access Control
+              </p>
+              <p className="text-xs text-primary/80 leading-relaxed">
+                Grant service accounts read access to this secret. Service
+                accounts must have explicit permissions to access secrets.
+              </p>
             </div>
           </div>
+        </div>
 
-          {/* Footer */}
-          <div className="px-4 py-3 border-t border-border bg-muted/50 dark:bg-background flex-shrink-0">
-            <button
-              onClick={onClose}
-              className="w-full px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-all"
-            >
-              Close
-            </button>
+        {/* Grant Access Button/Form */}
+        {!showAddForm ? (
+          <button
+            type="button"
+            onClick={() => setShowAddForm(true)}
+            disabled={availableServiceAccounts.length === 0}
+            className="w-full px-3 py-2.5 text-sm border border-dashed border-border rounded-lg text-muted-foreground hover:border-primary hover:text-primary hover:bg-primary/5 transition-all font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-border disabled:hover:text-muted-foreground disabled:hover:bg-transparent"
+          >
+            <Plus className="w-4 h-4" />
+            {availableServiceAccounts.length === 0
+              ? "No Service Accounts Available"
+              : "Grant Access to Service Account"}
+          </button>
+        ) : (
+          <form
+            onSubmit={handleGrantAccess}
+            className="bg-muted/50 dark:bg-background border border-border rounded-lg p-3 space-y-3"
+          >
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Select Service Account
+              </label>
+              <Select
+                value={selectedServiceAccountId || undefined}
+                onValueChange={setSelectedServiceAccountId}
+                disabled={isGranting || isLoadingServiceAccounts}
+              >
+                <SelectTrigger className="rounded-lg">
+                  <SelectValue placeholder="Select a service account" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableServiceAccounts.map((sa) => (
+                    <SelectItem key={sa.id} value={sa.id}>
+                      {sa.name} ({sa.client_id})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="bg-muted rounded-lg p-2.5">
+              <p className="text-xs text-muted-foreground">
+                <strong>Role:</strong> secret.accessor (read-only)
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  setShowAddForm(false);
+                  setSelectedServiceAccountId("");
+                }}
+                disabled={isGranting}
+                className="flex-1 rounded-lg font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isGranting || !selectedServiceAccountId}
+                className="flex-1 rounded-lg font-semibold"
+              >
+                {isGranting ? (
+                  <>
+                    <Loader2 className="animate-spin" />
+                    Granting...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle />
+                    Grant Access
+                  </>
+                )}
+              </Button>
+            </div>
+          </form>
+        )}
+
+        {/* Bindings List */}
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Users className="w-4 h-4 text-muted-foreground" />
+            <h3 className="font-semibold text-foreground text-sm">
+              Service Accounts with Access ({bindings.length})
+            </h3>
           </div>
+
+          {isLoadingBindings ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary animate-spin mb-4" />
+              <p className="text-sm text-muted-foreground">
+                Loading access data...
+              </p>
+            </div>
+          ) : bindings.length === 0 ? (
+            <div className="text-center py-10 bg-muted/50 dark:bg-background rounded-lg border border-dashed border-border">
+              <div className="w-14 h-14 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
+                <Lock className="w-7 h-7 text-muted-foreground" />
+              </div>
+              <h4 className="font-semibold text-foreground mb-1.5 text-sm">
+                No Access Granted
+              </h4>
+              <p className="text-muted-foreground text-xs">
+                Grant access to service accounts to allow them to read this
+                secret
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {bindings.map((binding) => (
+                <div
+                  key={binding.id}
+                  className="flex items-center justify-between p-3 bg-muted/50 dark:bg-background border border-border rounded-lg hover:border-primary/40 transition-all"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-9 h-9 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                      <Bot className="w-4 h-4 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-foreground text-sm truncate">
+                        {getServiceAccountName(binding.subject_id)}
+                      </p>
+                      <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] px-1.5 py-0 rounded-full font-medium"
+                        >
+                          {binding.role}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">
+                          {formatDate(binding.createdAt)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleRevokeAccess(binding.id)}
+                    disabled={revoking === binding.id}
+                    className="shrink-0 ml-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    title="Revoke access"
+                  >
+                    {revoking === binding.id ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <Trash2 />
+                    )}
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 p-4 sm:px-6 pt-3 border-t border-border bg-card">
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          className="w-full rounded-xl font-semibold"
+        >
+          Close
+        </Button>
+      </div>
     </Modal>
   );
 };

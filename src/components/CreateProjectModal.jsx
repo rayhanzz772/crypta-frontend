@@ -3,6 +3,7 @@ import { X, FolderKey, AlertCircle, Loader2, Check } from "lucide-react";
 import toast from "react-hot-toast";
 import { projectsAPI } from "../utils/api";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
   const [formData, setFormData] = useState({
@@ -123,142 +124,144 @@ const CreateProjectModal = ({ isOpen, onClose, onSuccess }) => {
       onClose={handleClose}
       size="sm"
       showCloseButton={false}
-      className="flex flex-col max-h-[95vh] overflow-hidden"
       srTitle="Create Project"
+      className="p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
     >
-          {/* Header */}
-          <div className="bg-gradient-to-r from-primary to-primary-600 px-4 py-3 flex-shrink-0">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                  <FolderKey className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-bold text-white">
-                    Create Project
-                  </h2>
-                  <p className="text-white/80 text-xs">Container for secrets</p>
-                </div>
-              </div>
-              <button
-                onClick={handleClose}
-                disabled={isSubmitting}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </button>
-            </div>
+      {/* Header */}
+      <div className="shrink-0 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+            <FolderKey className="w-5 h-5 text-primary" />
           </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Create Project
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              Container for secrets
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClose}
+          disabled={isSubmitting}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
 
-          {/* Form */}
-          <form
-            onSubmit={handleSubmit}
-            className="flex-1 overflow-y-auto p-4 space-y-4"
-          >
-            {/* Project Name */}
-            <div>
-              <label className="block text-xs font-semibold text-foreground mb-1.5">
-                Project Name <span className="text-destructive">*</span>
-              </label>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) =>
-                  setFormData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                placeholder="My Application"
-                className={`w-full px-3 py-2 text-sm rounded-lg border-2 ${
-                  errors.name
-                    ? "border-destructive focus:ring-destructive"
-                    : "border-border focus:ring-ring"
-                } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
-                disabled={isSubmitting}
-                maxLength={100}
-              />
-              {errors.name && (
-                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {errors.name}
-                </p>
-              )}
-            </div>
+      {/* Form */}
+      <form
+        id="create-project-form"
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {/* Project Name */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Project Name <span className="text-destructive">*</span>
+          </label>
+          <input
+            type="text"
+            value={formData.name}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, name: e.target.value }))
+            }
+            placeholder="My Application"
+            className={`w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none ${
+              errors.name ? "border-destructive" : "border-border"
+            }`}
+            disabled={isSubmitting}
+            maxLength={100}
+          />
+          {errors.name && (
+            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.name}
+            </p>
+          )}
+        </div>
 
-            {/* Project Slug */}
-            <div>
-              <label className="block text-xs font-semibold text-foreground mb-1.5">
-                Project Slug <span className="text-destructive">*</span>
-              </label>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={formData.slug}
-                  onChange={handleSlugChange}
-                  placeholder="my-application"
-                  className={`w-full px-3 py-2 text-sm rounded-lg border-2 ${
-                    errors.slug
-                      ? "border-destructive focus:ring-destructive"
-                      : formData.slug && validateSlug(formData.slug)
-                      ? "border-success focus:ring-green-500"
-                      : "border-border focus:ring-ring"
-                  } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none`}
-                  disabled={isSubmitting}
-                  maxLength={50}
-                />
-                {formData.slug && validateSlug(formData.slug) && (
-                  <Check className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-success" />
-                )}
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                URL-safe (lowercase, alphanumeric, hyphens)
-              </p>
-              {errors.slug && (
-                <p className="mt-1 text-xs text-destructive flex items-center gap-1">
-                  <AlertCircle className="w-3 h-3" />
-                  {errors.slug}
-                </p>
-              )}
-            </div>
+        {/* Project Slug */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Project Slug <span className="text-destructive">*</span>
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              value={formData.slug}
+              onChange={handleSlugChange}
+              placeholder="my-application"
+              className={`w-full px-3 py-2.5 pr-9 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none ${
+                errors.slug
+                  ? "border-destructive"
+                  : formData.slug && validateSlug(formData.slug)
+                  ? "border-success"
+                  : "border-border"
+              }`}
+              disabled={isSubmitting}
+              maxLength={50}
+            />
+            {formData.slug && validateSlug(formData.slug) && (
+              <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-success" />
+            )}
+          </div>
+          <p className="mt-1 text-xs text-muted-foreground">
+            URL-safe (lowercase, alphanumeric, hyphens)
+          </p>
+          {errors.slug && (
+            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.slug}
+            </p>
+          )}
+        </div>
 
-            {/* Info Box */}
-            <div className="bg-muted/50 dark:bg-background border border-border rounded-lg p-3">
-              <p className="text-xs text-muted-foreground leading-relaxed">
-                <strong className="text-foreground">
-                  Note:
-                </strong>{" "}
-                Projects are containers for secrets. Add secrets and manage
-                access via service accounts after creation.
-              </p>
-            </div>
+        {/* Info Box */}
+        <div className="bg-muted/50 dark:bg-background border border-border rounded-lg p-3">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            <strong className="text-foreground">Note:</strong> Projects are
+            containers for secrets. Add secrets and manage access via service
+            accounts after creation.
+          </p>
+        </div>
+      </form>
 
-            {/* Actions */}
-            <div className="flex gap-2 pt-1">
-              <button
-                type="button"
-                onClick={handleClose}
-                disabled={isSubmitting}
-                className="flex-1 px-3 py-2 text-sm bg-muted text-foreground rounded-lg font-semibold hover:bg-muted transition-all disabled:opacity-50"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting || !formData.name || !formData.slug}
-                className="flex-1 px-3 py-2 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-semibold transition-all disabled:opacity-50 flex items-center justify-center gap-1.5"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Creating...
-                  </>
-                ) : (
-                  <>
-                    <FolderKey className="w-4 h-4" />
-                    Create
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+      {/* Footer */}
+      <div className="shrink-0 flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClose}
+          disabled={isSubmitting}
+          className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form="create-project-form"
+          disabled={isSubmitting || !formData.name || !formData.slug}
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Creating...
+            </>
+          ) : (
+            <>
+              <FolderKey />
+              Create
+            </>
+          )}
+        </Button>
+      </div>
     </Modal>
   );
 };

@@ -4,6 +4,7 @@ import toast from "react-hot-toast";
 import { filesAPI } from "../utils/api";
 import { useAuth } from "../contexts/AuthContext";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 const FileUploadModal = ({ isOpen, onClose, onSuccess, folderId = "" }) => {
   const { mek } = useAuth();
@@ -66,106 +67,137 @@ const FileUploadModal = ({ isOpen, onClose, onSuccess, folderId = "" }) => {
     }
   };
 
+  const handleClose = () => {
+    if (!loading) {
+      onClose();
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <Modal
       isOpen={isOpen}
-      onClose={onClose}
+      onClose={handleClose}
       size="sm"
       srTitle="Upload File"
       showCloseButton={false}
-      className="bg-card gap-0 p-0 rounded-2xl sm:rounded-2xl border-0 shadow-xl overflow-hidden"
+      className="p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
     >
-            {/* Header */}
-            <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/40 flex items-center justify-center">
-                  <UploadCloud className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h2 className="text-xl font-bold text-foreground">
-                  Upload File
-                </h2>
-              </div>
-              <button
-                onClick={onClose}
-                className="p-2 text-muted-foreground hover:text-slate-600 dark:hover:text-foreground rounded-lg hover:bg-muted transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      {/* Header */}
+      <div className="shrink-0 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+            <UploadCloud className="w-5 h-5 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Upload File
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              Encrypted before it leaves your browser
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClose}
+          disabled={loading}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Form */}
+      <form
+        id="file-upload-form"
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {!file ? (
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={handleDrop}
+            className="border border-dashed border-border rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-primary/5 transition-all group"
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div className="w-14 h-14 mx-auto mb-4 bg-muted rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+              <UploadCloud className="w-7 h-7 text-muted-foreground" />
             </div>
+            <h3 className="text-sm font-semibold text-foreground mb-1">
+              Click or drag file to upload
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              File will be encrypted with AES-256-GCM before storage
+            </p>
+          </div>
+        ) : (
+          <div className="bg-muted/50 dark:bg-background/60 rounded-lg p-3 flex items-center gap-3 border border-border">
+            <div className="w-10 h-10 bg-primary/10 text-primary rounded-lg flex items-center justify-center shrink-0">
+              <FileIcon className="w-5 h-5" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground truncate">
+                {file.name}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                {formatFileSize(file.size)}
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={() => setFile(null)}
+              disabled={loading}
+              className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+              aria-label="Remove file"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        )}
+      </form>
 
-            <form onSubmit={handleSubmit} className="p-6">
-              {!file ? (
-                <div
-                  onClick={() => fileInputRef.current?.click()}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={handleDrop}
-                  className="border-2 border-dashed border-input rounded-2xl p-8 text-center cursor-pointer hover:border-indigo-500 hover:bg-indigo-50/50 dark:hover:bg-indigo-900/20 transition-all group"
-                >
-                  <input
-                    type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileChange}
-                    className="hidden"
-                  />
-                  <div className="w-16 h-16 mx-auto mb-4 bg-muted rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <UploadCloud className="w-8 h-8 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-sm font-semibold text-foreground mb-1">
-                    Click or drag file to upload
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    File will be encrypted with AES-256-GCM before storage
-                  </p>
-                </div>
-              ) : (
-                <div className="bg-muted/50 dark:bg-background/50 rounded-xl p-4 flex items-center gap-4 border border-border">
-                  <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center shrink-0">
-                    <FileIcon className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {file.name}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {formatFileSize(file.size)}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setFile(null)}
-                    className="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
-
-              <div className="flex items-center justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="px-4 py-2 text-sm font-medium text-foreground hover:bg-muted rounded-xl transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={!file || loading}
-                  className="flex items-center justify-center gap-2 px-6 py-2 bg-gradient-to-r from-primary to-primary-600 text-white font-semibold shadow-lg hover:shadow-xl rounded-xl transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Uploading...
-                    </>
-                  ) : (
-                    "Upload Securely"
-                  )}
-                </button>
-              </div>
-            </form>
+      {/* Footer */}
+      <div className="shrink-0 flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClose}
+          disabled={loading}
+          className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          form="file-upload-form"
+          disabled={!file || loading}
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            <>
+              <UploadCloud />
+              Upload Securely
+            </>
+          )}
+        </Button>
+      </div>
     </Modal>
   );
 };

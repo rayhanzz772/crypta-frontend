@@ -14,6 +14,7 @@ import {
 import toast from "react-hot-toast";
 import { serviceAccountsAPI } from "../utils/api";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 const CreateServiceAccountModal = ({
   isOpen,
@@ -124,229 +125,236 @@ const CreateServiceAccountModal = ({
       onClose={handleCancel}
       size="sm"
       showCloseButton={false}
-      className="flex flex-col max-h-[95vh] overflow-hidden"
       srTitle={step === "input" ? "Create Service Account" : "Save Private Key"}
+      className="p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
     >
-          {/* Header */}
+      {/* Header */}
+      <div className="shrink-0 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
           <div
-            className={`px-4 py-3 flex-shrink-0 ${
-              step === "input"
-                ? "bg-gradient-to-r from-blue-500 to-indigo-600"
-                : "bg-gradient-to-r from-amber-500 to-orange-600"
+            className={`w-10 h-10 shrink-0 rounded-xl flex items-center justify-center ${
+              step === "input" ? "bg-primary/10" : "bg-warning/10"
             }`}
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                  {step === "input" ? (
-                    <Bot className="w-5 h-5 text-white" />
-                  ) : (
-                    <Key className="w-5 h-5 text-white" />
-                  )}
-                </div>
-                <div>
-                  <h2 className="text-base sm:text-lg font-bold text-white">
-                    {step === "input"
-                      ? "Create Service Account"
-                      : "Save Private Key"}
-                  </h2>
-                  <p className="text-white/80 text-xs">{projectName}</p>
-                </div>
-              </div>
-              <button
-                onClick={handleCancel}
-                disabled={isSubmitting || (step === "show-key" && !confirmed)}
-                className="p-1.5 hover:bg-white/20 rounded-lg transition-colors disabled:opacity-50"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* Content - Scrollable */}
-          <div className="flex-1 overflow-y-auto p-4">
             {step === "input" ? (
-              // Step 1: Input service account name
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-                  <div className="flex gap-3">
-                    <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-semibold text-blue-900 dark:text-blue-100 text-sm">
-                        What is a Service Account?
-                      </p>
-                      <p className="text-xs text-blue-800 dark:text-blue-200 mt-1">
-                        Service accounts represent machine identities (apps,
-                        services) that need to access secrets programmatically.
-                        Each service account has its own RSA key pair for
-                        authentication.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-foreground mb-2">
-                    Service Account Name
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g., backend-app, api-service"
-                      className="w-full px-3 text-sm py-2 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-card text-foreground focus:border-primary focus:ring-2 focus:ring-ring/20 transition-all"
-                      disabled={isSubmitting}
-                      autoFocus
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-2">
-                    The client ID will be generated as:{" "}
-                    <code className="px-1.5 py-0.5 bg-muted rounded">
-                      {name || "name"}@{projectName}.crypta
-                    </code>
-                  </p>
-                </div>
-
-                <div className="flex gap-3 pt-2">
-                  <button
-                    type="button"
-                    onClick={handleCancel}
-                    disabled={isSubmitting}
-                    className="flex-1 px-4 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all disabled:opacity-50"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !name.trim()}
-                    className="flex-1 px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl font-semibold hover:from-blue-600 hover:to-indigo-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Bot className="w-5 h-5" />
-                        Create
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+              <Bot className="w-5 h-5 text-primary" />
             ) : (
-              // Step 2: Show private key (one-time)
-              <div className="space-y-4">
-                {/* Service Account Info */}
-                <div className="bg-muted/50 dark:bg-background border border-border rounded-xl p-3 space-y-2">
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Service Account Name
-                    </p>
-                    <p className="font-semibold text-foreground">
-                      {serviceAccount?.name}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-muted-foreground mb-1">
-                      Client ID
-                    </p>
-                    <code className="text-sm font-mono text-foreground bg-muted px-2 py-1 rounded">
-                      {serviceAccount?.client_id}
-                    </code>
-                  </div>
-                </div>
-
-                {/* Private Key Display */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm font-semibold text-foreground">
-                      Private Key (RSA)
-                    </label>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleCopyKey}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-muted text-foreground rounded-lg hover:bg-muted transition-colors text-sm font-medium"
-                      >
-                        <Copy className="w-4 h-4" />
-                        Copy
-                      </button>
-                      <button
-                        onClick={handleDownloadKey}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
-                      >
-                        <Download className="w-4 h-4" />
-                        Download .pem
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Debug info */}
-                  {!serviceAccount?.private_key && (
-                    <div className="mb-2 p-2 bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded text-xs">
-                      <p className="text-yellow-900 dark:text-yellow-100">
-                        Debug: private_key not found in response
-                      </p>
-                      <p className="text-yellow-800 dark:text-yellow-200 mt-1">
-                        Available keys:{" "}
-                        {Object.keys(serviceAccount || {}).join(", ")}
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="relative">
-                    <Code className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                    <pre className="w-full pl-10 pr-4 py-3 bg-muted dark:bg-black text-success font-mono text-xs rounded-xl overflow-auto border-2 border-border max-h-48">
-                      {serviceAccount?.private_key ||
-                        "Private key not available"}
-                    </pre>
-                  </div>
-                </div>
-
-                {/* Confirmation Checkbox */}
-                <label className="flex items-start gap-2.5 p-3 bg-warning/10 border border-warning/25 rounded-xl cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={confirmed}
-                    onChange={(e) => setConfirmed(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-warning focus:ring-amber-500 mt-0.5"
-                  />
-                  <div className="flex-1">
-                    <p className="font-semibold text-warning text-xs">
-                      I confirm that I have saved the private key
-                    </p>
-                    <p className="text-xs text-warning mt-0.5">
-                      I understand this key will not be shown again and cannot
-                      be recovered if lost
-                    </p>
-                  </div>
-                </label>
-
-                {/* Actions */}
-                <div className="flex gap-3 pt-1">
-                  <button
-                    onClick={handleClose}
-                    disabled={!confirmed}
-                    className="flex-1 px-4 py-2.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    {confirmed ? (
-                      <>
-                        <CheckCircle className="w-5 h-5" />
-                        Done - Close Dialog
-                      </>
-                    ) : (
-                      <>
-                        <AlertTriangle className="w-5 h-5" />
-                        Please Confirm Above
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
+              <Key className="w-5 h-5 text-warning" />
             )}
           </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              {step === "input" ? "Create Service Account" : "Save Private Key"}
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              {projectName}
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleCancel}
+          disabled={isSubmitting || (step === "show-key" && !confirmed)}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Content - Scrollable */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        {step === "input" ? (
+          // Step 1: Input service account name
+          <form
+            id="create-service-account-form"
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
+            <div className="bg-primary/10 border border-primary/25 rounded-lg p-3">
+              <div className="flex gap-2.5">
+                <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-primary text-xs mb-0.5">
+                    What is a Service Account?
+                  </p>
+                  <p className="text-xs text-primary/80 leading-relaxed">
+                    Service accounts represent machine identities (apps,
+                    services) that need to access secrets programmatically. Each
+                    service account has its own RSA key pair for authentication.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Service Account Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="e.g., backend-app, api-service"
+                className="w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
+                disabled={isSubmitting}
+                autoFocus
+              />
+              <p className="mt-1.5 text-xs text-muted-foreground">
+                The client ID will be generated as:{" "}
+                <code className="px-1.5 py-0.5 bg-muted rounded font-mono">
+                  {name || "name"}@{projectName}.crypta
+                </code>
+              </p>
+            </div>
+          </form>
+        ) : (
+          // Step 2: Show private key (one-time)
+          <div className="space-y-4">
+            {/* Service Account Info */}
+            <div className="bg-muted/50 dark:bg-background border border-border rounded-lg p-3 space-y-2.5">
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">
+                  Service Account Name
+                </p>
+                <p className="text-sm font-semibold text-foreground break-words">
+                  {serviceAccount?.name}
+                </p>
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground mb-1">Client ID</p>
+                <code className="text-xs font-mono text-foreground bg-muted px-2 py-1 rounded break-all">
+                  {serviceAccount?.client_id}
+                </code>
+              </div>
+            </div>
+
+            {/* Private Key Display */}
+            <div>
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+                <label className="text-xs font-medium text-muted-foreground">
+                  Private Key (RSA)
+                </label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleCopyKey}
+                    className="rounded-lg"
+                  >
+                    <Copy />
+                    Copy
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    onClick={handleDownloadKey}
+                    className="rounded-lg"
+                  >
+                    <Download />
+                    Download .pem
+                  </Button>
+                </div>
+              </div>
+
+              {/* Debug info */}
+              {!serviceAccount?.private_key && (
+                <div className="mb-2 p-2.5 bg-warning/10 border border-warning/25 rounded-lg">
+                  <p className="text-xs text-warning">
+                    Debug: private_key not found in response
+                  </p>
+                  <p className="text-xs text-warning/80 mt-1 break-all">
+                    Available keys:{" "}
+                    {Object.keys(serviceAccount || {}).join(", ")}
+                  </p>
+                </div>
+              )}
+
+              <div className="relative">
+                <Code className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
+                <pre className="w-full pl-10 pr-4 py-3 bg-muted dark:bg-background text-foreground font-mono text-xs rounded-lg overflow-auto border border-border max-h-48">
+                  {serviceAccount?.private_key || "Private key not available"}
+                </pre>
+              </div>
+            </div>
+
+            {/* Confirmation Checkbox */}
+            <label className="flex items-start gap-2.5 p-3 bg-warning/10 border border-warning/25 rounded-lg cursor-pointer">
+              <input
+                type="checkbox"
+                checked={confirmed}
+                onChange={(e) => setConfirmed(e.target.checked)}
+                className="w-4 h-4 rounded border-input accent-warning mt-0.5"
+              />
+              <div className="flex-1">
+                <p className="font-semibold text-warning text-xs">
+                  I confirm that I have saved the private key
+                </p>
+                <p className="text-xs text-warning/80 mt-0.5">
+                  I understand this key will not be shown again and cannot be
+                  recovered if lost
+                </p>
+              </div>
+            </label>
+          </div>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="shrink-0 flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card">
+        {step === "input" ? (
+          <>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+              className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="create-service-account-form"
+              disabled={isSubmitting || !name.trim()}
+              className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Bot />
+                  Create
+                </>
+              )}
+            </Button>
+          </>
+        ) : (
+          <Button
+            type="button"
+            onClick={handleClose}
+            disabled={!confirmed}
+            className="w-full rounded-xl font-semibold"
+          >
+            {confirmed ? (
+              <>
+                <CheckCircle />
+                Done - Close Dialog
+              </>
+            ) : (
+              <>
+                <AlertTriangle />
+                Please Confirm Above
+              </>
+            )}
+          </Button>
+        )}
+      </div>
     </Modal>
   );
 };

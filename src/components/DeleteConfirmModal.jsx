@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Trash2, AlertTriangle, Loader2 } from "lucide-react";
+import { Trash2, AlertTriangle, Loader2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -41,86 +41,115 @@ const DeleteConfirmModal = ({
   const confirmMatch = confirmText.toLowerCase() === "delete";
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="sm" srTitle={title || "Confirm Deletion"}>
-      {/* Header & Icon */}
-      <div className="flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 bg-destructive/10 rounded-full mx-auto mb-3 sm:mb-4">
-        <Trash2 className="w-7 h-7 sm:w-8 sm:h-8 text-destructive" />
-      </div>
-
-      <h2 className="text-xl sm:text-2xl font-bold text-center mb-2">
-        {title || "Confirm Deletion"}
-      </h2>
-      <p className="text-sm sm:text-base text-muted-foreground text-center mb-4 sm:mb-6 px-2">
-        Are you sure you want to delete "<strong>{itemName}</strong>"? This
-        action cannot be undone.
-      </p>
-
-      {/* Warning Message */}
-      <div className="p-3 sm:p-4 bg-warning/10 border border-warning/25 rounded-xl mb-4 sm:mb-6">
-        <div className="flex gap-2 sm:gap-3">
-          <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 text-warning flex-shrink-0 mt-0.5" />
-          <div className="text-xs sm:text-sm text-warning leading-relaxed">
-            <p className="font-semibold mb-1">Warning</p>
-            <p>
-              {warningText ||
-                "This item will be permanently deleted and cannot be recovered."}
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      size="sm"
+      srTitle={title || "Confirm Deletion"}
+      showCloseButton={false}
+      className="p-0 gap-0"
+    >
+      {/* Header */}
+      <div className="px-4 sm:px-6 pt-4 sm:pt-6 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-destructive/10 rounded-xl flex items-center justify-center">
+            <Trash2 className="w-5 h-5 text-destructive" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              {title || "Confirm Deletion"}
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              This action cannot be undone
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Confirmation Input */}
-      <div className="mb-4 sm:mb-6">
-        <Label className="mb-2">
-          Type{" "}
-          <span className="px-2 py-0.5 bg-destructive/10 text-destructive rounded font-mono font-bold">
-            DELETE
-          </span>{" "}
-          to confirm
-        </Label>
-        <Input
-          type="text"
-          value={confirmText}
-          onChange={(e) => setConfirmText(e.target.value)}
-          placeholder="Type DELETE"
-          className={`rounded-lg border-2 ${
-            confirmMatch
-              ? "border-success focus:ring-success/20"
-              : "focus:ring-destructive/20"
-          }`}
-          disabled={isLoading}
-          autoFocus
-        />
-      </div>
-
-      {/* Buttons */}
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
         <Button
-          variant="secondary"
+          variant="ghost"
+          size="icon"
           onClick={handleClose}
           disabled={isLoading}
-          className="w-full sm:flex-1 order-2 sm:order-1"
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
         >
-          Cancel
+          <X className="w-5 h-5" />
         </Button>
-        <Button
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={!confirmMatch || isLoading}
-          className="w-full sm:flex-1 order-1 sm:order-2"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="animate-spin" />
-              Deleting...
-            </>
-          ) : (
-            <>
-              <Trash2 />
-              Delete Forever
-            </>
-          )}
-        </Button>
+      </div>
+
+      {/* Body */}
+      <div className="p-4 sm:p-6 pt-4 sm:pt-5 space-y-3">
+        <p className="text-sm text-muted-foreground">
+          Are you sure you want to delete "<strong className="text-foreground">{itemName}</strong>"?
+          This action cannot be undone.
+        </p>
+
+        {/* Warning Message */}
+        <div className="bg-warning/10 border border-warning/25 rounded-lg p-3">
+          <div className="flex gap-2.5">
+            <AlertTriangle className="w-4 h-4 text-warning shrink-0 mt-0.5" />
+            <div className="text-xs text-warning">
+              <p className="font-semibold mb-0.5">Warning</p>
+              <p className="leading-relaxed">
+                {warningText ||
+                  "This item will be permanently deleted and cannot be recovered."}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Confirmation Input */}
+        <div>
+          <Label className="mb-1.5">
+            Type{" "}
+            <span className="px-1.5 py-0.5 bg-destructive/10 text-destructive rounded font-mono font-bold text-xs">
+              DELETE
+            </span>{" "}
+            to confirm
+          </Label>
+          <Input
+            type="text"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            placeholder="Type DELETE"
+            className={`rounded-lg ${
+              confirmMatch
+                ? "border-success focus-visible:ring-success/20"
+                : ""
+            }`}
+            disabled={isLoading}
+            autoFocus
+          />
+        </div>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+          <Button
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isLoading}
+            className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="destructive"
+            onClick={handleDelete}
+            disabled={!confirmMatch || isLoading}
+            className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Deleting...
+              </>
+            ) : (
+              <>
+                <Trash2 />
+                Delete Forever
+              </>
+            )}
+          </Button>
+        </div>
       </div>
     </Modal>
   );
