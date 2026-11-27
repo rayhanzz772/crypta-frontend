@@ -5,7 +5,6 @@ import {
   Copy,
   Edit,
   Trash2,
-  Lock,
   Unlock,
   Calendar,
   Tag,
@@ -18,6 +17,8 @@ import { useAuth } from "../contexts/AuthContext";
 import { decryptField, safeDecryptField } from "../utils/crypto";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 const normalizeTags = (tags) => {
   if (!tags) return [];
@@ -52,7 +53,6 @@ const ViewNoteModal = ({
       setDecryptError("");
     }
   }, [isOpen, note]);
-
 
   // Pure client-side decryption.
   const decryptNote = async () => {
@@ -109,189 +109,193 @@ const ViewNoteModal = ({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="2xl"
+      size="lg"
       srTitle={note.title}
       showCloseButton={false}
-      className="p-0"
+      className="p-0 max-h-[90vh] flex flex-col"
     >
       {/* Header */}
-        <div className="border-b border-border p-4 sm:p-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div
-              className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center`}
-            >
-              {decryptedContent ? (
-                <Unlock className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              ) : (
-                <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              )}
-            </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-foreground truncate max-w-[200px] sm:max-w-none">
-                {note.title}
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {decryptedContent ? "Note Decrypted" : "Decrypt Note"}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 hover:bg-muted rounded-lg transition-colors flex-shrink-0"
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className={`w-10 h-10 shrink-0 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-sm`}
           >
-            <X className="w-5 h-5 text-muted-foreground" />
-          </button>
-        </div>
-
-        {/* Scrollable Content */}
-        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto">
-          {/* Metadata Grid - 3 Columns */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            {/* Tags */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                <span className="text-xs sm:text-sm font-medium text-foreground">
-                  Tags
-                </span>
-              </div>
-              {(() => {
-                const tags = normalizeTags(note.tags);
-                return tags.length > 0 ? (
-                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
-                    {tags.map((tag, index) => (
-                      <span
-                        key={index}
-                        className="px-2 sm:px-3 py-0.5 sm:py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-xs sm:text-sm rounded-lg"
-                      >
-                        #{tag}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    No tags
-                  </p>
-                );
-              })()}
-            </div>
-
-            {/* Category */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <LayoutGrid className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                <span className="text-xs sm:text-sm font-medium text-foreground">
-                  Category
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">
-                {categoryData?.name || "Uncategorized"}
-              </p>
-            </div>
-
-            {/* Last Updated */}
-            <div>
-              <div className="flex items-center gap-2 mb-2 sm:mb-3">
-                <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                <span className="text-xs sm:text-sm font-medium text-foreground">
-                  Last Updated
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm font-medium text-foreground">
-                {formatDate(note.updated_at || note.created_at)}
-              </p>
-            </div>
+            {decryptedContent ? (
+              <Unlock className="w-5 h-5 text-white" />
+            ) : (
+              <CategoryIcon className="w-5 h-5 text-white" />
+            )}
           </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              {note.title}
+            </h2>
+            <Badge
+              variant={decryptedContent ? "default" : "outline"}
+              className="mt-1 text-[10px] px-1.5 py-0 gap-1"
+            >
+              {decryptedContent ? "Decrypted" : "Encrypted"}
+            </Badge>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
 
-          {/* Decrypted Content */}
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+        {/* Metadata Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {/* Tags */}
           <div>
-            <div className="flex items-center justify-between mb-2 sm:mb-3">
-              <div className="flex items-center gap-2">
-                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                <span className="text-xs sm:text-sm font-medium text-foreground">
-                  Content
-                </span>
-              </div>
-              {decryptedContent && (
-                <button
-                  onClick={handleCopy}
-                  className="px-2 sm:px-3 py-1 sm:py-1.5 bg-muted text-foreground rounded-lg hover:bg-muted transition-all flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
-                >
-                  <Copy className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                  Copy
-                </button>
-              )}
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Tags
+              </span>
             </div>
-
-            <div className="min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 bg-muted/50 dark:bg-background border-2 border-border rounded-xl">
-              {isDecrypting ? (
-                <div className="flex items-center justify-center py-8 sm:py-12">
-                  <div className="text-center">
-                    <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-spin mx-auto mb-3 sm:mb-4" />
-                    <p className="text-sm sm:text-base text-muted-foreground">
-                      Decrypting note...
-                    </p>
-                  </div>
-                </div>
-              ) : decryptError ? (
-                <div className="flex items-center justify-center py-8 sm:py-12">
-                  <div className="text-center max-w-md px-4">
-                    <AlertCircle className="w-10 h-10 sm:w-12 sm:h-12 text-destructive mx-auto mb-3 sm:mb-4" />
-                    <p className="text-sm sm:text-base text-destructive mb-3 sm:mb-4">
-                      {decryptError}
-                    </p>
-                    <button
-                      onClick={decryptNote}
-                      className="text-xs sm:text-sm text-primary-600 dark:text-primary-400 hover:underline"
+            {(() => {
+              const tags = normalizeTags(note.tags);
+              return tags.length > 0 ? (
+                <div className="flex flex-wrap gap-1.5">
+                  {tags.map((tag, index) => (
+                    <Badge
+                      key={index}
+                      variant="secondary"
+                      className="text-xs rounded-md"
                     >
-                      Try Again
-                    </button>
-                  </div>
+                      #{tag}
+                    </Badge>
+                  ))}
                 </div>
-              ) : decryptedContent ? (
-                <pre className="whitespace-pre-wrap break-words text-foreground font-mono text-xs sm:text-sm">
-                  {decryptedContent}
-                </pre>
               ) : (
-                <div className="flex items-center justify-center py-8 sm:py-12">
-                  <p className="text-sm sm:text-base text-muted-foreground">
-                    The content was encrypted
-                  </p>
-                </div>
-              )}
-            </div>
+                <p className="text-xs text-muted-foreground">No tags</p>
+              );
+            })()}
           </div>
 
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
-            <button
-              onClick={onClose}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all order-3 sm:order-1"
-            >
-              Close
-            </button>
-            <button
-              onClick={() => {
-                onClose();
-                onEdit(note);
-              }}
-              className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-primary text-white rounded-xl font-semibold hover:bg-primary/90 transition-all flex items-center justify-center gap-2 order-1 sm:order-2"
-            >
-              <Edit className="w-4 h-4 sm:w-5 sm:h-5" />
-              Edit Note
-            </button>
-            <button
-              onClick={() => {
-                onClose();
-                onDelete(note);
-              }}
-              className="w-full sm:w-auto px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-destructive text-white rounded-xl font-semibold hover:bg-destructive/90 transition-all flex items-center justify-center gap-2 order-2 sm:order-3"
-            >
-              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
-              Delete
-            </button>
+          {/* Category */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <LayoutGrid className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Category
+              </span>
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {categoryData?.name || "Uncategorized"}
+            </p>
+          </div>
+
+          {/* Last Updated */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Calendar className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Last Updated
+              </span>
+            </div>
+            <p className="text-sm font-medium text-foreground">
+              {formatDate(note.updated_at || note.created_at)}
+            </p>
           </div>
         </div>
+
+        {/* Decrypted Content */}
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <div className="flex items-center gap-1.5">
+              <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+              <span className="text-xs font-medium text-muted-foreground">
+                Content
+              </span>
+            </div>
+            {decryptedContent && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCopy}
+                className="h-7 px-2 text-xs text-muted-foreground"
+              >
+                <Copy />
+                Copy
+              </Button>
+            )}
+          </div>
+
+          <div className="min-h-[180px] p-3 sm:p-4 bg-muted/50 dark:bg-background/60 border border-border rounded-lg">
+            {isDecrypting ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="text-center">
+                  <Loader2 className="w-10 h-10 text-primary animate-spin mx-auto mb-3" />
+                  <p className="text-sm text-muted-foreground">
+                    Decrypting note...
+                  </p>
+                </div>
+              </div>
+            ) : decryptError ? (
+              <div className="flex items-center justify-center py-10">
+                <div className="text-center max-w-md px-4">
+                  <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
+                  <p className="text-sm text-destructive mb-3">{decryptError}</p>
+                  <Button variant="link" onClick={decryptNote} className="p-0 h-auto text-sm">
+                    Try Again
+                  </Button>
+                </div>
+              </div>
+            ) : decryptedContent ? (
+              <pre className="whitespace-pre-wrap break-words text-foreground font-mono text-xs sm:text-sm">
+                {decryptedContent}
+              </pre>
+            ) : (
+              <div className="flex items-center justify-center py-10">
+                <p className="text-sm text-muted-foreground">
+                  The content was encrypted
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer - sticky bottom bar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card shrink-0">
+        <Button
+          variant="secondary"
+          onClick={onClose}
+          className="order-3 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Close
+        </Button>
+        <Button
+          onClick={() => {
+            onClose();
+            onEdit(note);
+          }}
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          <Edit />
+          Edit Note
+        </Button>
+        <Button
+          variant="destructive"
+          onClick={() => {
+            onClose();
+            onDelete(note);
+          }}
+          className="order-2 sm:order-3 flex-1 sm:flex-none rounded-xl font-semibold"
+        >
+          <Trash2 />
+          Delete
+        </Button>
+      </div>
     </Modal>
   );
 };

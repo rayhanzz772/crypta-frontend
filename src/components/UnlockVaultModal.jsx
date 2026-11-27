@@ -130,7 +130,7 @@ const UnlockVaultModal = ({ isOpen, onClose }) => {
       size="sm"
       srTitle="Unlock Your Vault"
       showCloseButton={false}
-      className="p-0 overflow-hidden"
+      className="p-0"
     >
       {/* Header */}
         <div className="bg-gradient-to-br from-primary to-primary-600 px-4 sm:px-6 py-6 sm:py-8 text-center">

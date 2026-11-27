@@ -17,6 +17,14 @@ import { encryptField, safeDecryptField } from "../utils/crypto";
 import PasswordStrengthIndicator from "./PasswordStrengthIndicator";
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
   const { mek } = useAuth();
@@ -177,13 +185,9 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
     }
   };
 
-  // Get category icon and gradient
-  const CategoryIcon = getCategoryIcon(
-    formData.category || vaultItem?.category,
-  );
-  const categoryGradient = getCategoryGradient(
-    formData.category || vaultItem?.category,
-  );
+  // Category icon tracks the currently selected category
+  const CategoryIcon = getCategoryIcon(formData.category_name);
+  const categoryGradient = getCategoryGradient(formData.category_name);
 
   if (!isOpen) return null;
 
@@ -194,188 +198,202 @@ const UpdateVaultModal = ({ isOpen, onClose, vaultItem, onSuccess }) => {
       size="sm"
       srTitle="Update Password"
       showCloseButton={false}
-      className="p-0 overflow-hidden max-h-[90vh] flex flex-col"
+      className="p-0 max-h-[90vh] flex flex-col"
     >
       {/* Header */}
-        <div
-          className={`bg-gradient-to-r ${categoryGradient} px-4 sm:px-6 py-3.5 sm:py-4 flex-shrink-0`}
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center flex-shrink-0">
-                <CategoryIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-              </div>
-              <h2 className="text-base sm:text-xl font-bold text-white truncate">
-                Update Password
-              </h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-white/80 hover:text-white transition-colors flex-shrink-0 ml-2"
-            >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-          </div>
-        </div>{" "}
-        {/* Form - Scrollable */}
-        <form
-          onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 sm:space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
-        >
-          {/* Name */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Name *
-              </div>
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="e.g., Gmail Account"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground"
-              required
-            />
-          </div>
-
-          {/* Username */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Username / Email *
-              </div>
-            </label>
-            <input
-              type="text"
-              name="username"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="e.g., user@example.com"
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground"
-              required
-            />
-          </div>
-
-          {/* Password */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <KeyRound className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Password (leave empty to keep current)
-              </div>
-            </label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Leave empty to keep current password"
-                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground"
-              />
-              <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                  ) : (
-                    <Eye className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={generatePassword}
-                  className="p-1.5 sm:p-2 hover:bg-muted rounded-lg transition-colors"
-                  title="Generate password"
-                >
-                  <RefreshCw className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground" />
-                </button>
-              </div>
-            </div>
-            {formData.password && (
-              <PasswordStrengthIndicator password={formData.password} />
-            )}
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <Tag className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Category
-              </div>
-            </label>
-            <select
-              name="category_name"
-              value={formData.category_name}
-              onChange={handleChange}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground"
-            >
-              <option value="Work">Work</option>
-              <option value="Game">Game</option>
-              <option value="Finance">Finance</option>
-              <option value="Social">Social</option>
-            </select>
-          </div>
-
-          {/* Note */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <FileText className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                Note (Optional)
-              </div>
-            </label>
-            <textarea
-              name="note"
-              value={formData.note}
-              onChange={handleChange}
-              placeholder="Add any additional notes..."
-              rows={3}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground resize-none"
-            />
-          </div>
-
-          {/* Master Password Warning */}
-          <div className="flex items-start gap-2 sm:gap-3 p-2.5 sm:p-3 bg-primary/10 border border-blue-200 dark:border-blue-800 rounded-xl">
-            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-blue-800 dark:text-blue-200">
-              <p className="font-semibold mb-0.5 sm:mb-1">
-                End-to-End Encrypted
-              </p>
-              <p className="text-blue-700 dark:text-blue-300">
-                All fields are encrypted locally in your browser before being
-                saved. The server never sees your data.
-              </p>
-            </div>
-          </div>
-        </form>
-        {/* Buttons - Fixed at bottom */}
-        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-border bg-card flex-shrink-0">
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            disabled={isLoading}
-            className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div
+            className={`w-10 h-10 shrink-0 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center shadow-sm`}
           >
-            {isLoading ? "Updating..." : "Update Password"}
-          </button>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isLoading}
-            className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-colors disabled:opacity-50"
-          >
-            Cancel
-          </button>
+            <CategoryIcon className="w-5 h-5 text-white" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Update Password
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              Edit your saved credentials
+            </p>
+          </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          disabled={isLoading}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {/* Name */}
+        <div>
+          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+            <Tag className="w-3.5 h-3.5" />
+            Name
+          </label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="e.g., Gmail Account"
+            className="w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
+            required
+          />
+        </div>
+
+        {/* Username */}
+        <div>
+          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+            <User className="w-3.5 h-3.5" />
+            Username / Email
+          </label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            placeholder="e.g., user@example.com"
+            className="w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
+            required
+          />
+        </div>
+
+        {/* Password */}
+        <div>
+          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+            <KeyRound className="w-3.5 h-3.5" />
+            Password
+            <span className="font-normal">
+              (leave empty to keep current)
+            </span>
+          </label>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              placeholder="Leave empty to keep current password"
+              className="w-full px-3 py-2.5 pr-20 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
+            />
+            <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowPassword(!showPassword)}
+                className="size-7 rounded-md text-muted-foreground"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <EyeOff className="w-3.5 h-3.5" />
+                ) : (
+                  <Eye className="w-3.5 h-3.5" />
+                )}
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={generatePassword}
+                className="size-7 rounded-md text-muted-foreground"
+                title="Generate password"
+                aria-label="Generate password"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </Button>
+            </div>
+          </div>
+          {formData.password && (
+            <PasswordStrengthIndicator password={formData.password} />
+          )}
+        </div>
+
+        {/* Category */}
+        <div>
+          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+            <Tag className="w-3.5 h-3.5" />
+            Category
+          </label>
+          <Select
+            name="category_name"
+            value={formData.category_name}
+            onValueChange={(value) =>
+              setFormData((prev) => ({ ...prev, category_name: value }))
+            }
+          >
+            <SelectTrigger className="w-full h-10 text-sm bg-muted/50 dark:bg-background rounded-lg">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Work">Work</SelectItem>
+              <SelectItem value="Game">Game</SelectItem>
+              <SelectItem value="Finance">Finance</SelectItem>
+              <SelectItem value="Social">Social</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Note */}
+        <div>
+          <label className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+            <FileText className="w-3.5 h-3.5" />
+            Note
+            <span className="font-normal">(Optional)</span>
+          </label>
+          <textarea
+            name="note"
+            value={formData.note}
+            onChange={handleChange}
+            placeholder="Add any additional notes..."
+            rows={3}
+            className="w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none resize-none"
+          />
+        </div>
+
+        {/* Encryption Info */}
+        <div className="flex items-start gap-2.5 p-3 bg-primary/10 border border-primary/25 rounded-lg">
+          <Lock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+          <div className="text-xs text-primary/90">
+            <p className="font-semibold mb-0.5">End-to-End Encrypted</p>
+            <p className="text-primary/70">
+              All fields are encrypted locally in your browser before being
+              saved. The server never sees your data.
+            </p>
+          </div>
+        </div>
+      </form>
+
+      {/* Footer */}
+      <div className="flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card shrink-0">
+        <Button
+          type="submit"
+          onClick={handleSubmit}
+          disabled={isLoading}
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          {isLoading ? "Updating..." : "Update Password"}
+        </Button>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isLoading}
+          className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Cancel
+        </Button>
+      </div>
     </Modal>
   );
 };

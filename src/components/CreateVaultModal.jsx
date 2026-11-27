@@ -23,6 +23,7 @@ import {
 import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
 import { checkPasswordPwned, formatBreachCount } from "../utils/pwnedCheck";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 // Debounce utility function
 function debounce(func, wait) {
@@ -287,7 +288,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
       className="p-0 max-h-[90vh] flex flex-col"
     >
         {/* Header */}
-        <div className="sticky top-0 bg-card border-b border-border p-4 sm:p-6 flex items-center justify-between z-10">
+        <div className="sticky top-0 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between z-10">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <div
               className={`w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br ${categoryGradient} rounded-xl flex items-center justify-center flex-shrink-0`}
@@ -328,11 +329,11 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
         <form
           onSubmit={handleSubmit}
-          className="p-4 sm:p-6 space-y-3 sm:space-y-5"
+          className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
         >
           {/* Name Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5">
               Name <span className="text-destructive">*</span>
             </label>
             <input
@@ -341,7 +342,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.name}
               onChange={handleChange}
               placeholder="e.g., Gmail Account"
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
+              className={`w-full px-3 py-2.5 text-sm sm:text-base rounded-xl border ${
                 errors.name
                   ? "border-destructive focus:ring-destructive"
                   : "border-input focus:ring-ring"
@@ -356,7 +357,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Username Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5">
               Username / Email <span className="text-destructive">*</span>
             </label>
             <input
@@ -365,7 +366,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               value={formData.username}
               onChange={handleChange}
               placeholder="you@example.com"
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
+              className={`w-full px-3 py-2.5 text-sm sm:text-base rounded-xl border ${
                 errors.username
                   ? "border-destructive focus:ring-destructive"
                   : "border-input focus:ring-ring"
@@ -400,13 +401,13 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
                 value={formData.password}
                 onChange={handleChange}
                 placeholder="Enter a strong password"
-                className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-20 sm:pr-24 text-sm sm:text-base rounded-xl border ${
+                className={`w-full px-3 sm:px-4 py-2.5 pr-20 text-sm sm:text-base rounded-xl border ${
                   errors.password
                     ? "border-destructive focus:ring-destructive"
                     : "border-input focus:ring-ring"
                 } bg-card text-foreground focus:ring-2 focus:border-transparent transition-all outline-none font-mono`}
               />
-              <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 flex items-center gap-0.5 sm:gap-1">
+              <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -624,14 +625,14 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Category Dropdown */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5">
               Category <span className="text-destructive">*</span>
             </label>
             <select
               name="category_id"
               value={formData.category_id}
               onChange={handleChange}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border ${
+              className={`w-full px-3 py-2.5 text-sm sm:text-base rounded-xl border ${
                 errors.category_id
                   ? "border-destructive focus:ring-destructive"
                   : "border-input focus:ring-ring"
@@ -653,7 +654,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* Note Field */}
           <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
+            <label className="block text-xs sm:text-sm font-medium text-foreground mb-1.5">
               Note <span className="text-muted-foreground">(Optional)</span>
             </label>
             <textarea
@@ -662,38 +663,41 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
               onChange={handleChange}
               placeholder="Add any additional notes..."
               rows={3}
-              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base rounded-xl border border-input bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent transition-all outline-none resize-none"
+              className="w-full px-3 py-2.5 text-sm sm:text-base rounded-xl border border-input bg-card text-foreground focus:ring-2 focus:ring-ring focus:border-transparent transition-all outline-none resize-none"
             />
           </div>
 
-          {/* Footer Buttons */}
-          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-3 sm:pt-4">
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="order-1 sm:order-2 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
-                  Save
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleClose}
-              className="order-2 sm:order-1 flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-colors"
-            >
-              Cancel
-            </button>
-          </div>
         </form>
+
+        {/* Footer - sticky bottom bar */}
+        <div className="flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card shrink-0">
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={isLoading}
+            className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <CheckCircle2 />
+                Save
+              </>
+            )}
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+          >
+            Cancel
+          </Button>
+        </div>
     </Modal>
   );
 };

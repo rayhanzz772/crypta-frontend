@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { X, Save, Tag, AlertCircle, Loader2 } from "lucide-react";
+import { X, Save, AlertCircle, Loader2, FileText } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
 import { notesAPI } from "../utils/api";
 import { decryptField, encryptField } from "../utils/crypto";
-import { getCategoryIcon, getCategoryGradient } from "../utils/categoryIcons";
+import { getCategoryIcon } from "../utils/categoryIcons";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 // Utility function to normalize tags (convert string to array)
 const normalizeTags = (tags) => {
@@ -127,162 +128,180 @@ const UpdateNoteModal = ({ isOpen, onClose, note, onSuccess, categories }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      size="2xl"
+      size="lg"
       srTitle="Edit Note"
       showCloseButton={false}
-      className="p-0"
+      className="p-0 max-h-[90vh] flex flex-col"
     >
-      <div className="border-b border-border p-4 sm:p-6 flex items-center justify-between">
-          <h2 className="text-lg sm:text-xl font-bold text-foreground">
-            Edit Note
-          </h2>
-          <button
-            onClick={onClose}
-            disabled={isLoading}
-            className="p-2 hover:bg-muted rounded-lg transition-colors flex-shrink-0"
-          >
-            <X className="w-5 h-5 text-muted-foreground" />
-          </button>
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+            <FileText className="w-5 h-5 text-primary" />
+          </div>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Edit Note
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              Changes are re-encrypted on save
+            </p>
+          </div>
         </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto"
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          disabled={isLoading}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
         >
-          {isDecrypting ? (
-            <div className="flex items-center justify-center py-8 sm:py-12">
-              <Loader2 className="w-10 h-10 sm:w-12 sm:h-12 text-primary animate-spin" />
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {isDecrypting ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-10 h-10 text-primary animate-spin" />
+          </div>
+        ) : (
+          <>
+            {/* Title */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Title
+              </label>
+              <input
+                type="text"
+                value={formData.title}
+                onChange={(e) =>
+                  setFormData({ ...formData, title: e.target.value })
+                }
+                className={`w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all text-foreground ${
+                  errors.title ? "border-destructive" : "border-border"
+                }`}
+                disabled={isLoading}
+              />
+              {errors.title && (
+                <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {errors.title}
+                </p>
+              )}
             </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Category
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {availableCategories.map((category) => {
+                  const Icon = getCategoryIcon(category.name);
+                  const isSelected = formData.category === category.id;
+                  return (
+                    <button
+                      key={category.id}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, category: category.id })
+                      }
+                      disabled={isLoading}
+                      className={`p-2.5 rounded-lg border transition-all flex items-center gap-2 ${
+                        isSelected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border text-foreground hover:bg-muted/50"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4 shrink-0" />
+                      <span className="text-xs font-medium truncate">
+                        {category.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Note Content */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Note Content
+              </label>
+              <textarea
+                value={formData.note}
+                onChange={(e) =>
+                  setFormData({ ...formData, note: e.target.value })
+                }
+                rows={8}
+                className={`w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all text-foreground font-mono ${
+                  errors.note ? "border-destructive" : "border-border"
+                }`}
+                disabled={isLoading}
+              />
+              {errors.note && (
+                <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="w-3.5 h-3.5" />
+                  {errors.note}
+                </p>
+              )}
+            </div>
+
+            {/* Tags */}
+            <div>
+              <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+                Tags
+              </label>
+              <input
+                type="text"
+                value={formData.tags}
+                onChange={(e) =>
+                  setFormData({ ...formData, tags: e.target.value })
+                }
+                placeholder="work, important, ideas"
+                className="w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all text-foreground"
+                disabled={isLoading}
+              />
+            </div>
+          </>
+        )}
+      </form>
+
+      {/* Footer - sticky bottom bar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card shrink-0">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={onClose}
+          disabled={isLoading}
+          className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleSubmit}
+          disabled={isLoading || isDecrypting}
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Saving...
+            </>
           ) : (
             <>
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-                  Title *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
-                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 ${
-                    errors.title
-                      ? "border-destructive"
-                      : "border-border"
-                  } rounded-xl focus:ring-2 focus:ring-ring outline-none`}
-                  disabled={isLoading}
-                />
-                {errors.title && (
-                  <p className="mt-2 text-xs sm:text-sm text-destructive flex items-center gap-1">
-                    <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    {errors.title}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-                  Category *
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-                  {availableCategories.map((category) => {
-                    const Icon = getCategoryIcon(category.name);
-                    const isSelected = formData.category === category.id;
-                    return (
-                      <button
-                        key={category.id}
-                        type="button"
-                        onClick={() =>
-                          setFormData({ ...formData, category: category.id })
-                        }
-                        disabled={isLoading}
-                        className={`p-2.5 sm:p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
-                          isSelected
-                            ? "border-primary bg-primary-50 dark:bg-primary-900/20"
-                            : "border-border"
-                        }`}
-                      >
-                        <Icon className="w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0" />
-                        <span className="text-xs sm:text-sm font-medium truncate">
-                          {category.name}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-                  Note Content *
-                </label>
-                <textarea
-                  value={formData.note}
-                  onChange={(e) =>
-                    setFormData({ ...formData, note: e.target.value })
-                  }
-                  rows={8}
-                  className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 ${
-                    errors.note
-                      ? "border-destructive"
-                      : "border-border"
-                  } rounded-xl focus:ring-2 focus:ring-ring outline-none font-mono`}
-                  disabled={isLoading}
-                />
-                {errors.note && (
-                  <p className="mt-2 text-xs sm:text-sm text-destructive flex items-center gap-1">
-                    <AlertCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    {errors.note}
-                  </p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-                  Tags
-                </label>
-                <input
-                  type="text"
-                  value={formData.tags}
-                  onChange={(e) =>
-                    setFormData({ ...formData, tags: e.target.value })
-                  }
-                  placeholder="work, important, ideas"
-                  className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 border-border rounded-xl focus:ring-2 focus:ring-ring outline-none"
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4 border-t border-border">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  disabled={isLoading}
-                  className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all order-2 sm:order-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full sm:flex-1 px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-gradient-to-r from-primary to-primary-600 text-white rounded-xl font-semibold flex items-center justify-center gap-2 hover:shadow-lg transition-all order-1 sm:order-2"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <Save className="w-4 h-4 sm:w-5 sm:h-5" />
-                      Save Changes
-                    </>
-                  )}
-                </button>
-              </div>
+              <Save />
+              Save Changes
             </>
           )}
-        </form>
+        </Button>
+      </div>
     </Modal>
   );
 };

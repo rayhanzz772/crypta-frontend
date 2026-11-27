@@ -19,7 +19,7 @@ const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
       onClose={onClose}
       size="sm"
       srTitle="Save Your Recovery Key"
-      className="bg-white dark:bg-card gap-0 p-0 rounded-xl sm:rounded-xl border-0 shadow-xl overflow-hidden"
+      className="bg-white dark:bg-card gap-0 p-0 rounded-xl sm:rounded-xl border-0 shadow-xl"
     >
         <div className="p-6">
           <div className="flex items-center justify-center w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-500 mx-auto mb-4">

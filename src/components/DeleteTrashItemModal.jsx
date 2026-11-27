@@ -18,7 +18,7 @@ const DeleteTrashItemModal = ({
       onClose={() => !isDeleting && onClose()}
       size="sm"
       showCloseButton={false}
-      className="rounded-3xl overflow-hidden border border-slate-200/60 dark:border-slate-800 flex flex-col"
+      className="rounded-3xl overflow-x-hidden overflow-y-auto border border-slate-200/60 dark:border-slate-800 flex flex-col p-0 gap-0"
       srTitle="Delete Permanently"
     >
           {/* Top Danger Accent Bar */}
@@ -49,7 +49,7 @@ const DeleteTrashItemModal = ({
           </div>
 
           {/* Content Body */}
-          <div className="p-6 space-y-4">
+          <div className="p-6 space-y-3">
             {/* Target Item Card Preview */}
             <div className="p-4 bg-muted/50/60 border border-slate-200/60 dark:border-border/60 rounded-2xl flex items-center gap-3">
               <div className={`p-2.5 rounded-xl ${

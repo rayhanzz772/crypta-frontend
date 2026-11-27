@@ -49,7 +49,7 @@ const EmptyTrashModal = ({
       size="sm"
       srTitle="Empty Trash Bin"
       showCloseButton={false}
-      className="bg-card flex flex-col gap-0 p-0 rounded-3xl sm:rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-2xl overflow-hidden"
+      className="bg-card flex flex-col gap-0 p-0 rounded-3xl sm:rounded-3xl border border-slate-200/60 dark:border-slate-800 shadow-2xl overflow-x-hidden overflow-y-auto"
     >
           {/* Top Danger Accent Bar */}
           <div className="h-2 bg-gradient-to-r from-red-500 via-rose-500 to-red-600" />

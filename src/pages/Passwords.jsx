@@ -1,12 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
 import * as XLSX from "xlsx";
 import {
   Plus,
-  Download,
   Eye,
-  Copy,
   MoreVertical,
   Globe,
   Lock,
@@ -25,9 +23,23 @@ import { vaultAPI } from "../utils/api";
 import { safeDecryptField } from "../utils/crypto";
 import {
   getCategoryIcon,
-  getCategoryGradient,
   getCategoryColor,
 } from "../utils/categoryIcons";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import CreateVaultModal from "../components/CreateVaultModal";
 import DecryptModal from "../components/DecryptModal";
 import DeleteVaultModal from "../components/DeleteVaultModal";
@@ -74,9 +86,6 @@ const Passwords = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery, selectedCategory, showOnlyFavorites]);
-
-  const baseBtn =
-    "flex items-center gap-2 h-[44px] px-4 rounded-xl transition-all";
 
   const getFilenameFromContentDisposition = (contentDisposition) => {
     if (!contentDisposition) return null;
@@ -347,7 +356,7 @@ const Passwords = () => {
     );
   }
 
-  // Empty State
+  // Loading Skeleton
   if (isLoading) {
     return (
       <div className="w-full">
@@ -358,34 +367,34 @@ const Passwords = () => {
             <div className="h-4 w-32 bg-muted rounded-lg animate-pulse" />
           </div>
           <div className="flex items-center gap-3">
-            <div className="h-11 w-28 bg-muted rounded-xl animate-pulse hidden sm:block" />
-            <div className="h-11 w-40 bg-blue-200 dark:bg-blue-900/50 rounded-xl animate-pulse" />
+            <div className="h-9 w-28 bg-muted rounded-lg animate-pulse hidden sm:block" />
+            <div className="h-9 w-36 bg-muted rounded-lg animate-pulse" />
           </div>
         </div>
 
         {/* Grid Skeleton */}
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="bg-white/50 dark:bg-background/50 rounded-xl p-3.5 sm:p-4 border border-border flex flex-col justify-between"
+              className="rounded-xl border border-border bg-card p-4 flex flex-col justify-between"
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 bg-slate-200 dark:bg-card rounded-lg animate-pulse" />
-                  <div className="space-y-1">
-                    <div className="h-4 w-28 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-muted rounded-xl animate-pulse" />
+                  <div className="space-y-1.5">
+                    <div className="h-4 w-28 bg-muted rounded animate-pulse" />
                     <div className="h-3 w-16 bg-muted/60 rounded animate-pulse" />
                   </div>
                 </div>
-                <div className="w-6 h-6 bg-slate-200 dark:bg-card rounded animate-pulse" />
+                <div className="w-7 h-7 bg-muted rounded-md animate-pulse" />
               </div>
 
-              <div className="bg-muted dark:bg-background/80 rounded-lg h-8 mb-3 animate-pulse" />
+              <div className="bg-muted/60 rounded-lg h-9 mb-3 animate-pulse" />
 
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800/60 flex justify-between items-center">
-                <div className="h-3.5 w-16 bg-slate-200 dark:bg-card rounded animate-pulse" />
-                <div className="h-3.5 w-20 bg-slate-200 dark:bg-card rounded animate-pulse" />
+              <div className="pt-2.5 border-t border-border flex justify-between items-center">
+                <div className="h-4 w-16 bg-muted rounded animate-pulse" />
+                <div className="h-4 w-20 bg-muted rounded animate-pulse" />
               </div>
             </div>
           ))}
@@ -394,6 +403,7 @@ const Passwords = () => {
     );
   }
 
+  // Empty State
   if (passwords.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
@@ -402,7 +412,7 @@ const Passwords = () => {
           animate={{ opacity: 1, y: 0 }}
           className="text-center max-w-md"
         >
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-500/20">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary/20">
             <Lock className="w-8 h-8 text-white" />
           </div>
 
@@ -415,18 +425,13 @@ const Passwords = () => {
             first entry.
           </p>
 
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={openCreateModal}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-          >
-            <Plus className="w-4 h-4" />
+          <Button onClick={openCreateModal} className="rounded-xl">
+            <Plus />
             Add First Password
-          </motion.button>
+          </Button>
 
           {/* Info Card */}
-          <div className="mt-8 bg-blue-50/60 dark:bg-blue-950/20 rounded-xl p-3.5 border border-primary/20/40">
+          <div className="mt-8 bg-primary/5 rounded-xl p-3.5 border border-primary/20">
             <div className="flex items-start gap-3 text-left">
               <Lock className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
               <div>
@@ -449,10 +454,13 @@ const Passwords = () => {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <div>
           <h1 className="text-lg font-bold text-foreground mb-0.5 flex items-center gap-2">
             {showOnlyFavorites ? "Favorite Passwords" : "All Passwords"}
+            <Badge variant="secondary" className="font-mono">
+              {filteredPasswords.length}
+            </Badge>
             {isFiltering && (
               <span className="inline-flex items-center gap-1.5 text-xs font-normal text-primary">
                 <Loader2 className="animate-spin h-3.5 w-3.5" />
@@ -461,61 +469,55 @@ const Passwords = () => {
             )}
           </h1>
           <p className="text-xs text-muted-foreground">
-            {filteredPasswords.length}{" "}
-            {filteredPasswords.length === 1 ? "password" : "passwords"}
-            {showOnlyFavorites ? " favorite password" : " stored securely"}
+            {showOnlyFavorites
+              ? "Starred items, stored securely"
+              : "Stored securely, end-to-end encrypted"}
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex items-center gap-2">
           {/* View Mode Switcher */}
-          <div className="flex items-center p-0.5 bg-muted/80 rounded-xl border border-slate-200/60 dark:border-border/60">
-            <button
+          <div className="flex items-center p-0.5 bg-muted rounded-lg border border-border">
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleViewModeChange("grid")}
-              className={`p-1.5 rounded-lg transition-all ${viewMode === "grid"
-                ? "bg-white dark:bg-slate-700 text-primary shadow-xs font-semibold"
+              className={`size-7 rounded-md ${viewMode === "grid"
+                ? "bg-background shadow-xs text-foreground"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
-              title="Grid View"
+              aria-label="Grid View"
             >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
-            <button
+              <LayoutGrid />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={() => handleViewModeChange("list")}
-              className={`p-1.5 rounded-lg transition-all ${viewMode === "list"
-                ? "bg-white dark:bg-slate-700 text-primary shadow-xs font-semibold"
+              className={`size-7 rounded-md ${viewMode === "list"
+                ? "bg-background shadow-xs text-foreground"
                 : "text-muted-foreground hover:text-foreground"
                 }`}
-              title="Dense List View"
+              aria-label="Dense List View"
             >
-              <List className="w-4 h-4" />
-            </button>
+              <List />
+            </Button>
           </div>
 
           {/* Favorites Filter */}
-          <button
+          <Button
+            variant={showOnlyFavorites ? "default" : "outline"}
             onClick={() => setShowOnlyFavorites(!showOnlyFavorites)}
-            className={`${baseBtn} text-xs font-medium ${showOnlyFavorites
-              ? "bg-amber-100 dark:bg-amber-950/40 text-warning border border-amber-300/60 dark:border-amber-800/60"
-              : "bg-muted text-slate-600 dark:text-foreground hover:bg-muted"
-              }`}
+            className={`h-9 rounded-lg text-xs ${showOnlyFavorites ? "bg-warning text-warning-foreground hover:bg-warning/90" : ""}`}
           >
-            <Star
-              className={`w-4 h-4 ${showOnlyFavorites ? "fill-amber-500 text-warning" : ""
-                }`}
-            />
+            <Star className={showOnlyFavorites ? "fill-current" : ""} />
             <span className="hidden sm:inline">Favorites</span>
-          </button>
+          </Button>
 
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={openCreateModal}
-            className={`${baseBtn} bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium text-xs shadow-md shadow-blue-500/20 hover:shadow-lg`}
-          >
-            <Plus className="w-4 h-4" />
+          <Button onClick={openCreateModal} className="h-9 rounded-lg text-xs">
+            <Plus />
             <span className="hidden sm:inline">Add Password</span>
-          </motion.button>
+          </Button>
         </div>
       </div>
 
@@ -537,7 +539,7 @@ const Passwords = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-card/80 backdrop-blur-md rounded-2xl border border-slate-200/80 dark:border-border/60 overflow-hidden divide-y divide-slate-200/60 dark:divide-slate-700/50 shadow-xs dark:shadow-md dark:shadow-slate-950/40">
+          <div className="rounded-xl border border-border bg-card overflow-hidden divide-y divide-border">
             {filteredPasswords.map((password, index) => (
               <PasswordListRow
                 key={password.id || `password-${index}`}
@@ -559,7 +561,7 @@ const Passwords = () => {
           className="flex items-center justify-center min-h-[350px]"
         >
           <div className="text-center">
-            <Star className="w-12 h-12 text-foreground dark:text-slate-700 mx-auto mb-3 opacity-60" />
+            <Star className="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
             <h3 className="text-base font-semibold text-foreground mb-1">
               {showOnlyFavorites
                 ? "No Favorite Passwords"
@@ -571,12 +573,13 @@ const Passwords = () => {
                 : "Try adjusting your search or filters."}
             </p>
             {showOnlyFavorites && (
-              <button
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowOnlyFavorites(false)}
-                className="px-3.5 py-2 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-500 transition-colors"
               >
                 View All Passwords
-              </button>
+              </Button>
             )}
           </div>
         </motion.div>
@@ -584,32 +587,39 @@ const Passwords = () => {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between mt-6 px-4 py-2.5 bg-white dark:bg-slate-850 rounded-xl border border-slate-200/80 dark:border-slate-800 shadow-xs text-xs">
+        <div className="flex flex-wrap items-center justify-between gap-3 mt-6 px-4 py-2.5 rounded-xl border border-border bg-card text-xs">
           <div className="flex items-center gap-3">
             <span className="text-muted-foreground">
               Showing {Math.min((currentPage - 1) * perPage + 1, totalItems)}–
               {Math.min(currentPage * perPage, totalItems)} of {totalItems}
             </span>
-            <select
-              value={perPage}
-              onChange={(e) => handlePerPageChange(Number(e.target.value))}
-              className="text-xs bg-muted/50 border border-border rounded-lg px-2.5 py-1 focus:ring-2 focus:ring-ring outline-none"
+            <Select
+              value={String(perPage)}
+              onValueChange={(v) => handlePerPageChange(Number(v))}
             >
-              <option value={8}>8 per page</option>
-              <option value={12}>12 per page</option>
-              <option value={24}>24 per page</option>
-              <option value={48}>48 per page</option>
-            </select>
+              <SelectTrigger className="h-8 w-[110px] text-xs rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="8">8 / page</SelectItem>
+                <SelectItem value="12">12 / page</SelectItem>
+                <SelectItem value="24">24 / page</SelectItem>
+                <SelectItem value="48">48 / page</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex items-center gap-1.5">
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="p-1.5 text-muted-foreground bg-card border border-border rounded-lg hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="size-8 rounded-lg"
+              aria-label="Previous page"
             >
-              <ChevronLeft className="w-4 h-4" />
-            </button>
+              <ChevronLeft />
+            </Button>
 
             <div className="flex items-center gap-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -625,27 +635,30 @@ const Passwords = () => {
                 }
 
                 return (
-                  <button
+                  <Button
                     key={pageNum}
+                    variant={currentPage === pageNum ? "default" : "ghost"}
                     onClick={() => handlePageChange(pageNum)}
-                    className={`w-7 h-7 flex items-center justify-center text-xs font-medium rounded-lg transition-colors ${currentPage === pageNum
-                      ? "bg-blue-600 text-white"
-                      : "text-muted-foreground bg-card border border-border hover:bg-muted"
-                      }`}
+                    className="size-8 rounded-lg text-xs font-medium"
+                    aria-label={`Page ${pageNum}`}
+                    aria-current={currentPage === pageNum ? "page" : undefined}
                   >
                     {pageNum}
-                  </button>
+                  </Button>
                 );
               })}
             </div>
 
-            <button
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="p-1.5 text-muted-foreground bg-card border border-border rounded-lg hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              className="size-8 rounded-lg"
+              aria-label="Next page"
             >
-              <ChevronRight className="w-4 h-4" />
-            </button>
+              <ChevronRight />
+            </Button>
           </div>
         </div>
       )}
@@ -683,6 +696,36 @@ const Passwords = () => {
   );
 };
 
+// Item action menu shared by card and row views
+const VaultActionsMenu = ({ password, onUpdate, onDelete, isDeleting }) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-8 rounded-lg text-muted-foreground"
+        aria-label="Item actions"
+      >
+        <MoreVertical />
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" className="w-40">
+      <DropdownMenuItem onClick={() => onUpdate(password)}>
+        <Edit />
+        Edit
+      </DropdownMenuItem>
+      <DropdownMenuItem
+        onClick={() => onDelete(password)}
+        disabled={isDeleting}
+        className="text-destructive focus:text-destructive"
+      >
+        <Trash2 />
+        {isDeleting ? "Deleting..." : "Delete"}
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
+
 // Password Card Component
 const PasswordCard = ({
   password,
@@ -693,30 +736,10 @@ const PasswordCard = ({
   isDeleting,
   onToggleFavorite,
 }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef(null);
-
   // Get category icon for this password
   const CategoryIcon = getCategoryIcon(
     password.category || password.category_name,
   );
-
-  // Close menu when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
-      }
-    };
-
-    if (showMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showMenu]);
 
   const websiteUrl = password.website || password.url;
   const categoryName = password.category || password.category_name || "Uncategorized";
@@ -728,23 +751,23 @@ const PasswordCard = ({
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -3 }}
       transition={{ duration: 0.15, ease: "easeOut" }}
-      className="bg-card/80 hover:dark:bg-card/95 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-slate-200/80 dark:border-border/60 shadow-xs hover:shadow-lg dark:shadow-md dark:shadow-slate-950/40 hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 flex flex-col justify-between group relative"
+      className="rounded-xl border border-border bg-card hover:shadow-md hover:border-primary/30 transition-all duration-200 flex flex-col justify-between group relative"
     >
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-3.5">
+      <div className="flex items-start justify-between gap-2 p-4 pb-0">
         <div className="flex items-center gap-3 min-w-0 flex-1">
           {/* Category Icon */}
           <div className={`w-10 h-10 ${categoryColor.gradient} flex items-center justify-center shrink-0 rounded-xl shadow-xs`}>
             <CategoryIcon className="w-5 h-5 text-white" />
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-semibold text-sm sm:text-base text-foreground truncate leading-snug">
+            <h3 className="font-semibold text-sm text-foreground truncate leading-snug">
               {password.name || password.title}
             </h3>
-            <p className="text-xs text-muted-foreground dark:text-muted-foreground font-mono truncate mt-0.5">
+            <p className="text-xs text-muted-foreground font-mono truncate mt-0.5">
               {websiteUrl ? (
                 <span className="flex items-center gap-1">
-                  <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                  <Globe className="w-3.5 h-3.5 shrink-0" />
                   {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
                 </span>
               ) : (
@@ -755,88 +778,65 @@ const PasswordCard = ({
         </div>
 
         {/* Favorite & Options */}
-        <div className="flex items-center gap-1 shrink-0">
-          <button
+        <div className="flex items-center gap-0.5 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => onToggleFavorite(password.id)}
-            className="p-1.5 sm:p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-warning transition-colors"
+            className={`size-8 rounded-lg ${password.is_favorite
+              ? "text-warning hover:text-warning"
+              : "text-muted-foreground"
+              }`}
             title={
               password.is_favorite
                 ? "Remove from favorites"
                 : "Add to favorites"
             }
           >
-            <Star
-              className={`w-4 h-4 ${password.is_favorite
-                ? "text-warning fill-amber-500"
-                : ""
-                }`}
-            />
-          </button>
+            <Star className={password.is_favorite ? "fill-current" : ""} />
+          </Button>
 
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setShowMenu(!showMenu)}
-              className="p-1.5 sm:p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-            >
-              <MoreVertical className="w-4 h-4" />
-            </button>
-
-            {/* Dropdown Menu */}
-            {showMenu && (
-              <div className="absolute right-0 top-full mt-1 w-44 bg-card rounded-xl shadow-lg border border-border py-1 z-20">
-                <button
-                  onClick={() => {
-                    onUpdate(password);
-                    setShowMenu(false);
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-                >
-                  <Edit className="w-4 h-4" />
-                  Edit
-                </button>
-                <button
-                  onClick={() => {
-                    onDelete(password);
-                    setShowMenu(false);
-                  }}
-                  className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                  disabled={isDeleting}
-                >
-                  <Trash2 className="w-4 h-4" />
-                  {isDeleting ? "Deleting..." : "Delete"}
-                </button>
-              </div>
-            )}
-          </div>
+          <VaultActionsMenu
+            password={password}
+            onUpdate={onUpdate}
+            onDelete={onDelete}
+            isDeleting={isDeleting}
+          />
         </div>
       </div>
 
       {/* Password Masked Preview Bar */}
-      <div className="bg-muted/50/80 dark:bg-slate-950/70 border border-slate-200/60 dark:border-border/60 rounded-xl px-3 py-2 mb-3.5 flex items-center justify-between gap-2">
-        <span className="font-mono text-xs sm:text-sm text-muted-foreground dark:text-muted-foreground tracking-wider select-none">
+      <div className="mx-4 my-3 bg-muted/60 rounded-lg px-3 py-2 flex items-center justify-between gap-2">
+        <span className="font-mono text-xs text-muted-foreground tracking-wider select-none">
           ••••••••••••
         </span>
-        <button
+        <Button
+          variant="ghost"
+          size="sm"
           onClick={() => onDecrypt(password)}
-          className="p-1 rounded-md text-muted-foreground hover:text-primary hover:bg-slate-200/60 dark:hover:bg-card transition-colors flex items-center gap-1.5 text-xs font-medium"
+          className="h-7 px-2 text-xs text-muted-foreground"
           title="Decrypt and view password"
         >
-          <Eye className="w-4 h-4" />
-          <span>Decrypt</span>
-        </button>
+          <Eye />
+          Decrypt
+        </Button>
       </div>
 
       {/* Footer Meta */}
-      <div className="pt-2.5 border-t border-border flex items-center justify-between text-xs text-muted-foreground dark:text-muted-foreground">
-        <span className={`font-medium px-2.5 py-0.5 rounded-md text-[10px] sm:text-[11px] tracking-wider uppercase ${categoryColor.pill}`}>
-          {categoryName}
-        </span>
-        <button
-          onClick={() => onDecrypt(password)}
-          className="text-primary font-medium hover:underline text-xs flex items-center gap-1"
-        >
-          View Details →
-        </button>
+      <div className="px-4 pb-4 pt-0 mt-auto">
+        <div className="pt-2.5 border-t border-border flex items-center justify-between">
+          <span className={`font-medium px-2 py-0.5 rounded-md text-[10px] tracking-wider uppercase ${categoryColor.pill}`}>
+            {categoryName}
+          </span>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => onDecrypt(password)}
+            className="h-auto p-0 text-xs"
+          >
+            View Details
+          </Button>
+        </div>
       </div>
     </motion.div>
   );
@@ -851,9 +851,6 @@ const PasswordListRow = ({
   isDeleting,
   onToggleFavorite,
 }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef(null);
-
   const CategoryIcon = getCategoryIcon(
     password.category || password.category_name,
   );
@@ -861,40 +858,26 @@ const PasswordListRow = ({
   const categoryName = password.category || password.category_name || "Uncategorized";
   const categoryColor = getCategoryColor(categoryName);
 
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setShowMenu(false);
-      }
-    };
-    if (showMenu) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [showMenu]);
-
   return (
-    <div className="flex items-center justify-between gap-4 px-5 py-3.5 sm:py-4 hover:bg-muted/50/80 dark:hover:bg-slate-700/40 transition-colors group select-none">
+    <div className="flex items-center justify-between gap-4 px-4 sm:px-5 py-3 hover:bg-muted/50 transition-colors select-none">
       {/* Col 1: Icon & Item Info */}
-      <div className="flex items-center gap-3.5 min-w-0 flex-1">
-        <div className={`w-10 h-10 ${categoryColor.gradient} flex items-center justify-center shrink-0 rounded-xl shadow-xs`}>
-          <CategoryIcon className="w-5 h-5 text-white" />
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className={`w-9 h-9 ${categoryColor.gradient} flex items-center justify-center shrink-0 rounded-lg shadow-xs`}>
+          <CategoryIcon className="w-4.5 h-4.5 text-white" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold text-sm sm:text-base text-foreground truncate leading-snug">
+            <h3 className="font-semibold text-sm text-foreground truncate leading-snug">
               {password.name || password.title}
             </h3>
             {password.is_favorite && (
-              <Star className="w-4 h-4 text-warning fill-amber-500 shrink-0" />
+              <Star className="w-3.5 h-3.5 text-warning fill-current shrink-0" />
             )}
           </div>
-          <p className="text-xs text-muted-foreground dark:text-muted-foreground font-mono truncate mt-0.5">
+          <p className="text-xs text-muted-foreground font-mono truncate mt-0.5">
             {websiteUrl ? (
               <span className="flex items-center gap-1">
-                <Globe className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <Globe className="w-3.5 h-3.5 shrink-0" />
                 {websiteUrl.replace(/^https?:\/\//, "").replace(/\/$/, "")}
               </span>
             ) : (
@@ -906,66 +889,39 @@ const PasswordListRow = ({
 
       {/* Col 2: Category Tag (Hidden on mobile) */}
       <div className="hidden md:block w-36 shrink-0">
-        <span className={`text-[11px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-lg ${categoryColor.pill}`}>
+        <span className={`text-[10px] font-semibold tracking-wider uppercase px-2 py-1 rounded-md ${categoryColor.pill}`}>
           {categoryName}
         </span>
       </div>
 
-      {/* Col 4: Actions */}
-      <div className="flex items-center gap-1 shrink-0">
-        <button
+      {/* Col 3: Actions */}
+      <div className="flex items-center gap-0.5 shrink-0">
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => onToggleFavorite(password.id)}
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-warning transition-colors"
+          className={`size-8 rounded-lg ${password.is_favorite ? "text-warning hover:text-warning" : "text-muted-foreground"}`}
           title={password.is_favorite ? "Remove favorite" : "Add favorite"}
         >
-          <Star
-            className={`w-4 h-4 ${password.is_favorite ? "text-warning fill-amber-500" : ""
-              }`}
-          />
-        </button>
+          <Star className={password.is_favorite ? "fill-current" : ""} />
+        </Button>
 
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => onDecrypt(password)}
-          className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-primary transition-colors"
+          className="size-8 rounded-lg text-muted-foreground"
           title="Decrypt / View Details"
         >
-          <Eye className="w-4 h-4" />
-        </button>
+          <Eye />
+        </Button>
 
-        <div className="relative" ref={menuRef}>
-          <button
-            onClick={() => setShowMenu(!showMenu)}
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <MoreVertical className="w-4 h-4" />
-          </button>
-
-          {showMenu && (
-            <div className="absolute right-0 top-full mt-1 w-44 bg-card rounded-xl shadow-lg border border-border py-1 z-20">
-              <button
-                onClick={() => {
-                  onUpdate(password);
-                  setShowMenu(false);
-                }}
-                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-              >
-                <Edit className="w-4 h-4" />
-                Edit
-              </button>
-              <button
-                onClick={() => {
-                  onDelete(password);
-                  setShowMenu(false);
-                }}
-                className="w-full flex items-center gap-2.5 px-3.5 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                disabled={isDeleting}
-              >
-                <Trash2 className="w-4 h-4" />
-                {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-            </div>
-          )}
-        </div>
+        <VaultActionsMenu
+          password={password}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+          isDeleting={isDeleting}
+        />
       </div>
     </div>
   );

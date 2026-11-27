@@ -6,6 +6,7 @@ import { notesAPI } from "../utils/api";
 import { encryptField } from "../utils/crypto";
 import { getCategoryIcon } from "../utils/categoryIcons";
 import Modal from "./Modal";
+import { Button } from "@/components/ui/button";
 
 const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
   const { mek } = useAuth();
@@ -119,221 +120,211 @@ const CreateNoteModal = ({ isOpen, onClose, onSuccess, categories }) => {
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      size="2xl"
+      size="lg"
       showCloseButton={false}
       srTitle="Create New Note"
+      className="p-0 max-h-[90vh] flex flex-col"
     >
-        {/* Header */}
-        <div className="border-b border-border p-4 sm:p-6 flex items-center justify-between">
-          <div className="flex items-center gap-2 sm:gap-3">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-primary to-primary-600 rounded-xl flex items-center justify-center">
-              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-            </div>
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-foreground">
-                Create New Note
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Create an encrypted note
-              </p>
-            </div>
+      {/* Header */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 sm:px-6 py-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 shrink-0 bg-primary/10 rounded-xl flex items-center justify-center">
+            <FileText className="w-5 h-5 text-primary" />
           </div>
-          <button
-            onClick={handleClose}
-            disabled={isLoading}
-            className="p-2 hover:bg-muted rounded-lg transition-colors"
-          >
-            <X className="w-5 h-5 text-muted-foreground" />
-          </button>
+          <div className="min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-foreground truncate">
+              Create New Note
+            </h2>
+            <p className="text-xs text-muted-foreground truncate">
+              Encrypted before it leaves your browser
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={handleClose}
+          disabled={isLoading}
+          className="shrink-0 text-muted-foreground"
+          aria-label="Close"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Form */}
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-thin scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+      >
+        {/* Security Notice */}
+        <div className="flex items-start gap-2.5 p-3 bg-primary/10 border border-primary/25 rounded-lg">
+          <Lock className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+          <div className="text-xs text-primary/90">
+            <p className="font-semibold mb-0.5">End-to-End Encrypted</p>
+            <p className="text-primary/70">
+              Your note will be encrypted with your master password before being
+              stored.
+            </p>
+          </div>
         </div>
 
-        {/* Form */}
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 sm:p-6 space-y-4 sm:space-y-6 max-h-[calc(100vh-8rem)] sm:max-h-[calc(100vh-12rem)] overflow-y-auto"
-        >
-          {/* Security Notice */}
-          <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary-50 dark:bg-primary-900/20 border border-primary/20 rounded-xl">
-            <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-primary-600 dark:text-primary-400 flex-shrink-0 mt-0.5" />
-            <div className="text-xs sm:text-sm text-primary-800 dark:text-primary-200">
-              <p className="font-semibold mb-1">End-to-End Encrypted</p>
-              <p className="text-primary-700 dark:text-primary-300">
-                Your note will be encrypted with your master password before
-                being stored.
-              </p>
-            </div>
-          </div>
+        {/* Title */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Title
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => {
+              setFormData({ ...formData, title: e.target.value });
+              setErrors({ ...errors, title: "" });
+            }}
+            placeholder="Enter note title..."
+            maxLength={200}
+            className={`w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none ${
+              errors.title ? "border-destructive" : "border-border"
+            }`}
+            disabled={isLoading}
+          />
+          {errors.title && (
+            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.title}
+            </p>
+          )}
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formData.title.length}/200 characters
+          </p>
+        </div>
 
-          {/* Title */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              Title <span className="text-destructive">*</span>
-            </label>
+        {/* Category */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Category
+          </label>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {availableCategories.map((category) => {
+              const Icon = getCategoryIcon(category.name);
+              const isSelected = formData.category === category.id;
+
+              return (
+                <button
+                  key={category.id}
+                  type="button"
+                  onClick={() =>
+                    setFormData({ ...formData, category: category.id })
+                  }
+                  disabled={isLoading}
+                  className={`p-2.5 rounded-lg border transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? "border-primary bg-primary/10 text-primary"
+                      : "border-border text-foreground hover:bg-muted/50"
+                  } disabled:opacity-50`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span className="text-xs font-medium truncate">
+                    {category.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          {errors.category && (
+            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.category}
+            </p>
+          )}
+        </div>
+
+        {/* Note Content */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Note Content
+          </label>
+          <textarea
+            value={formData.note}
+            onChange={(e) => {
+              setFormData({ ...formData, note: e.target.value });
+              setErrors({ ...errors, note: "" });
+            }}
+            placeholder="Write your secret note here..."
+            rows={10}
+            maxLength={50000}
+            className={`w-full px-3 py-2.5 text-sm bg-muted/50 dark:bg-background border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none resize-none font-mono ${
+              errors.note ? "border-destructive" : "border-border"
+            }`}
+            disabled={isLoading}
+          />
+          {errors.note && (
+            <p className="mt-1.5 text-xs text-destructive flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" />
+              {errors.note}
+            </p>
+          )}
+          <p className="mt-1 text-xs text-muted-foreground">
+            {formData.note.length}/50,000 characters
+          </p>
+        </div>
+
+        {/* Tags */}
+        <div>
+          <label className="block text-xs font-medium text-muted-foreground mb-1.5">
+            Tags <span className="font-normal">(optional)</span>
+          </label>
+          <div className="relative">
+            <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <input
               type="text"
-              value={formData.title}
-              onChange={(e) => {
-                setFormData({ ...formData, title: e.target.value });
-                setErrors({ ...errors, title: "" });
-              }}
-              placeholder="Enter note title..."
-              maxLength={200}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 ${
-                errors.title
-                  ? "border-destructive focus:ring-destructive"
-                  : "border-border focus:ring-ring"
-              } rounded-xl focus:ring-2 focus:border-transparent transition-all text-foreground outline-none`}
-              disabled={isLoading}
-            />
-            {errors.title && (
-              <p className="mt-2 text-xs sm:text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                {errors.title}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-muted-foreground">
-              {formData.title.length}/200 characters
-            </p>
-          </div>
-
-          {/* Category */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              Category <span className="text-destructive">*</span>
-            </label>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
-              {availableCategories.map((category) => {
-                const Icon = getCategoryIcon(category.name);
-                const isSelected = formData.category === category.id;
-
-                return (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, category: category.id })
-                    }
-                    disabled={isLoading}
-                    className={`p-2.5 sm:p-3 rounded-xl border-2 transition-all flex items-center gap-2 ${
-                      isSelected
-                        ? "border-primary bg-primary-50 dark:bg-primary-900/20"
-                        : "border-border hover:border-slate-300 dark:hover:border-slate-600"
-                    } disabled:opacity-50`}
-                  >
-                    <Icon
-                      className={`w-4 h-4 sm:w-5 sm:h-5 flex-shrink-0 ${
-                        isSelected
-                          ? "text-primary-600 dark:text-primary-400"
-                          : "text-muted-foreground"
-                      }`}
-                    />
-                    <span
-                      className={`text-xs sm:text-sm font-medium truncate ${
-                        isSelected
-                          ? "text-primary-700 dark:text-primary-300"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {category.name}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            {errors.category && (
-              <p className="mt-2 text-xs sm:text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                {errors.category}
-              </p>
-            )}
-          </div>
-
-          {/* Note Content */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              Note Content <span className="text-destructive">*</span>
-            </label>
-            <textarea
-              value={formData.note}
-              onChange={(e) => {
-                setFormData({ ...formData, note: e.target.value });
-                setErrors({ ...errors, note: "" });
-              }}
-              placeholder="Write your secret note here..."
-              rows={8}
-              maxLength={50000}
-              className={`w-full px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 ${
-                errors.note
-                  ? "border-destructive focus:ring-destructive"
-                  : "border-border focus:ring-ring"
-              } rounded-xl focus:ring-2 focus:border-transparent transition-all text-foreground outline-none resize-none font-mono`}
-              disabled={isLoading}
-            />
-            {errors.note && (
-              <p className="mt-2 text-xs sm:text-sm text-destructive flex items-center gap-1">
-                <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                {errors.note}
-              </p>
-            )}
-            <p className="mt-1 text-xs text-muted-foreground">
-              {formData.note.length}/50,000 characters
-            </p>
-          </div>
-
-          {/* Tags */}
-          <div>
-            <label className="block text-xs sm:text-sm font-medium text-foreground mb-2">
-              Tags <span className="text-muted-foreground">(optional)</span>
-            </label>
-            <div className="relative">
-              <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground" />
-              <input
-                type="text"
-                value={formData.tags}
-                onChange={(e) =>
-                  setFormData({ ...formData, tags: e.target.value })
-                }
-                placeholder="work, important, ideas"
-                className="w-full pl-9 sm:pl-10 pr-3 sm:pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-muted/50 dark:bg-background border-2 border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
-                disabled={isLoading}
-              />
-            </div>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Separate multiple tags with commas
-            </p>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-border">
-            <button
-              type="submit"
-              disabled={
-                isLoading || !formData.title.trim() || !formData.note.trim()
+              value={formData.tags}
+              onChange={(e) =>
+                setFormData({ ...formData, tags: e.target.value })
               }
-              className="w-full sm:flex-1 px-4 py-3 bg-gradient-to-br from-primary to-primary-600 text-white rounded-xl font-semibold hover:shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 flex items-center justify-center gap-2 order-1"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  Creating...
-                </>
-              ) : (
-                <>
-                  <Save className="w-5 h-5" />
-                  Create Note
-                </>
-              )}
-            </button>
-            <button
-              type="button"
-              onClick={handleClose}
+              placeholder="work, important, ideas"
+              className="w-full pl-9 pr-3 py-2.5 text-sm bg-muted/50 dark:bg-background border border-border rounded-lg focus:ring-2 focus:ring-ring focus:border-transparent transition-all text-foreground outline-none"
               disabled={isLoading}
-              className="w-full sm:flex-1 px-4 py-3 bg-muted text-foreground rounded-xl font-semibold hover:bg-muted transition-all disabled:opacity-50 disabled:cursor-not-allowed order-2"
-            >
-              Cancel
-            </button>
+            />
           </div>
-        </form>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Separate multiple tags with commas
+          </p>
+        </div>
+      </form>
+
+      {/* Footer - sticky bottom bar */}
+      <div className="flex flex-col sm:flex-row gap-2.5 p-4 sm:px-6 pt-3 border-t border-border bg-card shrink-0">
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={handleClose}
+          disabled={isLoading}
+          className="order-2 sm:order-1 flex-1 rounded-xl font-semibold"
+        >
+          Cancel
+        </Button>
+        <Button
+          type="submit"
+          onClick={handleSubmit}
+          disabled={
+            isLoading || !formData.title.trim() || !formData.note.trim()
+          }
+          className="order-1 sm:order-2 flex-1 rounded-xl font-semibold"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="animate-spin" />
+              Creating...
+            </>
+          ) : (
+            <>
+              <Save />
+              Create Note
+            </>
+          )}
+        </Button>
+      </div>
     </Modal>
   );
 };
