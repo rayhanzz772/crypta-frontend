@@ -21,7 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
 import toast from "react-hot-toast";
@@ -72,15 +71,18 @@ const Topbar = ({
   };
 
   const searchField = (className) => (
-    <div className={cn("relative", className)}>
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-      <Input
-        type="text"
-        placeholder={getSearchPlaceholder()}
-        value={searchQuery}
-        onChange={(e) => onSearchChange?.(e.target.value)}
-        className="pl-9 rounded-lg bg-muted/50 border-border"
-      />
+    // outer div may carry horizontal padding; the icon anchors to the unpadded inner box
+    <div className={className}>
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+        <Input
+          type="text"
+          placeholder={getSearchPlaceholder()}
+          value={searchQuery}
+          onChange={(e) => onSearchChange?.(e.target.value)}
+          className="pl-9 rounded-lg bg-muted/50 border-border"
+        />
+      </div>
     </div>
   );
 

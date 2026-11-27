@@ -11,7 +11,7 @@ const PasswordWarningModal = ({ isOpen, onClose, onConfirm }) => {
       size="sm"
       srTitle="Important Warning!"
       showCloseButton={false}
-      className="bg-white dark:bg-card gap-0 p-4 sm:p-6 relative max-h-[90vh] rounded-xl sm:rounded-2xl border-0 shadow-2xl animate-scale-in"
+      className="bg-white dark:bg-card gap-0 p-4 sm:p-6 max-h-[90vh] rounded-xl sm:rounded-2xl border-0 shadow-2xl"
     >
         {/* Close button */}
         <button

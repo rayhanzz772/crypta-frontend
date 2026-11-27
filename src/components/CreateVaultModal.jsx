@@ -284,7 +284,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
       size="lg"
       showCloseButton={false}
       srTitle="Add New Password"
-      className="p-0 overflow-hidden max-h-[90vh] flex flex-col"
+      className="p-0 max-h-[90vh] flex flex-col"
     >
         {/* Header */}
         <div className="sticky top-0 bg-card border-b border-border p-4 sm:p-6 flex items-center justify-between z-10">
