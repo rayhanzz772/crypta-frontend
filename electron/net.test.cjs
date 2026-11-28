@@ -1,6 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 const { buildMultipart, resolveUrl, sanitizeHeaders, attachOrigin } = require("./net.cjs");
+const config = require("./config.cjs");
 
 test("buildMultipart includes fields and file bytes", () => {
   const { body, contentType } = buildMultipart({
@@ -68,4 +69,29 @@ test("attachOrigin is the only writer: sanitized headers cannot carry one", () =
   const headers = attachOrigin(sanitizeHeaders({ origin: "https://evil.test" }), "http://localhost:5000");
 
   assert.deepEqual(headers, { Origin: "http://localhost:5000" });
+});
+
+test("applyEnvText reads assignments and skips comments and blanks", () => {
+  config.applyEnvText(
+    [
+      "# production",
+      "",
+      "CRYPTA_TEST_URL=https://api.test",
+      "  export CRYPTA_TEST_QUOTED=\"https://quoted.test\"  ",
+      "not an assignment",
+    ].join("\n"),
+  );
+
+  assert.equal(process.env.CRYPTA_TEST_URL, "https://api.test");
+  assert.equal(process.env.CRYPTA_TEST_QUOTED, "https://quoted.test");
+  delete process.env.CRYPTA_TEST_URL;
+  delete process.env.CRYPTA_TEST_QUOTED;
+});
+
+test("applyEnvText never clobbers a real environment variable", () => {
+  process.env.CRYPTA_TEST_OVERRIDE = "from-shell";
+  config.applyEnvText("CRYPTA_TEST_OVERRIDE=from-file");
+
+  assert.equal(process.env.CRYPTA_TEST_OVERRIDE, "from-shell");
+  delete process.env.CRYPTA_TEST_OVERRIDE;
 });

@@ -1,3 +1,4 @@
+const fs = require("node:fs");
 const path = require("node:path");
 
 const APP_SCHEME = "app";
@@ -5,17 +6,36 @@ const APP_HOST = "crypta";
 const APP_ORIGIN = `${APP_SCHEME}://${APP_HOST}`;
 const DEV_APP_URL = "http://localhost:5173";
 
-// Dev: read the same .env Vite uses, so the web and desktop builds cannot drift
-// to different ports. Existing env vars win, and packaged builds have no .env
-// beside these sources — both cases fall through to the fallback below.
-try {
-  process.loadEnvFile(path.join(__dirname, "..", ".env"));
-} catch {
-  /* no .env: packaged, or a clean checkout */
-}
+// Electron's fs understands paths inside app.asar; process.loadEnvFile does not
+// (it goes through Node's internal binding), so packaged builds would silently
+// fall back. Hence the manual read + parse.
+const ENV_LINE = /^\s*(?:export\s+)?([A-Za-z_]\w*)\s*=([\s\S]*)$/;
 
-// Resolution order: per-run override, then the shared VITE_API_BASE_URL, then
-// the build-time default. Edit the default here before building an installer.
+const applyEnvText = (text) => {
+  for (const line of text.split(/\r?\n/)) {
+    const match = ENV_LINE.exec(line);
+    if (!match) continue;
+    const [, key, raw] = match;
+    // A real environment variable always beats the file.
+    if (process.env[key] !== undefined) continue;
+    process.env[key] = raw.trim().replace(/^(['"])(.*)\1$/, "$2");
+  }
+};
+
+const readEnvFile = (file) => {
+  try {
+    return fs.readFileSync(file, "utf8");
+  } catch {
+    return "";
+  }
+};
+
+// Dev and packaged both read the same .env: in dev it sits at the project root,
+// in packaged builds electron-builder ships it into the asar.
+applyEnvText(readEnvFile(path.join(__dirname, "..", ".env")));
+
+// Resolution order: per-run environment override, then the value from .env.
+// The hardcoded default only applies to a checkout with no .env at all.
 const API_BASE_URL = (
   process.env.CRYPTA_API_BASE_URL || process.env.VITE_API_BASE_URL || "http://localhost:5000"
 ).replace(/\/+$/, "");
@@ -37,4 +57,5 @@ module.exports = {
   API_BASE_URL,
   API_ORIGIN,
   DEV_APP_URL,
+  applyEnvText,
 };

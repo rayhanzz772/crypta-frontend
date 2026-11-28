@@ -10,6 +10,9 @@ const rendererUrl = useBundle ? `${config.APP_ORIGIN}/` : config.DEV_APP_URL;
 const distDir = path.join(app.getAppPath(), "dist");
 const CLIPBOARD_CLEAR_MS = 30000;
 const IDLE_LOCK_SECONDS = 300;
+// Portfolio/demo builds: CRYPTA_ALLOW_SCREENSHOT=1 lifts the capture block.
+// Unset in production, so the shipped installer stays protected.
+const ALLOW_SCREENSHOT = process.env.CRYPTA_ALLOW_SCREENSHOT === "1";
 const IDLE_TICK_MS = 10000;
 // Space reserved on the right of the custom title bar for the native overlay buttons.
 const OVERLAY_WIDTH = 138;
@@ -167,7 +170,7 @@ const createWindow = () => {
     },
   });
 
-  mainWindow.setContentProtection(true);
+  mainWindow.setContentProtection(!ALLOW_SCREENSHOT);
 
   mainWindow.on("closed", () => {
     mainWindow = null;

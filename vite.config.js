@@ -13,6 +13,14 @@ export default defineConfig(({ mode }) => {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
       },
     },
+    server: {
+      watch: {
+        // electron-builder output is not source. Without this the dev server
+        // crawls ~200 MB of Chromium and crashes with EBUSY the moment
+        // win-unpacked\Crypta.exe is running (Windows locks the .exe).
+        ignored: ["**/release/**"],
+      },
+    },
     plugins: [
       react(),
       VitePWA({

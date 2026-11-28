@@ -8,6 +8,9 @@ files:
   - electron/**
   - "!electron/**/*.test.cjs"
   - package.json
+  # config.cjs reads this at startup for the API origin, so packaged builds use
+  # the same .env as the dev server instead of a hardcoded fallback.
+  - .env
   - "!node_modules/**"
 asar: true
 win:

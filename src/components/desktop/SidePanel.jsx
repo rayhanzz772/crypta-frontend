@@ -7,7 +7,9 @@ import { cn } from "@/lib/utils";
 
 const rowClass = (active) =>
   cn(
-    "flex h-7 w-full items-center gap-2 rounded px-2 text-xs text-muted-foreground",
+    // justify-start overrides the Button base's justify-center, which would
+    // otherwise float every row's icon+label to the middle of the panel.
+    "flex h-7 w-full items-center justify-start gap-2 rounded px-2 text-xs text-muted-foreground",
     "hover:bg-accent hover:text-accent-foreground",
     "data-[active=true]:bg-accent data-[active=true]:font-medium data-[active=true]:text-accent-foreground",
   );
