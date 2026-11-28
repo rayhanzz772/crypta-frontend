@@ -1,21 +1,6 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import {
-  LayoutGrid,
-  Briefcase,
-  Wallet,
-  Users,
-  Activity,
-  Gamepad2,
-  Lock,
-  LockOpen,
-  FileText,
-  FolderKey,
-  FolderLock,
-  Trash2,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
+import { Lock, LockOpen, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
+import { VAULT_CATEGORIES, SECONDARY_LINKS } from "@/utils/nav";
 import toast from "react-hot-toast";
 
 // shadcn sidebar menu-button pattern: ghost base, accent fill when data-active.
@@ -103,21 +89,8 @@ const Sidebar = ({
     }
   };
 
-  const categories = [
-    { name: "All Vault", icon: LayoutGrid, value: "", count: 0 },
-    { name: "Work", icon: Briefcase, value: "Work", count: 0 },
-    { name: "Gaming", icon: Gamepad2, value: "Game", count: 0 },
-    { name: "Finance", icon: Wallet, value: "Finance", count: 0 },
-    { name: "Social", icon: Users, value: "Social", count: 0 },
-  ];
-
-  const secondaryLinks = [
-    { name: "Secret Notes", icon: FileText, path: "/app/notes" },
-    { name: "Secure Files", icon: FolderLock, path: "/app/files" },
-    { name: "Secret Manager", icon: FolderKey, path: "/app/secret-manager" },
-    { name: "Activity Logs", icon: Activity, path: "/app/logs" },
-    { name: "Trash Bin", icon: Trash2, path: "/app/trash" },
-  ];
+  const categories = VAULT_CATEGORIES;
+  const secondaryLinks = SECONDARY_LINKS;
 
   return (
     <aside

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
+import { setDesktopTitleBarTheme } from '../utils/desktop';
 
 const ThemeContext = createContext();
 

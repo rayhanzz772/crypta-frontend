@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Copy, Check, AlertTriangle, ShieldCheck } from "lucide-react";
 import Modal from "./Modal";
+import { copyText } from "@/utils/desktop";
 
 const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
   const [copied, setCopied] = useState(false);
@@ -8,7 +9,7 @@ const RecoveryKeyModal = ({ isOpen, recoveryKey, onClose }) => {
   if (!isOpen) return null;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(recoveryKey);
+    copyText(recoveryKey, { sensitive: true });
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };

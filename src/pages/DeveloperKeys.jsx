@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { copyText } from '@/utils/desktop';
 import { useNavigate } from 'react-router-dom';
 import {
   Key,
@@ -81,7 +82,7 @@ const DeveloperKeys = () => {
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+    copyText(text, { sensitive: true });
     toast.success('Copied to clipboard!');
   };
 

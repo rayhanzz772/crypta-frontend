@@ -18,6 +18,7 @@ import { useState, useEffect } from "react";
 import { Shield, Loader2, CheckCircle2, AlertCircle, Key } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "../contexts/AuthContext";
+import { copyText } from "../utils/desktop";
 import { authAPI, vaultAPI, notesAPI } from "../utils/api";
 import {
   sha256Hex,
@@ -228,7 +229,7 @@ const LegacyMigrationModal = () => {
 
   const handleCopyRecoveryKey = () => {
     if (recoveryKey) {
-      navigator.clipboard.writeText(recoveryKey);
+      copyText(recoveryKey, { sensitive: true });
       setHasCopiedRecoveryKey(true);
       toast.success("Recovery key copied to clipboard!");
     }

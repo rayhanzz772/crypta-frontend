@@ -42,7 +42,6 @@
   .dark {
     --background: 225 28% 6%;
     --foreground: 220 25% 96%;
-
     --card: 224 24% 9%;
     --card-foreground: 220 25% 96%;
 
@@ -72,6 +71,13 @@
     --ring: 212 100% 67%;
   }
 
+  /* Desktop shell: denser type scale and tighter radii, applied to <html> only
+     when running in Electron. Web build keeps the values above. */
+  .desktop-shell {
+    --radius: 0.375rem;
+    font-size: 14px;
+  }
+
   * {
     @apply border-border;
   }
@@ -84,6 +90,25 @@
 }
 
 @layer utilities {
+  /* Electron frameless title bar: draggable strip, with interactive children opting out. */
+  .app-drag {
+    -webkit-app-region: drag;
+  }
+
+  .app-no-drag {
+    -webkit-app-region: no-drag;
+  }
+
+  /* Interactive children of the drag strip must opt out, or clicks get eaten. */
+  .app-drag button,
+  .app-drag a,
+  .app-drag input,
+  .app-drag svg,
+  .app-drag [role="menuitem"],
+  .app-drag [role="combobox"] {
+    -webkit-app-region: no-drag;
+  }
+
   /* Single accent treatment. Replaces the old orange + rainbow gradients. */
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-br from-primary to-primary-600 dark:from-primary dark:to-primary-300;

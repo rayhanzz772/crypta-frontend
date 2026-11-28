@@ -4,9 +4,11 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./contexts/AuthContext";
+import { isDesktop } from "./utils/desktop";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AppLayout from "./layouts/AppLayout";
 import Landing from "./pages/Landing";
@@ -25,6 +27,12 @@ import FolderDetail from "./pages/FolderDetail";
 import Trash from "./pages/Trash";
 
 function App() {
+  // Density + radius tokens live on <html> so they apply above the router tree.
+  useEffect(() => {
+    document.documentElement.classList.toggle("desktop-shell", isDesktop);
+    return () => document.documentElement.classList.remove("desktop-shell");
+  }, []);
+
   return (
     <Router>
       <AuthProvider>
@@ -62,7 +70,8 @@ function App() {
           {/* Routes */}
           <Routes>
             {/* Public Routes */}
-            <Route path="/" element={<Landing />} />
+            {/* Desktop has no marketing site: boot straight into the vault shell. */}
+            <Route path="/" element={isDesktop ? <Navigate to="/app" replace /> : <Landing />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/verify-email" element={<VerifyEmail />} />

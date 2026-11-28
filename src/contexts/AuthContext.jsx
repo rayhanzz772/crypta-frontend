@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI, logsAPI, registerAuthFailureHandler } from "../utils/api";
+import { onAutoLock } from "../utils/desktop";
 import {
   sha256Hex,
   deriveKEK,
@@ -280,6 +281,14 @@ export const AuthProvider = ({ children }) => {
       // Non-fatal
     }
   };
+
+  // Auto-lock on screen lock, suspend, or system idle (desktop only).
+  useEffect(() => {
+    return onAutoLock(() => {
+      if (mek) lockVault();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mek]);
 
   // -------------------------------------------------------------------------
   // Unlock Vault — re-derive KEK and unwrap MEK locally.

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { copyText } from "@/utils/desktop";
 import { useOutletContext } from "react-router-dom";
 import {
   FolderKey,
@@ -285,7 +286,7 @@ const SecretManager = () => {
   };
 
   const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
+    copyText(text, { sensitive: true });
     toast.success("Copied to clipboard");
   };
 

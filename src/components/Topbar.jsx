@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
+import { getSearchPlaceholder } from "@/utils/searchPlaceholder";
 import toast from "react-hot-toast";
 
 const Topbar = ({
@@ -37,23 +38,6 @@ const Topbar = ({
   const { user, logout, lockVault, mek } = useAuth();
   const isVaultUnlocked = !!mek;
   const { theme, toggleTheme } = useTheme();
-
-  // Dynamic placeholder based on current route
-  const getSearchPlaceholder = () => {
-    if (location.pathname.includes("/notes")) {
-      return "Search notes by title, content, or tags...";
-    }
-    if (location.pathname.includes("/secret-manager")) {
-      return "Search projects and secrets...";
-    }
-    if (location.pathname.includes("/files")) {
-      return "Search Folder / file...";
-    }
-    if (location.pathname.includes("/trash")) {
-      return "Search trash items...";
-    }
-    return "Search passwords...";
-  };
 
   const handleLogout = () => {
     logout();
@@ -77,7 +61,7 @@ const Topbar = ({
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <Input
           type="text"
-          placeholder={getSearchPlaceholder()}
+          placeholder={getSearchPlaceholder(location.pathname)}
           value={searchQuery}
           onChange={(e) => onSearchChange?.(e.target.value)}
           className="pl-9 rounded-lg bg-muted/50 border-border"

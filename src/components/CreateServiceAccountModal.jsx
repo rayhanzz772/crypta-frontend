@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { copyText } from "@/utils/desktop";
 import {
   X,
   Bot,
@@ -76,7 +77,7 @@ const CreateServiceAccountModal = ({
   const handleCopyKey = () => {
     if (!serviceAccount?.private_key) return;
 
-    navigator.clipboard.writeText(serviceAccount.private_key);
+    copyText(serviceAccount.private_key, { sensitive: true });
     toast.success("Private key copied to clipboard");
   };
 

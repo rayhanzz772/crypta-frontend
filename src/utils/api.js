@@ -1,5 +1,5 @@
-import axios from "axios";
 import { sanitizeStringArray, sanitizeText } from "./sanitize";
+import { createClient, setResponseErrorHandler } from "./apiTransport";
 
 const AUTH_REDIRECT_MESSAGE_KEY = "auth_redirect_message";
 const PUBLIC_AUTH_ROUTES = [
@@ -13,13 +13,8 @@ const AUTH_FAILURE_DEBOUNCE_MS = 1500;
 let authFailureHandler = null;
 let lastAuthFailureAt = 0;
 
-const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
-  withCredentials: true,
+const api = createClient({
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   timeout: 10000,
 });
 
@@ -95,38 +90,19 @@ export const consumeAuthRedirectMessage = () => {
   return message;
 };
 
-api.interceptors.request.use(
-  (config) => {
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  },
-);
+setResponseErrorHandler((error) => {
+  const authErrorText = (
+    error.response?.data?.message || error.response?.data?.error || ""
+  ).toLowerCase();
 
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    const authErrorText = (
-      error.response?.data?.message || error.response?.data?.error || ""
-    ).toLowerCase();
+  if (authErrorText.includes("jwt") || authErrorText.includes("token")) {
+    clearAuthAndRedirect(error);
+  }
 
-    if (
-      authErrorText.includes("jwt") ||
-      authErrorText.includes("token")
-    ) {
-      clearAuthAndRedirect(error);
-    }
-
-    if (error.response?.status === 401) {
-      clearAuthAndRedirect(error);
-    }
-
-    return Promise.reject(error);
-  },
-);
+  if (error.response?.status === 401) {
+    clearAuthAndRedirect(error);
+  }
+});
 
 export const authAPI = {
   /**
@@ -245,6 +221,13 @@ export const authAPI = {
     } catch {
       // Ignore logout errors — always clear local state.
     }
+
+    try {
+      await window.cryptaDesktop?.logout?.();
+    } catch {
+      // Desktop session cleanup is best-effort.
+    }
+
     clearStoredAuth();
   },
 };

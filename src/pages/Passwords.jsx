@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { copyText } from "@/utils/desktop";
 import { useOutletContext } from "react-router-dom";
 import { motion } from "framer-motion";
 import * as XLSX from "xlsx";
@@ -276,7 +277,7 @@ const Passwords = () => {
   };
 
   const handleCopy = (text) => {
-    navigator.clipboard.writeText(text);
+    copyText(text, { sensitive: true });
     toast.success("Copied to clipboard!");
   };
 

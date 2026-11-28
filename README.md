@@ -125,6 +125,23 @@ npm run build
 npm run preview
 ```
 
+### Desktop App (Electron)
+
+The desktop build bundles the UI locally and sends API traffic through the Electron main process.
+
+```bash
+# Terminal 1: web dev server
+npm run dev
+
+# Terminal 2: Electron shell loading the dev server
+npm run dev:desktop
+
+# Packaged Windows installer
+npm run build:desktop
+```
+
+Set `CRYPTA_API_BASE_URL` in the environment for development, or edit the fallback in `electron/config.cjs` before packaging for production. The installer is written to `release/`.
+
 ---
 
 ## � Project Structure

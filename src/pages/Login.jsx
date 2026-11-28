@@ -9,6 +9,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useAuth } from "@/contexts/AuthContext";
 import { consumeAuthRedirectMessage } from "@/utils/api";
+import { isDesktop } from "@/utils/desktop";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -110,13 +111,15 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-background px-4 py-6 sm:py-12">
       <Card className="w-full max-w-[440px]">
         <CardContent className="pt-8 pb-8 px-6 sm:px-8">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            Back to Home
-          </Link>
+          {!isDesktop && (
+            <Link
+              to="/"
+              className="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              Back to Home
+            </Link>
+          )}
 
           <div className="text-center mb-8">
             <img

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { copyText } from "@/utils/desktop";
 import {
   X,
   Eye,
@@ -94,7 +95,7 @@ const DecryptModal = ({ isOpen, onClose, vaultItem }) => {
 
   const handleCopy = () => {
     if (decryptedPassword) {
-      navigator.clipboard.writeText(decryptedPassword);
+      copyText(decryptedPassword, { sensitive: true });
       toast.success("Password copied to clipboard!");
     }
   };

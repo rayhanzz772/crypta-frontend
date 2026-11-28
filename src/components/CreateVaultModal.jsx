@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { copyText } from "@/utils/desktop";
 import {
   X,
   Eye,
@@ -175,7 +176,7 @@ const CreateVaultModal = ({ isOpen, onClose, onSuccess }) => {
 
   const handleCopyPassword = () => {
     if (formData.password) {
-      navigator.clipboard.writeText(formData.password);
+      copyText(formData.password, { sensitive: true });
       toast.success("Password copied!");
     }
   };

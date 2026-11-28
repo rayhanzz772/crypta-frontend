@@ -1,0 +1,29 @@
+appId: com.crypta.app
+productName: Crypta
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**
+  - electron/**
+  - "!electron/**/*.test.cjs"
+  - package.json
+  - "!node_modules/**"
+asar: true
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+mac:
+  target:
+    - dmg
+  category: public.app-category.productivity
+linux:
+  target:
+    - AppImage
+  category: Utility

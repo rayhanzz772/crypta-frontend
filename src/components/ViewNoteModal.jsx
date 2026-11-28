@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { copyText } from "@/utils/desktop";
 import {
   X,
   LayoutGrid,
@@ -75,7 +76,7 @@ const ViewNoteModal = ({
 
   const handleCopy = () => {
     if (decryptedContent) {
-      navigator.clipboard.writeText(decryptedContent);
+      copyText(decryptedContent, { sensitive: true });
       toast.success("Note content copied to clipboard!");
     }
   };
